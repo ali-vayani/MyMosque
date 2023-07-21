@@ -4,13 +4,14 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
 import List from './app/screens/List';
+import Home from './app/screens/Home';
 
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name='My Todos' component={List}/>
+        <Stack.Screen name='Home' component={Home} options={{headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
