@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     },
     progressBar:{
         width: '100%',
-        height: '13%',
+        height: '25%',
         backgroundColor: 'rgba(255, 244, 210, .5)', 
         borderRadius: 15,
     },
@@ -40,10 +40,9 @@ const styles = StyleSheet.create({
     },
     content: {
         width: '100%',
-        height: '100%',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center',   
     },
     textArea: {
         flexDirection: 'row',

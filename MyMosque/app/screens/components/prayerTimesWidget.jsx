@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image  } from 'react-native';
 import PrayerBar from './prayerBar';
+import Location from './location';
 import { Dimensions } from 'react-native';
 
 let widgetHeight = Dimensions.get('window').height*.32;
@@ -27,7 +28,7 @@ const PrayerTimesWidget = ({ navigation }) => {
       <View style={styles.content}>
         <Text style={styles.mainText}> Prayer Times </Text>
           <PrayerBar timeTillNext={'14 min 20 sec'} nextPrayer={'Maghrib'}/>
-        
+          <Location location={'Keller, TX'}/>
       </View>
     </View>
   );
@@ -38,7 +39,7 @@ export default PrayerTimesWidget;
 const styles = StyleSheet.create({
   widget: {
     width: '97%',
-    height: '33%',
+    height: '30%',
     backgroundColor: '#67519A',
     borderRadius: 41.5,
     justifyContent: 'center',
@@ -51,8 +52,11 @@ const styles = StyleSheet.create({
     color: '#FFF4D2',
   },
   content: {
-    marginVertical: '15%',
+    paddingTop: '10%',
+    paddingBottom: '5%',
     width: '90%',
+    height: '100%',
+    justifyContent: 'space-between',
   },
   dot: {
     position: 'absolute',
