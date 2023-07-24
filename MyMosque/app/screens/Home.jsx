@@ -1,6 +1,7 @@
 import {View, Text, Button, StyleSheet, TextInput, FlatList, TouchableOpacity} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
-import PrayerTimesWidget from './components/prayerTimesWidget';
+import PrayerTimesWidget from '../components/widgets/prayerTimesWidget';
+import SearchWidget from '../components/widgets/SearchWidget';
 
 const Home = ({navigation}) => {
     return(
@@ -8,6 +9,7 @@ const Home = ({navigation}) => {
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
                 <PrayerTimesWidget/>
+                <SearchWidget/>
             </View>
 
         </View>
