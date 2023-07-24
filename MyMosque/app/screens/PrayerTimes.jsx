@@ -1,24 +1,30 @@
-import {View, Text, Button, StyleSheet, TextInput, FlatList, TouchableOpacity} from 'react-native'
+import {View, Text, Button, StyleSheet, Image, FlatList, TouchableOpacity} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import PrayerTimesWidget from '../components/widgets/prayerTimesWidget';
 import SearchWidget from '../components/widgets/SearchWidget';
 import MyMosqueWidget from '../components/widgets/MyMosquesWidget';
 
-const Home = ({navigation}) => {
+const PrayerTimes = ({navigation}) => {
     return(
         <View style={styles.page}>
-            <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
-            <View style={styles.content}>
-                <PrayerTimesWidget navigation={navigation}/>
-                <SearchWidget/>
-                <MyMosqueWidget/>
-            </View>
+            <LinearGradient colors={['#67519A', '#A79A84']} style={styles.background}/>
+            <Image 
+            source={require('../../assets/images/Random3.png')} 
+            style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            borderRadius: 41.5,
+            opacity: .1,
+            }}/>
 
         </View>
     )
 }
 
-export default Home;
+export default PrayerTimes;
 
 const styles = StyleSheet.create({
     page: {
