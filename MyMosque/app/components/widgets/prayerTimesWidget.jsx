@@ -20,7 +20,7 @@ const PrayerTimesWidget = ({ navigation }) => {
       />
       <View style={styles.content}>
         <Text style={styles.mainText}> Prayer Times </Text>
-          <PrayerBar timeTillNext={'14 min 20 sec'} nextPrayer={'Maghrib'}/>
+          <PrayerBar timeTillNext={'14 min 20 sec'} nextPrayer={'Maghrib'} size={28}/>
           <Location location={'Keller, TX'}/>
       </View>
     </TouchableOpacity>
