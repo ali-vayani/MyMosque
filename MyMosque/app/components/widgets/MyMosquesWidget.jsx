@@ -17,8 +17,11 @@ const MyMosqueWidget = ({ navigation }) => {
         }}
       />
       <View style={styles.content}>
-        <MosqueInfo mosque={'Watauga Masjid'} announcment={'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...'}/>
-        <MosqueInfo mosque={'Watauga Masjid'} announcment={'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...'}/>
+        <Text style={styles.mainText}>My Mosques</Text>
+        <View style={styles.mosqueInfoContent}>
+          <MosqueInfo mosque={'Watauga Masjid'} announcment={'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...'}/>
+          <MosqueInfo mosque={'Watauga Masjid'} announcment={'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...'}/>
+        </View>
       </View>
     </View>
   );
@@ -29,7 +32,7 @@ export default MyMosqueWidget;
 const styles = StyleSheet.create({
   widget: {
     width: '97%',
-    height: '60%',
+    height: '56%',
     backgroundColor: '#679159',
     borderRadius: 41.5,
     justifyContent: 'center',
@@ -45,6 +48,11 @@ const styles = StyleSheet.create({
     paddingBottom: '5%',
     width: '90%',
     height: '100%',
-    justifyContent: 'space-between',
+    gap: 35
   },
+  mosqueInfoContent: {
+    gap: 15,
+    width: '100%',
+    height: '100%'
+  }
 });

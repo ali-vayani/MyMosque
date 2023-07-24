@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image  } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
 import PrayerBar from '../elements/prayerBar';
 import Location from '../elements/location';
 const PrayerTimesWidget = ({ navigation }) => {
   return (
-    <View style={styles.widget}>
+    <TouchableOpacity style={styles.widget} onPress={() => console.log('prayertimewidget')}>
       {/* <View style={{backgroundImage: require('C:/Users/aliva/Desktop/MyMosquefr/MyMosque/assets/images/1.jpg'), position: 'absolute', top: 0, bottom: 0, left:0, right:0, borderRadius: 41.5}} /> */}
       <Image 
         source={require('../../../assets/images/Random3.png')} 
@@ -23,7 +23,7 @@ const PrayerTimesWidget = ({ navigation }) => {
           <PrayerBar timeTillNext={'14 min 20 sec'} nextPrayer={'Maghrib'}/>
           <Location location={'Keller, TX'}/>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -2,6 +2,7 @@ import {View, Text, Button, StyleSheet, TextInput, FlatList, TouchableOpacity} f
 import { LinearGradient } from 'expo-linear-gradient';
 import PrayerTimesWidget from '../components/widgets/prayerTimesWidget';
 import SearchWidget from '../components/widgets/SearchWidget';
+import MyMosqueWidget from '../components/widgets/MyMosquesWidget';
 
 const Home = ({navigation}) => {
     return(
@@ -10,6 +11,7 @@ const Home = ({navigation}) => {
             <View style={styles.content}>
                 <PrayerTimesWidget/>
                 <SearchWidget/>
+                <MyMosqueWidget/>
             </View>
 
         </View>

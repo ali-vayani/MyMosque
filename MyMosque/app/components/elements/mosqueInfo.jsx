@@ -13,26 +13,27 @@ const MosqueInfo = ({ imgPath, mosque, announcment }) => {
 
 const styles = StyleSheet.create({
 mainText: {
-  fontSize: 32,
+  fontSize: 24,
   fontWeight: 'bold',
   color: '#FFF4D2',
-  paddingVertical: '2%'
+  paddingVertical: '3%'
 },
 subheadingText: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#FFF4D2',
 },
 minorText: {
-  fontSize: 12,
+  fontSize: 10,
   fontWeight: 'bold',
   color: '#FFF4D2',
 },
     
 content: {
     paddingVertical: '5%',
-    width: '90%',
-    height: '30%',
+    paddingHorizontal: '3%',
+    width: '100%',
+    height: '33%',
     flexDirection: 'column',
     justifyContent: 'space-between',
     borderRadius: 20,    
