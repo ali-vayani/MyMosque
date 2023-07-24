@@ -1,19 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image  } from 'react-native';
-import PrayerBar from './prayerBar';
-import { Dimensions } from 'react-native';
-
-let widgetHeight = Dimensions.get('window').height*.32;
-let widgetWidth = Dimensions.get('window').width*.95;
-const existingDots = new Set();
-let topVal;
-let leftVal;
+import PrayerBar from '../elements/prayerBar';
+import Location from '../elements/location';
 const PrayerTimesWidget = ({ navigation }) => {
   return (
     <View style={styles.widget}>
       {/* <View style={{backgroundImage: require('C:/Users/aliva/Desktop/MyMosquefr/MyMosque/assets/images/1.jpg'), position: 'absolute', top: 0, bottom: 0, left:0, right:0, borderRadius: 41.5}} /> */}
       <Image 
-        source={require('C:/Users/aliva/Desktop/MyMosquefr/MyMosque/assets/images/Random3.png')} 
+        source={require('../../../assets/images/Random3.png')} 
         style={{
           width: '100%',
           height: '100%',
@@ -27,7 +21,7 @@ const PrayerTimesWidget = ({ navigation }) => {
       <View style={styles.content}>
         <Text style={styles.mainText}> Prayer Times </Text>
           <PrayerBar timeTillNext={'14 min 20 sec'} nextPrayer={'Maghrib'}/>
-        
+          <Location location={'Keller, TX'}/>
       </View>
     </View>
   );
@@ -38,7 +32,7 @@ export default PrayerTimesWidget;
 const styles = StyleSheet.create({
   widget: {
     width: '97%',
-    height: '33%',
+    height: '30%',
     backgroundColor: '#67519A',
     borderRadius: 41.5,
     justifyContent: 'center',
@@ -51,15 +45,10 @@ const styles = StyleSheet.create({
     color: '#FFF4D2',
   },
   content: {
-    marginVertical: '15%',
+    paddingTop: '10%',
+    paddingBottom: '5%',
     width: '90%',
-  },
-  dot: {
-    position: 'absolute',
-    backgroundColor:'white',
-    opacity: .1,
-    width: 5,
-    height: 5,
-    borderRadius: 3,
+    height: '100%',
+    justifyContent: 'space-between',
   },
 });
