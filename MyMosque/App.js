@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import Home from './app/screens/Home';
 import PrayerTimes from './app/screens/PrayerTimes';
+import Mosque from './app/screens/Mosque';
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name='Home' component={Home} options={{headerShown: false}} />
         <Stack.Screen name='PrayerTimes' component={PrayerTimes} options={{headerShown: false}}/>
+        <Stack.Screen name='Mosque' component={Mosque} options={{headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

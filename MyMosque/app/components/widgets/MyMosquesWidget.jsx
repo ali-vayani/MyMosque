@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image  } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
 import MosqueInfo from '../elements/mosqueInfo';
 const MyMosqueWidget = ({ navigation }) => {
   return (
-    <View style={styles.widget}>
+    <TouchableOpacity onPress={() => navigation.navigate('Mosque')} style={styles.widget}>
       <Image 
         source={require('../../../assets/images/Random3.png')} 
         style={{
@@ -23,7 +23,7 @@ const MyMosqueWidget = ({ navigation }) => {
           <MosqueInfo mosque={'Watauga Masjid'} announcment={'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...'}/>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

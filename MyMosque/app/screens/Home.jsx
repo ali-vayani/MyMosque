@@ -11,7 +11,7 @@ const Home = ({navigation}) => {
             <View style={styles.content}>
                 <PrayerTimesWidget navigation={navigation}/>
                 <SearchWidget/>
-                <MyMosqueWidget/>
+                <MyMosqueWidget navigation={navigation}/>
             </View>
 
         </View>
