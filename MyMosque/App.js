@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Home from './app/screens/Home';
-import PrayerTimes from './app/screens/PrayerTimes';
+import PrayerTimes from './app/screens/PrayerTimes'
 import Mosque from './app/screens/Mosque';
 
 const Stack = createNativeStackNavigator();
