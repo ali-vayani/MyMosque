@@ -1,8 +1,31 @@
 import {View, Text, Button, StyleSheet, Image, ImageBackground, FlatList, TouchableOpacity} from 'react-native'
+import React, { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import PrayerBar from '../components/elements/prayerBar';
-import Location from '../components/elements/location';
-const Mosque = ({navigation}) => {
+import { FIRESTORE_DB } from '../../firebaseConfig';
+import { doc, getDoc } from "firebase/firestore";
+
+const Mosque = ({navigation, route}) => {
+    const { masjidId } = route.params;
+    const [name, setName] = useState('');
+    const [announcments, setAnnouncments] = useState('');
+    const [address, setAddress] = useState('');
+    const [website, setWebsite] = useState('');
+    let docRef = doc(FIRESTORE_DB, "masjids ", masjidId);
+    console.log(masjidId)
+
+    useEffect(() => {
+        getInfo()
+    }, [])
+
+    
+    const getInfo = async () => {
+        const docSnap = await getDoc(docRef);
+        setName(docSnap.data()["name"])
+        setAnnouncments(docSnap.data()["announcement"])
+        setAddress(docSnap.data()["address "])
+        setWebsite(docSnap.data()["website"])
+    }
+
     return(
         <View style={styles.page}>
             <LinearGradient colors={['#679159', '#A79A84']} style={styles.background}/>
@@ -19,11 +42,11 @@ const Mosque = ({navigation}) => {
             }}/>
             <View style={styles.content}>
                 <View style={styles.image}>
-                    <Text style={styles.mainText}>Watauga Masjid</Text>
-                    <Text style={styles.minorText}>6005 Chapman Rd, Watauga, TX 76148 · 20 min drive </Text>
+                    <Text style={styles.mainText}>{ name }</Text>
+                    <Text style={styles.minorText}> { address } </Text>
                 </View>
                 <View style={styles.contentBlock}>
-                    <Text style={styles.mainText}>Announcments</Text>
+                    <Text style={styles.mainText}> Announcments </Text>
                     <View style={styles.announcmentInfo}>
                         <View style={styles.userIcon}></View> 
                         <View style={styles.userInfo}>
@@ -31,19 +54,19 @@ const Mosque = ({navigation}) => {
                             <Text style={styles.minorMinorText}>July 20th</Text>
                         </View>
                     </View>
-                        <Text style={styles.minorText}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Iaculis at erat pellentesque adipiscing commodo elit at imperdiet dui. Nunc congue nisi vitae suscipit tellus mauris. Nunc eget lorem dolor sed.  </Text>
+                        <Text style={styles.minorText}>{ announcments }</Text>
                 </View>
 
                 <View style={styles.contentBlock}>
                     <Text style={styles.mainText}>Info</Text>
                     <View style={styles.info}>
-                        <Text style={styles.minorText}>Website: wataugamasjid.com</Text>
+                        <Text style={styles.minorText}>{ website }</Text>
                         <View style={styles.divideBar}></View>
 
-                        <Text style={styles.minorText}>Website: wataugamasjid.com</Text>
+                        <Text style={styles.minorText}>{ website }</Text>
                         <View style={styles.divideBar}></View>
 
-                        <Text style={styles.minorText}>Website: wataugamasjid.com</Text>
+                        <Text style={styles.minorText}>{ website }</Text>
                     </View>
                 </View>
             </View>

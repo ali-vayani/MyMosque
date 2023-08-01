@@ -1,6 +1,7 @@
 import {View, Text, Button, StyleSheet, TextInput, FlatList, TouchableOpacity} from 'react-native'
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { FIREBASE_AUTH } from '../../firebaseConfig';
+import { FIREBASE_AUTH, FIRESTORE_DB } from '../../firebaseConfig';
+import { doc, getDoc } from "firebase/firestore";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 
@@ -19,8 +20,10 @@ const SignIn = ({navigation}) => {
             const user = userCredential.user;
             const uid = user.uid;
             console.log(uid)
-            navigation.navigate('Home');
-
+            const docRef = doc(FIRESTORE_DB, "users", uid);
+            const docSnap = await getDoc(docRef);
+            console.log(docSnap.data()["favMasjid1"])
+            navigation.navigate('Home', {uid: uid});
         } catch (error) {
             const errorCode = error.code;
             const errorMessage = error.message;

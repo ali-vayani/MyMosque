@@ -1,13 +1,35 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { FIRESTORE_DB } from '../../../firebaseConfig';
+import { doc, getDoc } from "firebase/firestore";
 
-const MosqueInfo = ({ imgPath, mosque, announcment }) => {
+const MosqueInfo = ({ navigation, masjidId }) => {
+  
+  const [name, setName] = useState('')
+  const [announcments, setAnnouncments] = useState('')
+  let docRef;
+  if (masjidId && masjidId.length > 0) {
+    masjidId = masjidId.replace(/\s/g, '');
+    docRef = doc(FIRESTORE_DB, "masjids ", masjidId);
+
+  }
+  useEffect(() => {
+    getInfo()
+  }, [])
+
+  
+  const getInfo = async () => {
+    const docSnap = await getDoc(docRef);
+    setName(docSnap.data()["name"])
+    setAnnouncments(docSnap.data()["announcement"])
+  }
+
   return (
-    <View style={styles.content}>
-        <Text style={styles.mainText}> { mosque } </Text>
+    <TouchableOpacity style={styles.content} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId})}>
+        <Text style={styles.mainText}> { name } </Text>
         <Text style={styles.subheadingText}> Announcments </Text>
-        <Text style={styles.minorText}> { announcment } </Text>
-      </View>
+        <Text style={styles.minorText}> { announcments } </Text>
+      </TouchableOpacity>
     )
 };
 

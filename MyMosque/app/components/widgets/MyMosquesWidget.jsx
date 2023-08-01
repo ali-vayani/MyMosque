@@ -1,9 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
+import { FIRESTORE_DB } from '../../../firebaseConfig';
+import { doc, getDoc } from "firebase/firestore";
+
 import MosqueInfo from '../elements/mosqueInfo';
-const MyMosqueWidget = ({ navigation }) => {
+const MyMosqueWidget = ({ navigation, masjidId }) => {
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('Mosque')} style={styles.widget}>
+    <View style={styles.widget}>
       <Image 
         source={require('../../../assets/images/Random3.png')} 
         style={{
@@ -19,11 +22,11 @@ const MyMosqueWidget = ({ navigation }) => {
       <View style={styles.content}>
         <Text style={styles.mainText}>My Mosques</Text>
         <View style={styles.mosqueInfoContent}>
-          <MosqueInfo mosque={'Watauga Masjid'} announcment={'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...'}/>
-          <MosqueInfo mosque={'Watauga Masjid'} announcment={'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...'}/>
+          <MosqueInfo masjidId={masjidId[0]} navigation={navigation}/>
+          <MosqueInfo masjidId={masjidId[1]} navigation={navigation}/>
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
