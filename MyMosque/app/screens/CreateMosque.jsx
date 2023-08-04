@@ -12,12 +12,14 @@ const CreateMosque = ({navigation}) => {
     const [masjidEmail,   setMasjidEmail      ] = useState('')
 
     const createMosque = async () => {
-        const doc = addDoc(collection(FIRESTORE_DB, 'masjids'), {name: masjidName, address: masjidAddress, annoucnment: annoucnment, website: masjidWebsite, email: masjidEmail})
+        const doc = await addDoc(collection(FIRESTORE_DB, 'masjids'), {name: masjidName, address: masjidAddress, annoucnment: annoucnment, website: masjidWebsite, email: masjidEmail})
         setMasjidName('')
         setMasjidAddress('')
         setMasjidAnnouncment('')
         setMasjidWebsite('')
         setMasjidEmail('')
+        
+        navigation.navigate('Mosque', {masjidId: doc.id})
     }
 
     return(

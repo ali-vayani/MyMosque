@@ -1,4 +1,4 @@
-import {View, Text, Button, StyleSheet, TextInput, FlatList, TouchableOpacity} from 'react-native'
+import {View, Text, Button, StyleSheet, TextInput, Image, TouchableOpacity} from 'react-native'
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
@@ -35,13 +35,26 @@ const SignIn = ({navigation}) => {
     return(
         <View style={styles.page}>
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
+            <Image 
+                source={require('../../assets/images/Random3.png')} 
+                style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                opacity: .05,
+                }}
+            />
             <View style={styles.content}>
-                <Text>MyMosque</Text>
-                <TextInput style={styles.input} placeholder="Email" onChangeText={(text) => setEmail(text)} value={email}/>
-                <TextInput style={styles.input} textContentType="password" placeholder="Password" onChangeText={(text) => setPassword(text)} value={password}/>
-                <Button onPress={() => signIn(email, password)} title="Sign In"></Button>
-            </View>
+                <Text style={styles.mainText}>MyMosque</Text>
+                <TextInput style={styles.input} placeholder="Email" onChangeText={(text) => setEmail(text)} value={email} placeholderTextColor={'rgba(255, 244, 210, .5)'}/>
+                <TextInput style={styles.input} textContentType="password" placeholder="Password" onChangeText={(text) => setPassword(text)} value={password} placeholderTextColor={'rgba(255, 244, 210, .5)'}/>
+                <TouchableOpacity style={styles.button} onPress={() => signIn(email, password)}>
+                    <Text style={styles.buttonText}>Sign In</Text>
+                </TouchableOpacity>
 
+            </View>
         </View>
     )
 }
@@ -52,8 +65,7 @@ const styles = StyleSheet.create({
     page: {
         width: '100%',
         height: '100%',
-        alignItems: 'center'
-
+        justifyContent: 'center'
     },
     background:{
         width: '100%',
@@ -62,20 +74,43 @@ const styles = StyleSheet.create({
     },
     content: {
         width: '100%',
-        height: '100%',
+        height: '90%',
         alignItems: 'center',
-        marginVertical: '2%',
+        paddingVertical: '20%',
+
     },
     input: {
         borderWidth: 3,
-        color: "#f7f7f7",
-        fontSize: 16,
-        borderColor: "#f7f7f7",
-        backgroundColor: 'rgba(118, 118, 128, .20)',
+        color: "#fff4d2",
+        fontSize: 20,
+        borderColor: "#fff4d2",
+        backgroundColor: 'rgba(255, 244, 210, .10)',
         height: 60,
         marginVertical: 4,
         paddingHorizontal: 10,
         borderRadius: 10,
-        marginHorizontal: 20
+        marginHorizontal: 20,
+        minWidth: 350
+    },
+    button: {
+        backgroundColor: 'rgba(255, 244, 210, .15)',
+        height: 40,
+        width: 80,
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        borderRadius: 7,
+        borderWidth: 2,
+        borderColor: "#fff4d2",
+        marginTop: '7%'
+    },
+    buttonText: {
+        color: 'rgba(255, 244, 210, 1)',
+        fontSize: 16,
+    },
+    mainText: {
+        color: '#fff4d2',
+        fontSize: 48,
+        fontWeight: 'bold',
+        marginBottom: '10%'
     }
 })
