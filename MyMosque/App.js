@@ -7,12 +7,15 @@ import Home from './app/screens/Home';
 import PrayerTimes from './app/screens/PrayerTimes'
 import Mosque from './app/screens/Mosque';
 import SignIn from './app/screens/SignIn';
+import CreateMosque from './app/screens/CreateMosque';
 
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen name='CreateMosque' component={CreateMosque} options={{headerShown: false}}/>
+
         <Stack.Screen name='SignIn' component={SignIn} options={{headerShown: false}} />
         <Stack.Screen name='Home' component={Home} options={{headerShown: false}} />
         <Stack.Screen name='PrayerTimes' component={PrayerTimes} options={{headerShown: false}}/>
