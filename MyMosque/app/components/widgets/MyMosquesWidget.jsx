@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
-import { FIRESTORE_DB } from '../../../firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
 
 import MosqueInfo from '../elements/mosqueInfo';
 const MyMosqueWidget = ({ navigation, masjidId }) => {
+
   return (
     <View style={styles.widget}>
       <Image 
@@ -22,8 +22,9 @@ const MyMosqueWidget = ({ navigation, masjidId }) => {
       <View style={styles.content}>
         <Text style={styles.mainText}>My Mosques</Text>
         <View style={styles.mosqueInfoContent}>
-          <MosqueInfo masjidId={masjidId[0]} navigation={navigation}/>
-          <MosqueInfo masjidId={masjidId[1]} navigation={navigation}/>
+          {masjidId && <MosqueInfo masjidId={masjidId[0]} navigation={navigation}/>}
+          {masjidId && <MosqueInfo masjidId={masjidId[1]} navigation={navigation}/>}
+          {!masjidId && <MosqueInfo masjidId={undefined} navigation={navigation}/>}
         </View>
       </View>
     </View>
@@ -57,5 +58,5 @@ const styles = StyleSheet.create({
     gap: 15,
     width: '100%',
     height: '100%'
-  }
+  },
 });

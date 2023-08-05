@@ -22,7 +22,7 @@ const SignIn = ({navigation}) => {
             console.log(uid)
             const docRef = doc(FIRESTORE_DB, "users", uid);
             const docSnap = await getDoc(docRef);
-            console.log(docSnap.data()["favMasjid1"])
+            //console.log(docSnap.data()["favMasjid1"])
             navigation.navigate('Home', {uid: uid});
         } catch (error) {
             const errorCode = error.code;

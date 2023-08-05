@@ -16,8 +16,13 @@ const Home = ({navigation, route}) => {
         getMasjidId()
     }, [])
     const getMasjidId = async () => {
-        const docSnap = await getDoc(docRef);
-        setMasjidId(docSnap.data()["favMasjid1"]);
+        try{
+            const docSnap = await getDoc(docRef);
+            setMasjidId(docSnap.data()["favMasjid1"]);
+        } catch {
+            setMasjidId(undefined);
+        }
+
     }
     return(
         <View style={styles.page}>
