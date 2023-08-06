@@ -30,7 +30,7 @@ const Map = () => {
     }, []);
 
     const fetchNearbyMosques = async (lat, lng, nextPageToken = null) => {
-        const radius = 24000; // 10 miles in meters
+        const radius = 24000;
         const apiKey = 'YOUR_GOOGLE_PLACES_API_KEY';
         let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=mosque&key=${apiKey}`;
         
