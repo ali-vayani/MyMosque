@@ -5,16 +5,17 @@ import { FIRESTORE_DB } from '../../firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
 
 const Mosque = ({navigation, route}) => {
-    const { masjidId } = route.params;
+    //const { masjidId } = route.params;
+    let masjidId = "1L0iis8IcUkV3aFYhyvu"
     const [name, setName] = useState('');
     const [announcments, setAnnouncments] = useState('');
     const [address, setAddress] = useState('');
     const [website, setWebsite] = useState('');
-    let docRef = doc(FIRESTORE_DB, "masjids", masjidId);
-    console.log(masjidId)
+    let docRef = doc(FIRESTORE_DB, "masjids ", "1L0iis8IcUkV3aFYhyvu");
+    //console.log(masjidId)
 
     useEffect(() => {
-        console.log(masjidId)
+        //console.log(masjidId)
         getInfo()
     }, [])
 
@@ -23,7 +24,7 @@ const Mosque = ({navigation, route}) => {
         const docSnap = await getDoc(docRef);
         setName(docSnap.data()["name"])
         setAnnouncments(docSnap.data()["announcement"])
-        setAddress(docSnap.data()["address"])
+        setAddress(docSnap.data()["address "])
         setWebsite(docSnap.data()["website"])
     }
 
