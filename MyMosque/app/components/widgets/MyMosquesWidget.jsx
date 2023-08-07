@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { doc, getDoc } from "firebase/firestore";
 
 import MosqueInfo from '../elements/mosqueInfo';
-const MyMosqueWidget = ({ navigation, masjidId }) => {
 
+const MyMosqueWidget = ({ navigation, masjidId }) => {
   return (
     <View style={styles.widget}>
       <Image 
@@ -21,11 +21,15 @@ const MyMosqueWidget = ({ navigation, masjidId }) => {
       />
       <View style={styles.content}>
         <Text style={styles.mainText}>My Mosques</Text>
-        <View style={styles.mosqueInfoContent}>
-          {masjidId && <MosqueInfo masjidId={masjidId[0]} navigation={navigation}/>}
-          {masjidId && <MosqueInfo masjidId={masjidId[1]} navigation={navigation}/>}
-          {!masjidId && <MosqueInfo masjidId={undefined} navigation={navigation}/>}
-        </View>
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.mosqueInfoContent}>
+            {masjidId && <MosqueInfo masjidId={masjidId[0]} navigation={navigation}/>}
+            {masjidId && <MosqueInfo masjidId={masjidId[1]} navigation={navigation}/>}
+            {!masjidId && <MosqueInfo masjidId={undefined} navigation={navigation}/>}
+            {!masjidId && <MosqueInfo masjidId={undefined} navigation={navigation}/>}
+            {!masjidId && <MosqueInfo masjidId={undefined} navigation={navigation}/>}
+          </View>
+        </ScrollView>
       </View>
     </View>
   );
@@ -41,6 +45,11 @@ const styles = StyleSheet.create({
     borderRadius: 41.5,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: -1
+  },
+  scrollContainer: {
+    width: '100%',
+    flex: 1,
   },
   mainText: {
     fontSize: 32,
@@ -57,6 +66,6 @@ const styles = StyleSheet.create({
   mosqueInfoContent: {
     gap: 15,
     width: '100%',
-    height: '100%'
+    minHeight: '100%',
   },
 });

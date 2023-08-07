@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
 import PrayerBar from '../elements/prayerBar';
 import Location from '../elements/location';
 const PrayerTimesWidget = ({ navigation }) => {
+  const [time, setTime] = useState('14 min 20 sec')
   return (
     <TouchableOpacity style={styles.widget} onPress={() => navigation.navigate('PrayerTimes')}>
       {/* <View style={{backgroundImage: require('C:/Users/aliva/Desktop/MyMosquefr/MyMosque/assets/images/1.jpg'), position: 'absolute', top: 0, bottom: 0, left:0, right:0, borderRadius: 41.5}} /> */}
@@ -20,8 +21,8 @@ const PrayerTimesWidget = ({ navigation }) => {
       />
       <View style={styles.content}>
         <Text style={styles.mainText}> Prayer Times </Text>
-          <PrayerBar timeTillNext={'14 min 20 sec'} nextPrayer={'Maghrib'} size={28}/>
-          <Location location={'Keller, TX'}/>
+          <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28}/>
+          <Location location={'Keller, TX'} setTime={setTime}/>
       </View>
     </TouchableOpacity>
   );

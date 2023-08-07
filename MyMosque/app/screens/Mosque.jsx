@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
+import { Ionicons } from '@expo/vector-icons';
 
 const Mosque = ({navigation, route}) => {
     //const { masjidId } = route.params;
@@ -11,6 +12,7 @@ const Mosque = ({navigation, route}) => {
     const [announcments, setAnnouncments] = useState('');
     const [address, setAddress] = useState('');
     const [website, setWebsite] = useState('');
+    const [isFavorite, setFavorite] = useState(false)
     let docRef = doc(FIRESTORE_DB, "masjids ", "1L0iis8IcUkV3aFYhyvu");
     //console.log(masjidId)
 
@@ -43,6 +45,13 @@ const Mosque = ({navigation, route}) => {
             opacity: .1,
             }}/>
             <View style={styles.content}>
+                <TouchableOpacity style={styles.star} onPress={() => {
+                    setFavorite(!isFavorite);
+                }}>
+                   {!isFavorite && <Ionicons name="star-outline" size={25} color={'#C8C079'}/>}
+                   {isFavorite && <Ionicons name="star" size={25} color={'#C8C079'}/>}
+                </TouchableOpacity>
+                
                 <View style={styles.image}>
                     <Text style={styles.mainText}>{ name }</Text>
                     <Text style={styles.minorText}> { address } </Text>
@@ -162,7 +171,13 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
         marginVertical: 25,
         flexDirection: 'column',
-
+    },
+    star: {
+        position: 'absolute',
+        top: 40,
+        right: 10,  
+        zIndex: 10,
+        padding: 10,
     }
     
 })
