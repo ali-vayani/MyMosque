@@ -1,62 +1,55 @@
-import {View, Text, Button, StyleSheet, Image, ImageBackground, FlatList, TouchableOpacity} from 'react-native'
+import {View, Text, Button, StyleSheet, Image, ImageBackground, FlatList, TouchableOpacity, Modal, ScrollView} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
 import { Ionicons } from '@expo/vector-icons';
+import ViewPager from '@react-native-community/viewpager';
 
 const Mosque = ({navigation, route}) => {
-    //const { masjidId } = route.params;
+    // ... your existing states and variables
     let masjidId = "1L0iis8IcUkV3aFYhyvu"
     const [name, setName] = useState('');
     const [announcments, setAnnouncments] = useState('');
     const [address, setAddress] = useState('');
     const [website, setWebsite] = useState('');
     const [isFavorite, setFavorite] = useState(false)
+    const [showAnnouncementsModal, setShowAnnouncementsModal] = useState(false);
+    const [allAnnouncements, setAllAnnouncements] = useState([]);
     let docRef = doc(FIRESTORE_DB, "masjids ", "1L0iis8IcUkV3aFYhyvu");
-    //console.log(masjidId)
 
     useEffect(() => {
-        //console.log(masjidId)
         getInfo()
-    }, [])
+    }, []);
 
-    
     const getInfo = async () => {
         const docSnap = await getDoc(docRef);
         setName(docSnap.data()["name"])
-        setAnnouncments(docSnap.data()["announcement"])
+        setAnnouncments(docSnap.data()["announcement"][docSnap.data()["announcement"].length-1])
+        setAllAnnouncements(docSnap.data()["announcement"]);
         setAddress(docSnap.data()["address "])
         setWebsite(docSnap.data()["website"])
     }
 
-    return(
+    return (
         <View style={styles.page}>
             <LinearGradient colors={['#679159', '#A79A84']} style={styles.background}/>
             <Image 
-            source={require('../../assets/images/Random3.png')} 
-            style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            borderRadius: 41.5,
-            opacity: .1,
-            }}/>
+                source={require('../../assets/images/Random3.png')} 
+                style={styles.imageBg}
+            />
             <View style={styles.content}>
-                <TouchableOpacity style={styles.star} onPress={() => {
-                    setFavorite(!isFavorite);
-                }}>
-                   {!isFavorite && <Ionicons name="star-outline" size={25} color={'#C8C079'}/>}
-                   {isFavorite && <Ionicons name="star" size={25} color={'#C8C079'}/>}
+                <TouchableOpacity style={styles.star} onPress={() => setFavorite(!isFavorite)}>
+                    {!isFavorite && <Ionicons name="star-outline" size={25} color={'#C8C079'}/>}
+                    {isFavorite && <Ionicons name="star" size={25} color={'#C8C079'}/>}
                 </TouchableOpacity>
                 
                 <View style={styles.image}>
                     <Text style={styles.mainText}>{ name }</Text>
                     <Text style={styles.minorText}> { address } </Text>
                 </View>
-                <View style={styles.contentBlock}>
+                
+                <TouchableOpacity style={styles.contentBlock} onPress={() => setShowAnnouncementsModal(true)}>
                     <Text style={styles.mainText}> Announcments </Text>
                     <View style={styles.announcmentInfo}>
                         <View style={styles.userIcon}></View> 
@@ -65,23 +58,53 @@ const Mosque = ({navigation, route}) => {
                             <Text style={styles.minorMinorText}>July 20th</Text>
                         </View>
                     </View>
-                        <Text style={styles.minorText}>{ announcments }</Text>
-                </View>
+                    <Text style={styles.minorText}>{ announcments }</Text>
+                </TouchableOpacity>
 
                 <View style={styles.contentBlock}>
                     <Text style={styles.mainText}>Info</Text>
                     <View style={styles.info}>
                         <Text style={styles.minorText}>{ website }</Text>
                         <View style={styles.divideBar}></View>
-
                         <Text style={styles.minorText}>{ website }</Text>
                         <View style={styles.divideBar}></View>
-
                         <Text style={styles.minorText}>{ website }</Text>
                     </View>
                 </View>
+                
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={showAnnouncementsModal}
+                    onRequestClose={() => setShowAnnouncementsModal(false)}>
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={styles.modal}>
+                            <Text style={styles.mainText}>All Announcements</Text>
+                            <ScrollView style={{ flex: 1 }}>
+                                {allAnnouncements.map((announcement, index) => (
+                                    <View key={index} style={{ padding: 10 }}>
+                                        <View style={styles.announcmentInfo}>
+                                            <View style={styles.userIcon}></View> 
+                                            <View style={styles.userInfo}>
+                                                <Text style={styles.minorText}>Name</Text>
+                                                <Text style={styles.minorMinorText}>July 20th</Text>
+                                            </View>
+                                        </View>
+                                        <Text style={styles.minorText}>{announcement}</Text>
+                                        <View style={{  
+                                            height: 1,
+                                            backgroundColor: 'rgb(255, 244, 210)',
+                                            marginVertical: '3%'
+                                        }}/>
+                                            
+                                    </View>
+                                ))}
+                            </ScrollView>
+                            <Button title="Close" onPress={() => setShowAnnouncementsModal(false)} color={"rgb(255, 244, 210)"}/>
+                        </View>
+                    </View>
+                </Modal>
             </View>
-
         </View>
     )
 }
@@ -178,6 +201,23 @@ const styles = StyleSheet.create({
         right: 10,  
         zIndex: 10,
         padding: 10,
+    }, 
+    imageBg: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        borderRadius: 41.5,
+        opacity: .1,
+    },
+    modal:{
+        width: '90%', 
+        height: '70%', 
+        backgroundColor: '#679159', 
+        borderRadius: 10, 
+        padding: 10,
+        
     }
     
 })
