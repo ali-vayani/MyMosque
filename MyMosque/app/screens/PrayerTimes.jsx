@@ -2,7 +2,9 @@ import {View, Text, Button, StyleSheet, Image, FlatList, TouchableOpacity} from 
 import { LinearGradient } from 'expo-linear-gradient';
 import PrayerBar from '../components/elements/prayerBar';
 import Location from '../components/elements/location';
-const PrayerTimes = ({navigation}) => {
+const PrayerTimes = ({navigation, route}) => {
+    const { prayerAndTime } = route.params;
+
     return(
         <View style={styles.page}>
             <LinearGradient colors={['#67519A', '#A79A84']} style={styles.background}/>
@@ -19,28 +21,14 @@ const PrayerTimes = ({navigation}) => {
             }}/>
             <View style={styles.content}>
                 <Text style={styles.mainText }>Mhrm. 1, 1445 AH</Text>
-                <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32}/>
+                <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={prayerAndTime}/>
                 <View style={styles.prayerArea}>
-                    <View style={styles.prayerAndTime}>
-                        <Text style={styles.text}>Fajr</Text>
-                        <Text style={styles.text}>5:14 AM</Text>
-                    </View>
-                    <View style={styles.prayerAndTime}>
-                        <Text style={styles.text}>Duhur</Text>
-                        <Text style={styles.text}>1:36 PM</Text>
-                    </View>
-                    <View style={styles.prayerAndTime}>
-                        <Text style={styles.text}>Asr</Text>
-                        <Text style={styles.text}>5:18 PM</Text>
-                    </View>
-                    <View style={styles.prayerAndTime}>
-                        <Text style={styles.text}>Maghrib</Text>
-                        <Text style={styles.text}>8:36 PM</Text>
-                    </View>
-                    <View style={styles.prayerAndTime}>
-                        <Text style={styles.text}>Isha</Text>
-                        <Text style={styles.text}>9:56 PM</Text>
-                    </View>
+                    {prayerAndTime.map((specificPrayer, index) => (
+                        <View key={index} style={styles.prayerAndTime}>
+                            <Text style={styles.text}>{specificPrayer[0]}</Text>
+                            <Text style={styles.text}>{specificPrayer[1]}</Text>
+                        </View>
+                    ))}
                 </View>
                 <Location location={'Keller, TX'}/>
             </View>

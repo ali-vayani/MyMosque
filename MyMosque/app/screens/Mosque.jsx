@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 import ViewPager from '@react-native-community/viewpager';
 
 const Mosque = ({navigation, route}) => {
-    // ... your existing states and variables
     let masjidId = "1L0iis8IcUkV3aFYhyvu"
     const [name, setName] = useState('');
     const [announcments, setAnnouncments] = useState('');
