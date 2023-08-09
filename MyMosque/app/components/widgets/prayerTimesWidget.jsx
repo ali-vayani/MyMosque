@@ -5,6 +5,7 @@ import Location from '../elements/location';
 const PrayerTimesWidget = ({ navigation }) => {
   const [time, setTime] = useState('14 min 20 sec')
   const [prayerAndTime, setPrayerAndTime] = useState([]);
+  const [militaryPrayerAndTime, setMilitaryPrayerAndTime] = useState([])
     useEffect(() => {
         getPrayerTimes(32.508515, -97.1254872, 8, 2023, 2);
         //console.log(prayerAndTime[0] + "test")
@@ -29,6 +30,11 @@ const PrayerTimesWidget = ({ navigation }) => {
         //console.log(data['data'][0]['timings']);
         const timings = data['data'][0]['timings'];
         //translates the prayer times into the correct format and sets the prayer time
+        setMilitaryPrayerAndTime(Object.entries(timings)
+        .slice(0, 7).map(([key, value]) => {
+          const militaryTime = value.replace(' (CDT)', '');
+          return [key, militaryTime]
+        }));
         setPrayerAndTime(Object.entries(timings)
           .slice(0, 7)
           .map(([key, value]) => {
@@ -64,7 +70,7 @@ const PrayerTimesWidget = ({ navigation }) => {
       />
       <View style={styles.content}>
         <Text style={styles.mainText}> Prayer Times </Text>
-          <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28} prayerAndTime={prayerAndTime}/>
+          <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28} prayerAndTime={militaryPrayerAndTime}/>
           <Location location={'Keller, TX'} setTime={setTime} />
       </View>
     </TouchableOpacity>

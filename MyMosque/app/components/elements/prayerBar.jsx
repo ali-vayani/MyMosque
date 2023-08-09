@@ -4,67 +4,73 @@ import { useEffect, useState } from 'react';
 import { isBrowserExtension } from '@firebase/util';
 const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
     const [nextPrayer, setNextPrayer] = useState('');
-    const [timeRemaining, setTimeRemaining] = useState(0);
+    const [timeRemaining, setTimeRemaining] = useState('');
     const [percentage, setPercentage] = useState(0);
+    let nextPrayerDate;
+    let differenceInMilliseconds;
+    let differenceInHours;
+    let differenceInMinutes;
     
     useEffect(() => {
-        const now = new Date();
-        
-        // Find the next prayer time
-        let nextPrayerIndex = prayerAndTime.findIndex(([_, time]) => {
-            const [hour, min] = time.split(':').map(Number);
-            return hour * 60 + min > now.getHours() * 60 + now.getMinutes();
-        });
+        const chatGPTWantsThisFunctionSoYea = () => {
+            const now = new Date();
+            // Find the next prayer time
+            let nextPrayerIndex = prayerAndTime.findIndex(([_, time]) => {
+                const [hour, min] = time.replace(/[^\d:]/g, '').split(':').map(Number);
+                return hour * 60 + min > now.getHours() * 60 + now.getMinutes();
+            });
+            nextPrayerIndex--;
 
-        if (nextPrayerIndex === -1) nextPrayerIndex = 0; // If no next prayer found, loop back to the first one
-        // console.log(prayerAndTime)
-        // console.log(nextPrayerIndex)
-        // console.log(prayerAndTime[nextPrayerIndex])
-        if(prayerAndTime[nextPrayerIndex])
-            setNextPrayer(prayerAndTime[nextPrayerIndex][0]);
+            if (nextPrayerIndex === -1) nextPrayerIndex = 0; // If no next prayer found, loop back to the first one
+            if(prayerAndTime[nextPrayerIndex])
+                setNextPrayer(prayerAndTime[nextPrayerIndex][0]);
+                nextPrayerIndex++;
+            // Calculate time remaining until the next prayer
+            if(prayerAndTime[nextPrayerIndex])
+            {
+                // console.log(prayerAndTime[nextPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number)[1])
+                const [hour, min] = prayerAndTime[nextPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number);
+                nextPrayerDate = new Date();
+                nextPrayerDate.setMinutes(min);
+                nextPrayerDate.setHours(hour);
+                differenceInMilliseconds = (nextPrayerDate - now);
+                differenceInHours = Math.floor(differenceInMilliseconds / (1000 * 60 * 60));
+                differenceInMinutes = Math.floor((differenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+                
+                let resultString = "";
+                if (differenceInHours > 0) {
+                    resultString += differenceInHours + (differenceInHours > 1 ? " hr" : " hr");
+                }
+                if (differenceInMinutes > 0) {
+                    if (resultString.length > 0) {
+                    resultString += ", ";
+                }
+                    resultString += differenceInMinutes + (differenceInMinutes > 1 ? " min left" : " min left");
+                }
+                setTimeRemaining(resultString);
+            }
 
-        // Calculate time remaining until the next prayer
-        if(prayerAndTime[nextPrayerIndex])
-        {
-            console.log(prayerAndTime[nextPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number))
-            const [hour, min] = prayerAndTime[nextPrayerIndex][1].split(':').map(Number);
-            console.log(hour)
-            console.log(min)
-            const nextPrayerDate = new Date();
-            console.log(nextPrayerDate)
-            nextPrayerDate.setHours(hour);
-            nextPrayerDate.setMinutes(nextPrayerDate.setHours(prayerAndTime[nextPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number)[1]));
-            console.log(nextPrayerDate)
-            const remaining = (nextPrayerDate - now) / 1000;
-            setTimeRemaining(remaining);
-        }
 
+            if(prayerAndTime[nextPrayerIndex])
+            {
 
-        // // Calculate the percentage value
-        // const prevPrayerTime = prayerAndTime[nextPrayerIndex === 0 ? prayerAndTime.length - 1 : nextPrayerIndex - 1][1];
-        // const [prevHour, prevMin] = prevPrayerTime.split(':').map(Number);
-        // const prevPrayerDate = new Date();
-        // prevPrayerDate.setHours(prevHour);
-        // prevPrayerDate.setMinutes(prevMin);
-        // const totalDuration = (nextPrayerDate - prevPrayerDate) / 1000;
-        // const percentageValue = ((totalDuration - remaining) / totalDuration) * 100;
-        // setPercentage(percentageValue);
+                let lastPrayerIndex = nextPrayerIndex-1;
+                const [hour, min] = prayerAndTime[lastPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number);
+                let lastPrayerTime = new Date();
+                lastPrayerTime.setMinutes(min)
+                lastPrayerTime.setHours(hour)
+                let currentDate = new Date();
+                //current time - last prayer time / next prayer time - last prayer time
+                setPercentage(((currentDate.getHours()* 60 + (currentDate.getMinutes())) -  (lastPrayerTime.getHours()* 60 + (lastPrayerTime.getMinutes()))) / ((nextPrayerDate.getHours()* 60 + (nextPrayerDate.getMinutes())) - (lastPrayerTime.getHours()* 60 + (lastPrayerTime.getMinutes()))));
+            }
+            console.log("test")
+        };
 
-        // // Update the countdown every second
-        // const intervalId = setInterval(() => {
-        //     setTimeRemaining(timeRemaining - 1);
-        // }, 1000);
-
-        // return () => clearInterval(intervalId); // Clear interval when component unmounts
+        chatGPTWantsThisFunctionSoYea();
+        const intervalId = setInterval(chatGPTWantsThisFunctionSoYea, 30000);
+        return () => clearInterval(intervalId);
     }, [prayerAndTime]);
 
-    useEffect(() => {
-        console.log(percentage); // This will log the updated value
-      }, [percentage]);
-      
-    // console.log(nextPrayer)
-    // console.log(timeRemaining)
-    // console.log(percentage)
     const styles = StyleSheet.create({
     content: {
         width: '100%',
@@ -89,7 +95,7 @@ const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
         borderRadius: 15,
     },
     progressBarDone:{
-        width: '70%',
+        width: `${percentage*100}%`,
         height: '100%',
         backgroundColor: '#FFF4D2', 
         borderRadius: 15,
