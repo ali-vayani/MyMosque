@@ -63,7 +63,6 @@ const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
                 //current time - last prayer time / next prayer time - last prayer time
                 setPercentage(((currentDate.getHours()* 60 + (currentDate.getMinutes())) -  (lastPrayerTime.getHours()* 60 + (lastPrayerTime.getMinutes()))) / ((nextPrayerDate.getHours()* 60 + (nextPrayerDate.getMinutes())) - (lastPrayerTime.getHours()* 60 + (lastPrayerTime.getMinutes()))));
             }
-            console.log("test")
         };
 
         chatGPTWantsThisFunctionSoYea();
