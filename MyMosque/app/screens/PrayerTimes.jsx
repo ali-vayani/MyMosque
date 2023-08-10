@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import PrayerBar from '../components/elements/prayerBar';
 import Location from '../components/elements/location';
 const PrayerTimes = ({navigation, route}) => {
-    const { prayerAndTime } = route.params;
+    const { prayerAndTime, militaryPrayerAndTime } = route.params;
 
     return(
         <View style={styles.page}>
@@ -21,7 +21,7 @@ const PrayerTimes = ({navigation, route}) => {
             }}/>
             <View style={styles.content}>
                 <Text style={styles.mainText }>Mhrm. 1, 1445 AH</Text>
-                <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={prayerAndTime}/>
+                <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={militaryPrayerAndTime}/>
                 <View style={styles.prayerArea}>
                     {prayerAndTime.map((specificPrayer, index) => (
                         <View key={index} style={styles.prayerAndTime}>

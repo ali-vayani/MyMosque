@@ -54,7 +54,7 @@ const PrayerTimesWidget = ({ navigation }) => {
     }
     
   return (
-    <TouchableOpacity style={styles.widget} onPress={() => navigation.navigate('PrayerTimes', {prayerAndTime: prayerAndTime})}>
+    <TouchableOpacity style={styles.widget} onPress={() => navigation.navigate('PrayerTimes', {prayerAndTime: prayerAndTime, militaryPrayerAndTime: militaryPrayerAndTime})}>
       {/* <View style={{backgroundImage: require('C:/Users/aliva/Desktop/MyMosquefr/MyMosque/assets/images/1.jpg'), position: 'absolute', top: 0, bottom: 0, left:0, right:0, borderRadius: 41.5}} /> */}
       <Image 
         source={require('../../../assets/images/Random3.png')} 
