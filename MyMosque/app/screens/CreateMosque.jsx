@@ -1,15 +1,17 @@
-import {View, Text, Button, StyleSheet, Image, ImageBackground, FlatList, TouchableOpacity, TextInput} from 'react-native'
+import {View, Text, Button, StyleSheet, Image, ScrollView , FlatList, TouchableOpacity, TextInput} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import { addDoc, collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { useState } from 'react';
+import DatePicker from 'react-native-datepicker';
 const CreateMosque = ({navigation}) => {
 
-    const [masjidName,    setMasjidName       ] = useState('')
-    const [masjidAddress, setMasjidAddress    ] = useState('')
-    const [annoucnment,   setMasjidAnnouncment] = useState('')
-    const [masjidWebsite, setMasjidWebsite    ] = useState('')
-    const [masjidEmail,   setMasjidEmail      ] = useState('')
+    const [masjidName,    setMasjidName       ] = useState('');
+    const [masjidAddress, setMasjidAddress    ] = useState('');
+    const [annoucnment,   setMasjidAnnouncment] = useState('');
+    const [masjidWebsite, setMasjidWebsite    ] = useState('');
+    const [masjidEmail,   setMasjidEmail      ] = useState('');
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
     const createMosque = async () => {
         const doc = await addDoc(collection(FIRESTORE_DB, 'masjids'), {name: masjidName, address: masjidAddress, annoucnment: annoucnment, website: masjidWebsite, email: masjidEmail})
@@ -36,38 +38,65 @@ const CreateMosque = ({navigation}) => {
             borderRadius: 41.5,
             opacity: .1,
             }}/>
-            <View style={styles.content}>
-                <View style={styles.image}>
-                    <TextInput style={[styles.mainText, styles.input]} placeholder={"Masjid Name"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidName(text)} value={masjidName}/>
-                    <TextInput style={[styles.minorText, styles.input]} placeholder={"Address"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidAddress(text)} value={masjidAddress}/>
-                </View>
-                <View style={styles.contentBlock}>
-                    <Text style={styles.mainText}>Announcments</Text>
-                    <View style={styles.announcmentInfo}>
-                        <View style={styles.userIcon}></View> 
-                        <View style={styles.userInfo}>
-                            <Text style={styles.minorText}>Name</Text>
-                            <Text style={styles.minorMinorText}>July 20th</Text>
+            <ScrollView style={{width: '100%', flex: 1,}}>
+                <View style={styles.content}>
+                    <View style={styles.image}>
+                        <TextInput style={[styles.mainText, styles.input]} placeholder={"Masjid Name"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidName(text)} value={masjidName}/>
+                        <TextInput style={[styles.minorText, styles.input]} placeholder={"Address"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidAddress(text)} value={masjidAddress}/>
+                    </View>
+                    <View style={styles.contentBlock}>
+                        <Text style={styles.mainText}>Announcments</Text>
+                        <View style={styles.announcmentInfo}>
+                            <View style={styles.userIcon}></View> 
+                            <View style={styles.userInfo}>
+                                <Text style={styles.minorText}>Name</Text>
+                                <Text style={styles.minorMinorText}>July 20th</Text>
+                            </View>
                         </View>
+                        <TextInput style={[styles.minorText, styles.input]} placeholder={"Create Announcement (Optional)"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidAnnouncment(text)} value={annoucnment}/>
                     </View>
-                    <TextInput style={[styles.minorText, styles.input]} placeholder={"Create Announcement (Optional)"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidAnnouncment(text)} value={annoucnment}/>
-                </View>
 
-                <View style={styles.contentBlock}>
-                    <Text style={styles.mainText}>Info</Text>
-                    <View style={styles.info}>
-                        <TextInput style={[styles.minorText, styles.input]} placeholder={"Website Link"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidWebsite(text)} value={masjidWebsite}/>
-                        <View style={styles.divideBar}></View>
+                    <View style={styles.contentBlock}>
+                        <Text style={styles.mainText}>Info</Text>
+                        <View style={styles.info}>
+                            <TextInput style={[styles.minorText, styles.input]} placeholder={"Website Link"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidWebsite(text)} value={masjidWebsite}/>
+                            <View style={styles.divideBar}></View>
 
-                        <TextInput style={[styles.minorText, styles.input]} placeholder={"Contact Email"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidEmail(text)} value={masjidEmail}/>
-                        <View style={styles.divideBar}></View>
+                            <TextInput style={[styles.minorText, styles.input]} placeholder={"Contact Email"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidEmail(text)} value={masjidEmail}/>
+                            <View style={styles.divideBar}></View>
+                            <Text style={styles.minorText}>Website: wataugamasjid.com</Text>
+                        </View>
 
-                        <Text style={styles.minorText}>Website: wataugamasjid.com</Text>
+                        
                     </View>
-                </View>
-                <Button title='Submit' onPress={() => createMosque()}/>
-            </View>
+                    <View style={styles.contentBlock}>
+                            <Text style={styles.mainText}>Prayer Times</Text>
 
+                            <DatePicker
+                                style={{ width: 200 }}
+                                date={selectedDate}
+                                mode="date"
+                                placeholder="Select Date"
+                                format="YYYY-MM-DD"
+                                confirmBtnText="Confirm"
+                                cancelBtnText="Cancel"
+                                onDateChange={(date) => setSelectedDate(date)}
+                        
+                            />
+
+                            {[1, 2, 3, 4, 5].map((_, index) => (
+                                <TextInput
+                                    key={index}
+                                    style={[styles.minorText, styles.input]}
+                                    placeholder={"Enter Time " + (index + 1)}
+                                    placeholderTextColor={"rgba(255, 244, 210, .5)"}
+                                />
+                            ))}
+
+                        </View>
+                    <Button title='Submit' onPress={() => createMosque()}/>
+                </View>
+            </ScrollView>                
         </View>
     )
 }
@@ -77,7 +106,7 @@ export default CreateMosque;
 const styles = StyleSheet.create({
     page: {
         width: '100%',
-        height: '100%',
+        flex: 1,
         alignItems: 'center',
     },
     background:{
@@ -87,9 +116,7 @@ const styles = StyleSheet.create({
     },
     content: {
         width: '100%',
-        height: '100%',
-        alignItems: 'center',
-        flexDirection: 'column'
+        minHeight: '100%',
     },
     minorText: {
         fontSize: 14,
