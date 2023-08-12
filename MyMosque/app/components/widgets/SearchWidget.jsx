@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Image, TextInput, Keyboard    } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 const SearchWidget = ({ navigation }) => {
 
     const dismissKeyboard = () => {
@@ -9,29 +10,31 @@ const SearchWidget = ({ navigation }) => {
                 dismissKeyboard
     };
     return (
-        <View style={styles.widget}>
-        <Image 
-            source={require('../../../assets/images/Random3.png')} 
-            style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            borderRadius: 41.5,
-            opacity: .1,
-            }}
-        />
-        <View style={styles.content}>
-        <Ionicons name="search-outline" size={36} color={'#FFF4D2'}/>
-        <TextInput
-            style={styles.textarea}
-            returnKeyType='done'
-            onSubmitEditing={dismissKeyboard}
-            placeholder={'Search for a Mosque'}
-            placeholderTextColor="rgba(255, 244, 210, .5)" 
-        />
-        </View>
+        <View style={styles.widget} >
+          <TouchableOpacity style={{width:'100%', height:'100%', margin: 0}} onPress={() => navigation.navigate('Map')}>
+            <Image 
+                source={require('../../../assets/images/Random3.png')} 
+                style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                borderRadius: 41.5,
+                opacity: .1,
+                }}
+            />
+            <View style={styles.content}>
+              <Ionicons name="search-outline" size={36} color={'#FFF4D2'}/>
+              <TextInput
+                  style={styles.textarea}
+                  returnKeyType='done'
+                  onSubmitEditing={dismissKeyboard}
+                  placeholder={'Search for a Mosque'}
+                  placeholderTextColor="rgba(255, 244, 210, .5)" 
+              />
+            </View>
+          </TouchableOpacity>
         </View>
     );
 };
@@ -47,6 +50,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       marginVertical: '2.5%',
       zIndex: -1,
+      justifyContent: 'center'
     },
     content:{
       flexDirection: 'row',

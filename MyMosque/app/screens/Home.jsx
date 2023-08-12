@@ -18,7 +18,7 @@ const Home = ({navigation, route}) => {
     const getMasjidId = async () => {
         try{
             const docSnap = await getDoc(docRef);
-            setMasjidId(docSnap.data()["favMasjid1"]);
+            setMasjidId(docSnap.data()["favMasjids"]);
         } catch {
             setMasjidId(undefined);
         }
@@ -29,7 +29,7 @@ const Home = ({navigation, route}) => {
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
                 <PrayerTimesWidget navigation={navigation}/>
-                <SearchWidget/>
+                <SearchWidget navigation={navigation}/>
                 <MyMosqueWidget navigation={navigation} masjidId={masjidId}/>
             </View>
 

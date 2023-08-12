@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Button, TouchableWithoutFeedback  } from 'react-native';
 import { FIRESTORE_DB } from '../../../firebaseConfig';
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { doc, getDoc } from "firebase/firestore";
 
 const MosqueInfo = ({ navigation, masjidId }) => {
 
-  const [name, setName] = useState('')
-  const [announcments, setAnnouncments] = useState('')
+  const [name, setName] = useState('');
+  const [announcements, setAnnouncements] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
   let docRef;
   if (masjidId && masjidId.length > 0) {
     masjidId = masjidId.replace(/\s/g, '');
@@ -15,32 +16,48 @@ const MosqueInfo = ({ navigation, masjidId }) => {
   }
 
   useEffect(() => {
-    getInfo()
-  }, [])
+    getInfo();
+  }, []);
 
-  
   const getInfo = async () => {
     const docSnap = await getDoc(docRef);
-    setName(docSnap.data()["name"])
-    setAnnouncments(docSnap.data()["announcement"])
+    console.log(docSnap.data()["announcment"])
+    setName(docSnap.data()["name"]);
+    setAnnouncements(docSnap.data()["announcment"][(docSnap.data()["announcment"].length)-1]);
   }
-  //docRef will be initialized if masjidId isn't unfined. If docRef is a thing then it displays masjid otherwise it displays add.
-  if(docRef)
-  {
 
+  if(docRef) {
     return (
-        <TouchableOpacity style={styles.content} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId})}>
-          <Text style={styles.mainText}> { name } </Text>
-          <Text style={styles.subheadingText}> Announcments </Text>
-          <Text style={styles.minorText}> { announcments } </Text>
-        </TouchableOpacity>
-      )
+      <TouchableOpacity style={styles.content} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId})}>
+        <Text style={styles.mainText}> { name } </Text>
+        <Text style={styles.subheadingText}> Announcements </Text>
+        <Text style={styles.minorText}> { announcements.length > 200 ? announcements.substring(0, 200) : announcements} </Text>
+      </TouchableOpacity>
+    );
   } else {
     return(
-        <TouchableOpacity style={styles.undefined} onPress={() => console.log("Idek")}>
+      <View>
+        <TouchableOpacity style={styles.undefined} onPress={() => setModalVisible(true)}>
           <Ionicons name="add-outline" color="#FFF4D2" size={32}/>
         </TouchableOpacity>
-    )
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+        >
+          <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={[styles.modalText, {color: '#362921'}]}>Choose an option</Text>
+                <Button title="Create a Mosque" onPress={() => {navigation.navigate('CreateMosque'); setModalVisible(false) }} color={'#679159'}/>
+                <Button title="Search for a Mosque" onPress={() => {navigation.navigate('Map'); setModalVisible(false)}} color={'#596d91'}/>
+                <Button title="Close" onPress={() => setModalVisible(false)} color={'#915959'}/>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </View>
+    );
   }
 };
 
@@ -84,6 +101,30 @@ undefined: {
   backgroundColor: 'rgba(255, 244, 210, .3)',
   alignItems: 'center'
   //blurRadius=100
+},
+centeredView: {
+  flex: 1,
+  justifyContent: "flex-end",
+  alignItems: "center",
+},
+modalView: {
+  margin: 20,
+  backgroundColor: "#FFF4D2",
+  borderRadius: 20,
+  padding: 25,
+  alignItems: "center",
+  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 4,
+  elevation: 5
+},
+modalText: {
+  marginBottom: 15,
+  textAlign: "center"
 },
 
 })

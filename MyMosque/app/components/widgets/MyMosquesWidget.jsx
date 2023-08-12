@@ -5,6 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 import MosqueInfo from '../elements/mosqueInfo';
 
 const MyMosqueWidget = ({ navigation, masjidId }) => {
+  console.log(masjidId)
   return (
     <View style={styles.widget}>
       <Image 
@@ -25,9 +26,7 @@ const MyMosqueWidget = ({ navigation, masjidId }) => {
           <View style={styles.mosqueInfoContent}>
             {masjidId && <MosqueInfo masjidId={masjidId[0]} navigation={navigation}/>}
             {masjidId && <MosqueInfo masjidId={masjidId[1]} navigation={navigation}/>}
-            {!masjidId && <MosqueInfo masjidId={undefined} navigation={navigation}/>}
-            {!masjidId && <MosqueInfo masjidId={undefined} navigation={navigation}/>}
-            {!masjidId && <MosqueInfo masjidId={undefined} navigation={navigation}/>}
+            <MosqueInfo masjidId={undefined} navigation={navigation}/>
           </View>
         </ScrollView>
       </View>

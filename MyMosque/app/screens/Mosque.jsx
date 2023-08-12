@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ViewPager from '@react-native-community/viewpager';
 
 const Mosque = ({navigation, route}) => {
-    let masjidId = "1L0iis8IcUkV3aFYhyvu"
+    let { masjidId } = route.params;
     const [name, setName] = useState('');
     const [announcments, setAnnouncments] = useState('');
     const [address, setAddress] = useState('');
@@ -15,7 +15,7 @@ const Mosque = ({navigation, route}) => {
     const [isFavorite, setFavorite] = useState(false)
     const [showAnnouncementsModal, setShowAnnouncementsModal] = useState(false);
     const [allAnnouncements, setAllAnnouncements] = useState([]);
-    let docRef = doc(FIRESTORE_DB, "masjids ", "1L0iis8IcUkV3aFYhyvu");
+    let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
 
     useEffect(() => {
         getInfo()
@@ -24,9 +24,9 @@ const Mosque = ({navigation, route}) => {
     const getInfo = async () => {
         const docSnap = await getDoc(docRef);
         setName(docSnap.data()["name"])
-        setAnnouncments(docSnap.data()["announcement"][docSnap.data()["announcement"].length-1])
-        setAllAnnouncements(docSnap.data()["announcement"]);
-        setAddress(docSnap.data()["address "])
+        setAnnouncments(docSnap.data()["announcment"][docSnap.data()["announcment"].length-1])
+        setAllAnnouncements(docSnap.data()["announcment"]);
+        setAddress(docSnap.data()["address"])
         setWebsite(docSnap.data()["website"])
     }
 
