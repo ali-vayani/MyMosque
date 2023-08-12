@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image, TextInput, Keyboard    } from 'react-native';
+import { View, StyleSheet, Image, TextInput, Keyboard, Text    } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 const SearchWidget = ({ navigation }) => {
@@ -11,8 +11,7 @@ const SearchWidget = ({ navigation }) => {
     };
     return (
         <View style={styles.widget} >
-          <TouchableOpacity style={{width:'100%', height:'100%', margin: 0}} onPress={() => navigation.navigate('Map')}>
-            <Image 
+          <Image 
                 source={require('../../../assets/images/Random3.png')} 
                 style={{
                 width: '100%',
@@ -24,15 +23,11 @@ const SearchWidget = ({ navigation }) => {
                 opacity: .1,
                 }}
             />
+          <TouchableOpacity style={{width:'100%', height:'100%', margin: 0}} onPress={() => navigation.navigate('Map')}>
+
             <View style={styles.content}>
               <Ionicons name="search-outline" size={36} color={'#FFF4D2'}/>
-              <TextInput
-                  style={styles.textarea}
-                  returnKeyType='done'
-                  onSubmitEditing={dismissKeyboard}
-                  placeholder={'Search for a Mosque'}
-                  placeholderTextColor="rgba(255, 244, 210, .5)" 
-              />
+              <Text style={styles.textarea} >Search for a Mosque</Text>
             </View>
           </TouchableOpacity>
         </View>

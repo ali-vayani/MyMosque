@@ -16,10 +16,13 @@ const MosqueInfo = ({ navigation, masjidId }) => {
   }
 
   useEffect(() => {
-    getInfo();
-  }, []);
+    if (docRef) { // Check if docRef is defined
+      getInfo();
+    }
+  }, [docRef]);
 
   const getInfo = async () => {
+    if (!docRef) return;
     const docSnap = await getDoc(docRef);
     console.log(docSnap.data()["announcment"])
     setName(docSnap.data()["name"]);
@@ -31,7 +34,7 @@ const MosqueInfo = ({ navigation, masjidId }) => {
       <TouchableOpacity style={styles.content} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId})}>
         <Text style={styles.mainText}> { name } </Text>
         <Text style={styles.subheadingText}> Announcements </Text>
-        <Text style={styles.minorText}> { announcements.length > 200 ? announcements.substring(0, 200) : announcements} </Text>
+        <Text style={styles.minorText}> { announcements.length > 200 ? announcements.substring(0, 200) + "..." : announcements} </Text>
       </TouchableOpacity>
     );
   } else {
@@ -72,18 +75,20 @@ subheadingText: {
     fontSize: 12,
     fontWeight: 'bold',
     color: '#FFF4D2',
+    marginBottom: 5
 },
 minorText: {
   fontSize: 10,
   fontWeight: 'bold',
   color: '#FFF4D2',
+  marginHorizontal: 3
 },
     
 content: {
     paddingVertical: '5%',
     paddingHorizontal: '3%',
     width: '100%',
-    height: '37%',
+    height: 150,
     flexDirection: 'column',
     justifyContent: 'space-between',
     borderRadius: 20,    

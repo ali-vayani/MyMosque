@@ -21,22 +21,42 @@ const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
             });
             nextPrayerIndex--;
 
-            if (nextPrayerIndex === -1) nextPrayerIndex = 0; // If no next prayer found, loop back to the first one
+            if (nextPrayerIndex === -2) 
+                nextPrayerIndex = 6; // If no next prayer found, loop back to the first one
             if(prayerAndTime[nextPrayerIndex])
                 setNextPrayer(prayerAndTime[nextPrayerIndex][0]);
                 nextPrayerIndex++;
+                if(nextPrayerIndex === 7)
+                    nextPrayerIndex = 0;
             // Calculate time remaining until the next prayer
             if(prayerAndTime[nextPrayerIndex])
             {
-                // console.log(prayerAndTime[nextPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number)[1])
-                const [hour, min] = prayerAndTime[nextPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number);
-                nextPrayerDate = new Date();
-                nextPrayerDate.setMinutes(min);
-                nextPrayerDate.setHours(hour);
-                differenceInMilliseconds = (nextPrayerDate - now);
-                differenceInHours = Math.floor(differenceInMilliseconds / (1000 * 60 * 60));
-                differenceInMinutes = Math.floor((differenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
-                
+                if(nextPrayerIndex !== 0)
+                {
+                    // console.log(prayerAndTime[nextPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number)[1])
+                    const [hour, min] = prayerAndTime[nextPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number);
+                    nextPrayerDate = new Date();
+                    nextPrayerDate.setMinutes(min);
+                    nextPrayerDate.setHours(hour);
+                    differenceInMilliseconds = (nextPrayerDate - now);
+                    differenceInHours = Math.floor(differenceInMilliseconds / (1000 * 60 * 60));
+                    differenceInMinutes = Math.floor((differenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+                }
+                else{
+                    const [hour, min] = prayerAndTime[nextPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number);
+                    nextPrayerDate = new Date();
+                    nextPrayerDate.setMinutes(min);
+                    nextPrayerDate.setHours(hour);
+                    let iWroteBadCode = new Date();
+                    iWroteBadCode.setMinutes(59);
+                    iWroteBadCode.setHours(23);
+                    iWroteBadCode.setSeconds(59);
+                    console.log((iWroteBadCode - now) )
+                    console.log(((nextPrayerDate.getHours() * 60 * 1000)) + (nextPrayerDate.getMinutes() * 1000))
+                    differenceInMilliseconds = ((iWroteBadCode - now) + (((nextPrayerDate.getHours() * 60 * 1000)) + (nextPrayerDate.getMinutes() * 1000)));
+                    differenceInHours = Math.floor(differenceInMilliseconds / (1000 * 60 * 60));
+                    differenceInMinutes = Math.floor((differenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+                }
                 let resultString = "";
                 if (differenceInHours > 0) {
                     resultString += differenceInHours + (differenceInHours > 1 ? " hr" : " hr");
@@ -48,20 +68,36 @@ const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
                     resultString += differenceInMinutes + (differenceInMinutes > 1 ? " min left" : " min left");
                 }
                 setTimeRemaining(resultString);
+                
             }
 
-
-            if(prayerAndTime[nextPrayerIndex])
+            if(prayerAndTime[nextPrayerIndex+1] || prayerAndTime[nextPrayerIndex-1])
             {
-
-                let lastPrayerIndex = nextPrayerIndex-1;
-                const [hour, min] = prayerAndTime[lastPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number);
-                let lastPrayerTime = new Date();
-                lastPrayerTime.setMinutes(min)
-                lastPrayerTime.setHours(hour)
-                let currentDate = new Date();
-                //current time - last prayer time / next prayer time - last prayer time
-                setPercentage(((currentDate.getHours()* 60 + (currentDate.getMinutes())) -  (lastPrayerTime.getHours()* 60 + (lastPrayerTime.getMinutes()))) / ((nextPrayerDate.getHours()* 60 + (nextPrayerDate.getMinutes())) - (lastPrayerTime.getHours()* 60 + (lastPrayerTime.getMinutes()))));
+                if(nextPrayerIndex !== 0)
+                {
+                    let lastPrayerIndex = nextPrayerIndex-1;
+                    const [hour, min] = prayerAndTime[lastPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number);
+                    let lastPrayerTime = new Date();
+                    lastPrayerTime.setMinutes(min)
+                    lastPrayerTime.setHours(hour)
+                    let currentDate = new Date();
+                    //current time - last prayer time / next prayer time - last prayer time
+                    setPercentage(((currentDate.getHours()* 60 + (currentDate.getMinutes())) -  (lastPrayerTime.getHours()* 60 + (lastPrayerTime.getMinutes()))) / ((nextPrayerDate.getHours()* 60 + (nextPrayerDate.getMinutes())) - (lastPrayerTime.getHours()* 60 + (lastPrayerTime.getMinutes()))));
+                }
+                else{
+                    let lastPrayerIndex = 6;
+                    nextPrayerIndex = 0;
+                    const [hour, min] = prayerAndTime[lastPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number);
+                    let lastPrayerTime = new Date();
+                    lastPrayerTime.setMinutes(min)
+                    lastPrayerTime.setHours(24-hour)
+                    let currentDate = new Date();
+                    //current time - last prayer time / next prayer time - last prayer time
+                    setPercentage(
+                        ((currentDate.getHours()* 60 + (currentDate.getMinutes())) -  (24-(lastPrayerTime.getHours()))* 60 + (lastPrayerTime.getMinutes())) 
+                        / 
+                        ((nextPrayerDate.getHours()* 60 + (nextPrayerDate.getMinutes())) + (lastPrayerTime.getHours()* 60 + (lastPrayerTime.getMinutes()))));
+                }
             }
         };
 
