@@ -125,7 +125,7 @@ const Map = () => {
         flex: 1,
     },
     map: {
-        flex: 1,
+        flex: 1.5,
     },
     list: {
         flex: 1,
