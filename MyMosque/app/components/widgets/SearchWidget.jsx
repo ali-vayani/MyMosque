@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Image, TextInput, Keyboard, Text    } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-const SearchWidget = ({ navigation, inputVersion, onSubmit}) => {
+const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value}) => {
 
   let height;
   if(!inputVersion)
@@ -65,7 +65,7 @@ const SearchWidget = ({ navigation, inputVersion, onSubmit}) => {
           {
             inputVersion && 
             <View style={[styles.content]}>
-              <TouchableOpacity onPress={ onSubmit }>
+              <TouchableOpacity onPress={ dismissKeyboard && onSubmit }>
                 <Ionicons name="search-outline" size={36} color={'#FFF4D2'}/>
               </TouchableOpacity>
               <TextInput
@@ -73,7 +73,9 @@ const SearchWidget = ({ navigation, inputVersion, onSubmit}) => {
                   returnKeyType='done'
                   onSubmitEditing={dismissKeyboard && onSubmit}
                   placeholder={'Search for a Mosque'}
-                  placeholderTextColor="rgba(255, 244, 210, .5)" 
+                  placeholderTextColor={"rgba(255, 244, 210, .5)"}
+                  onChangeText={text => setValue(text)}
+                  value={value} 
               />
             </View>
           }

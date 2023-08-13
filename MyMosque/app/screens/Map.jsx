@@ -9,6 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 const Map = () => {
     const [location, setLocation] = useState(null);
     const [markers, setMarkers] = useState([]);
+    const [value, setValue] = useState()
 
     useEffect(() => {
         ///setMarkers([])
@@ -32,6 +33,39 @@ const Map = () => {
             fetchNearbyMosques(latitude, longitude);
         })();
     }, []);
+
+    const fetchQueryMosque = async (query, lat, lng, nextPageToken = null) => {
+        const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
+        const radius = 24000;
+        let url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query + "mosque")}&radius=${radius}&keyword=mosque&key=${apiKey}`;
+
+        if (nextPageToken) {
+            url += `&pagetoken=${nextPageToken}`;
+        }
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.results) {
+                // Add distance property to each result
+                const resultsWithDistance = data.results.map(result => ({
+                    ...result,
+                    distance: getDistance(
+                        { latitude: lat, longitude: lng },
+                        { latitude: result.geometry.location.lat, longitude: result.geometry.location.lng }
+                    ),
+                }));
+
+                // Sort by distance
+                resultsWithDistance.sort((a, b) => a.distance - b.distance);
+
+                setMarkers(resultsWithDistance);
+            }
+            // ...
+        } catch (error) {
+            console.error("Error fetching mosques: ", error);
+        }
+    }
 
     const fetchNearbyMosques = async (lat, lng, nextPageToken = null) => {
         const radius = 24000;
@@ -83,7 +117,7 @@ const Map = () => {
                 style={styles.imageBg}
             />
             <View style={styles.searchContainer}>
-                <SearchWidget inputVersion={true} onSubmit={() => console.log("Submitted")}/>
+                <SearchWidget inputVersion={true} onSubmit={() => value ? fetchQueryMosque(value, location["latitude"], location["longitude"]) : null} setValue={setValue} value={value}/>
             </View>
             
             <MapView
