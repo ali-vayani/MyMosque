@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity, Image } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getDistance } from 'geolib';
+import SearchWidget from '../components/widgets/SearchWidget';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Map = () => {
     const [location, setLocation] = useState(null);
     const [markers, setMarkers] = useState([]);
 
     useEffect(() => {
+        ///setMarkers([])
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
@@ -31,37 +34,37 @@ const Map = () => {
     }, []);
 
     const fetchNearbyMosques = async (lat, lng, nextPageToken = null) => {
-    const radius = 24000;
-    const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
-    let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&keyword=mosque&key=${apiKey}`;
-    
-    if (nextPageToken) {
-        url += `&pagetoken=${nextPageToken}`;
-    }
-
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        if (data.results) {
-            // Add distance property to each result
-            const resultsWithDistance = data.results.map(result => ({
-                ...result,
-                distance: getDistance(
-                    { latitude: lat, longitude: lng },
-                    { latitude: result.geometry.location.lat, longitude: result.geometry.location.lng }
-                ),
-            }));
-
-            // Sort by distance
-            resultsWithDistance.sort((a, b) => a.distance - b.distance);
-
-            setMarkers(prevMarkers => [...prevMarkers, ...resultsWithDistance]);
+        const radius = 24000;
+        const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
+        let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&keyword=mosque&key=${apiKey}`;
+        
+        if (nextPageToken) {
+            url += `&pagetoken=${nextPageToken}`;
         }
-        // ...
-    } catch (error) {
-        console.error("Error fetching mosques: ", error);
-    }
-};
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.results) {
+                // Add distance property to each result
+                const resultsWithDistance = data.results.map(result => ({
+                    ...result,
+                    distance: getDistance(
+                        { latitude: lat, longitude: lng },
+                        { latitude: result.geometry.location.lat, longitude: result.geometry.location.lng }
+                    ),
+                }));
+
+                // Sort by distance
+                resultsWithDistance.sort((a, b) => a.distance - b.distance);
+
+                setMarkers(resultsWithDistance);
+            }
+            // ...
+        } catch (error) {
+            console.error("Error fetching mosques: ", error);
+        }
+    };
 
     const onMarkerPress = (latitude, longitude) => {
         setLocation({
@@ -74,27 +77,42 @@ const Map = () => {
 
     return (
         <View style={styles.container}>
-        <MapView
-            provider={PROVIDER_GOOGLE}
-            style={styles.map}
-            region={location}
-        >
-            {markers.map((marker, index) => (
-            <Marker
-                key={index}
-                coordinate={{
-                latitude: marker.geometry.location.lat,
-                longitude: marker.geometry.location.lng,
-                }}
-                title={marker.name}
+            <LinearGradient colors={['#57658E', '#A79A84']} style={styles.background}/>
+            <Image 
+                source={require('../../assets/images/Random3.png')} 
+                style={styles.imageBg}
             />
-            ))}
+            <View style={styles.searchContainer}>
+                <SearchWidget inputVersion={true} onSubmit={() => console.log("Submitted")}/>
+            </View>
+            
+            <MapView
+                provider={PROVIDER_GOOGLE}
+                style={styles.map}
+                region={location}
+            >
+                
+                {markers.map((marker, index) => (
+                <Marker
+                    key={index}
+                    coordinate={{
+                    latitude: marker.geometry.location.lat,
+                    longitude: marker.geometry.location.lng,
+                    }}
+                    title={marker.name}
+                />
+                ))}
         </MapView>
         <ScrollView style={styles.list}>
+            <LinearGradient colors={['#57658E', '#A79A84']} style={styles.background}/>
+            <Image 
+                source={require('../../assets/images/Random3.png')} 
+                style={styles.imageBg}
+            />
             {markers.map((marker, index) => (
             <TouchableOpacity key={index} style={styles.listItem} onPress={() => onMarkerPress(marker.geometry.location.lat, marker.geometry.location.lng)}>
-                <Text>{marker.name}</Text>
-                <Text>{marker.vicinity}</Text>
+                <Text style={[styles.nameText, {fontWeight: 'bold'}]}>{marker.name}</Text>
+                <Text style={styles.nameText}>{marker.vicinity}</Text>
             </TouchableOpacity>
             ))}
         </ScrollView>
@@ -115,8 +133,35 @@ const Map = () => {
     listItem: {
         padding: 10,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        borderBottomColor: '#FFF4D2',
     },
+    background:{
+        width: '100%',
+        height: '100%',
+        position: 'absolute'
+    },
+    imageBg: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        borderRadius: 41.5,
+        opacity: .05,
+    },
+    nameText: {
+        color: '#FFF4D2',
+    },
+    searchContainer: {
+        position: 'absolute',
+        top: 30, 
+        left: 0, 
+        right: 0, 
+        zIndex: 10, 
+        height: 90,
+        alignItems: 'center',
+    },
+    
 });
 
 export default Map;
