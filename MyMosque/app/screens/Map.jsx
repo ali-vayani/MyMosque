@@ -5,11 +5,19 @@ import * as Location from 'expo-location';
 import { getDistance } from 'geolib';
 import SearchWidget from '../components/widgets/SearchWidget';
 import { LinearGradient } from 'expo-linear-gradient';
+import { FIRESTORE_DB } from '../../firebaseConfig';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { async } from '@firebase/util';
 
-const Map = () => {
+
+const Map = ({ navigation }) => {
     const [location, setLocation] = useState(null);
     const [markers, setMarkers] = useState([]);
-    const [value, setValue] = useState()
+    const [value, setValue] = useState();
+    const [expanded, setExpanded] = useState(null)
+    const [masjidId, setMasjidID] = useState(null)
+    //onst masjidsRef = FIRESTORE_DB.collection('masjids');
+
 
     useEffect(() => {
         ///setMarkers([])
@@ -33,6 +41,22 @@ const Map = () => {
             fetchNearbyMosques(latitude, longitude);
         })();
     }, []);
+
+    const masjidExistsInDatabase = async (address) => {
+        try {
+            console.log(address)
+            const getMasjidWithAddress = query(collection(FIRESTORE_DB, "masjids"), where("address", "==", address));
+            const querySnapshot = await getDocs(getMasjidWithAddress);
+            console.log(querySnapshot.docs)
+            querySnapshot.forEach((doc) => {
+                setMasjidID(doc.id);
+                console.log(doc.id, " => ", doc.data());
+            });
+        } catch (error) {
+            console.error("An error occurred:", error);
+        }
+
+    }
 
     const fetchQueryMosque = async (query, lat, lng, nextPageToken = null) => {
         const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
@@ -91,7 +115,6 @@ const Map = () => {
 
                 // Sort by distance
                 resultsWithDistance.sort((a, b) => a.distance - b.distance);
-
                 setMarkers(resultsWithDistance);
             }
             // ...
@@ -144,10 +167,42 @@ const Map = () => {
                 style={styles.imageBg}
             />
             {markers.map((marker, index) => (
-            <TouchableOpacity key={index} style={styles.listItem} onPress={() => onMarkerPress(marker.geometry.location.lat, marker.geometry.location.lng)}>
-                <Text style={[styles.nameText, {fontWeight: 'bold'}]}>{marker.name}</Text>
-                <Text style={styles.nameText}>{marker.vicinity}</Text>
-            </TouchableOpacity>
+                <TouchableOpacity 
+                    key={index} 
+                    style={styles.listItem} 
+                    onPress={ async () => {
+                    onMarkerPress(marker.geometry.location.lat, marker.geometry.location.lng);
+                    setMasjidID(null)
+                    setExpanded(expanded === index ? null : index); // Toggle expanded state
+                    await masjidExistsInDatabase(marker.vicinity)
+                    console.log(masjidId)
+                    }}
+                >
+                    <Text style={[styles.nameText, {fontWeight: 'bold'}]}>{marker.name}</Text>
+                    <Text style={styles.nameText}>{marker.vicinity}</Text>
+                    {
+                    expanded === index && 
+                    <View style={{flexDirection: 'row', gap: 15, marginVertical: '3%'}}>
+                        
+                        {
+                            masjidId !== null &&
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId})}><Text style={styles.nameText}>Learn More</Text></TouchableOpacity>
+                        }
+                        {
+                            masjidId === null &&
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('CreateMosque')}><Text style={styles.nameText}>Create this Mosque</Text></TouchableOpacity>
+                        }
+                        {
+                            markers.length/2 >= index &&
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#A79A84', borderRadius: 20}}><Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>
+                        }
+                        {
+                            markers.length/2 < index &&
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#57658E', borderRadius: 20}}><Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>
+                        }
+                    </View> 
+                    }
+                </TouchableOpacity>
             ))}
         </ScrollView>
         </View>
