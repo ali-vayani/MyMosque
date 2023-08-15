@@ -2,12 +2,13 @@ import {View, Text, Button, StyleSheet, Image, ImageBackground, FlatList, Toucha
 import React, { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FIRESTORE_DB } from '../../firebaseConfig';
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { Ionicons } from '@expo/vector-icons';
 import ViewPager from '@react-native-community/viewpager';
 
 const Mosque = ({navigation, route}) => {
-    let { masjidId } = route.params;
+    let { masjidId, uid } = route.params;
+    console.log(uid)
     const [name, setName] = useState('');
     const [announcments, setAnnouncments] = useState('');
     const [address, setAddress] = useState('');
@@ -16,6 +17,7 @@ const Mosque = ({navigation, route}) => {
     const [showAnnouncementsModal, setShowAnnouncementsModal] = useState(false);
     const [allAnnouncements, setAllAnnouncements] = useState([]);
     let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
+    let userRef = doc(FIRESTORE_DB, "users", uid.replace(/\s/g, ''));
 
     useEffect(() => {
         getInfo()
@@ -23,12 +25,47 @@ const Mosque = ({navigation, route}) => {
 
     const getInfo = async () => {
         const docSnap = await getDoc(docRef);
+        const userDocSnap = await getDoc(userRef);
+        if(userDocSnap.data()["favMasjids"].length > 0)
+        {
+            for(let i = 0; i < userDocSnap.data()["favMasjids"].length; i++)
+            {
+                if(userDocSnap.data()["favMasjids"][i].replace(/\s/g, '') === masjidId)
+                    setFavorite(true)
+            }
+        }
+
         setName(docSnap.data()["name"])
         setAnnouncments(docSnap.data()["announcment"][docSnap.data()["announcment"].length-1])
         setAllAnnouncements(docSnap.data()["announcment"]);
         setAddress(docSnap.data()["address"])
         setWebsite(docSnap.data()["website"])
     }
+    const toggleFavorite = async () => {
+        // Get current favMasjids of the user
+        const userDocSnap = await getDoc(userRef);
+    
+        // Check if masjidId is in favMasjids
+        const currentFavMasjids = userDocSnap.data()["favMasjids"] || [];
+        console.log(currentFavMasjids)
+        const isCurrentlyFavorite = currentFavMasjids.includes(masjidId);
+    
+        let updatedFavMasjids;
+        if (isCurrentlyFavorite) {
+            updatedFavMasjids = currentFavMasjids.filter(id => id !== masjidId);
+        } else {
+            updatedFavMasjids = [...currentFavMasjids, masjidId];
+        }
+    
+        await updateDoc(userRef, {
+            favMasjids: updatedFavMasjids
+        });
+    
+        setFavorite(!isCurrentlyFavorite);
+    };
+    
+    //...
+    
 
     return (
         <View style={styles.page}>
@@ -38,7 +75,7 @@ const Mosque = ({navigation, route}) => {
                 style={styles.imageBg}
             />
             <View style={styles.content}>
-                <TouchableOpacity style={styles.star} onPress={() => setFavorite(!isFavorite)}>
+                <TouchableOpacity style={styles.star} onPress={() => toggleFavorite()}>
                     {!isFavorite && <Ionicons name="star-outline" size={25} color={'#C8C079'}/>}
                     {isFavorite && <Ionicons name="star" size={25} color={'#C8C079'}/>}
                 </TouchableOpacity>

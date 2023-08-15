@@ -4,7 +4,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 import MosqueInfo from '../elements/mosqueInfo';
 
-const MyMosqueWidget = ({ navigation, masjidId }) => {
+const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
   console.log(masjidId)
   return (
     <View style={styles.widget}>
@@ -21,15 +21,17 @@ const MyMosqueWidget = ({ navigation, masjidId }) => {
         }}
       />
       <View style={styles.content}>
-        <Text style={styles.mainText}>My Mosques</Text>
-        <ScrollView style={styles.scrollContainer}>
-          <View style={styles.mosqueInfoContent}>
-            {masjidId && <MosqueInfo masjidId={masjidId[0]} navigation={navigation}/>}
-            {masjidId && <MosqueInfo masjidId={masjidId[1]} navigation={navigation}/>}
-            <MosqueInfo masjidId={undefined} navigation={navigation}/>
-          </View>
-        </ScrollView>
+          <Text style={styles.mainText}>My Mosques</Text>
+          <ScrollView style={styles.scrollContainer}>
+              <View style={styles.mosqueInfoContent}>
+                  {masjidId && masjidId.map((id, index) => (
+                      <MosqueInfo key={index} masjidId={id} navigation={navigation} uid={uid}/>
+                  ))}
+                  <MosqueInfo masjidId={undefined} navigation={navigation}/>
+              </View>
+          </ScrollView>
       </View>
+
     </View>
   );
 };

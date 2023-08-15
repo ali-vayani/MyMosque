@@ -10,7 +10,9 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { async } from '@firebase/util';
 
 
-const Map = ({ navigation }) => {
+const Map = ({ navigation, route}) => {
+    const { uid } = route.params;
+    console.log(uid)
     const [location, setLocation] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [value, setValue] = useState();
@@ -186,11 +188,11 @@ const Map = ({ navigation }) => {
                         
                         {
                             masjidId !== null &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId})}><Text style={styles.nameText}>Learn More</Text></TouchableOpacity>
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId, uid: uid})}><Text style={styles.nameText}>Learn More</Text></TouchableOpacity>
                         }
                         {
                             masjidId === null &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('CreateMosque')}><Text style={styles.nameText}>Create this Mosque</Text></TouchableOpacity>
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('CreateMosque', {uid: uid})}><Text style={styles.nameText}>Create this Mosque</Text></TouchableOpacity>
                         }
                         {
                             markers.length/2 >= index &&

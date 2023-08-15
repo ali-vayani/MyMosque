@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Image, TextInput, Keyboard, Text    } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value}) => {
+const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value, uid}) => {
 
   let height;
   if(!inputVersion)
@@ -54,7 +54,7 @@ const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value}) =>
             />
           {
           !inputVersion && 
-            <TouchableOpacity style={{width:'100%', height:'100%', margin: 0}} onPress={() => navigation.navigate('Map')}>
+            <TouchableOpacity style={{width:'100%', height:'100%', margin: 0}} onPress={() => navigation.navigate('Map', {uid: uid})}>
 
               <View style={[styles.content]}>
                 <Ionicons name="search-outline" size={36} color={'#FFF4D2'}/>

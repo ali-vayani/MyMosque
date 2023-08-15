@@ -4,8 +4,7 @@ import { FIRESTORE_DB } from '../../../firebaseConfig';
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { doc, getDoc } from "firebase/firestore";
 
-const MosqueInfo = ({ navigation, masjidId }) => {
-
+const MosqueInfo = ({ navigation, masjidId, uid }) => {
   const [name, setName] = useState('');
   const [announcements, setAnnouncements] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -31,7 +30,7 @@ const MosqueInfo = ({ navigation, masjidId }) => {
 
   if(docRef) {
     return (
-      <TouchableOpacity style={styles.content} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId})}>
+      <TouchableOpacity style={styles.content} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId, uid: uid})}>
         <Text style={styles.mainText}> { name } </Text>
         <Text style={styles.subheadingText}> Announcements </Text>
         <Text style={styles.minorText}> { announcements.length > 200 ? announcements.substring(0, 200) + "..." : announcements} </Text>
@@ -52,8 +51,8 @@ const MosqueInfo = ({ navigation, masjidId }) => {
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 <Text style={[styles.modalText, {color: '#362921'}]}>Choose an option</Text>
-                <Button title="Create a Mosque" onPress={() => {navigation.navigate('CreateMosque'); setModalVisible(false) }} color={'#679159'}/>
-                <Button title="Search for a Mosque" onPress={() => {navigation.navigate('Map'); setModalVisible(false)}} color={'#596d91'}/>
+                <Button title="Create a Mosque" onPress={() => {navigation.navigate('CreateMosque', {uid: uid}); setModalVisible(false) }} color={'#679159'}/>
+                <Button title="Search for a Mosque" onPress={() => {navigation.navigate('Map', {uid: uid}); setModalVisible(false)}} color={'#596d91'}/>
                 <Button title="Close" onPress={() => setModalVisible(false)} color={'#915959'}/>
               </View>
             </View>

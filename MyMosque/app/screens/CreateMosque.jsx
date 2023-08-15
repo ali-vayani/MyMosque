@@ -4,25 +4,37 @@ import { FIRESTORE_DB } from '../../firebaseConfig';
 import { addDoc, collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { useState } from 'react';
 import DatePicker from 'react-native-datepicker';
-const CreateMosque = ({navigation}) => {
-
+const CreateMosque = ({navigation, route}) => {
+    const { uid } = route.params;
+    console.log(uid)
     const [masjidName,    setMasjidName       ] = useState('');
     const [masjidAddress, setMasjidAddress    ] = useState('');
     const [annoucnment,   setMasjidAnnouncment] = useState('');
     const [masjidWebsite, setMasjidWebsite    ] = useState('');
     const [masjidEmail,   setMasjidEmail      ] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [prayerTimes, setPrayerTimes] = useState(["", "", "", "", ""])
 
     const createMosque = async () => {
-        const doc = await addDoc(collection(FIRESTORE_DB, 'masjids'), {name: masjidName, address: masjidAddress, annoucnment: annoucnment, website: masjidWebsite, email: masjidEmail})
+        const doc = await addDoc(collection(FIRESTORE_DB, 'masjids'), {name: masjidName, address: masjidAddress, annoucnment: annoucnment, website: masjidWebsite, email: masjidEmail, prayerTimes: prayerTimes})
         setMasjidName('')
         setMasjidAddress('')
         setMasjidAnnouncment('')
         setMasjidWebsite('')
         setMasjidEmail('')
-        
-        navigation.navigate('Mosque', {masjidId: doc.id})
+        setPrayerTimes(["", "", "", "", ""])
+        navigation.navigate('Mosque', {masjidId: doc.id, uid: uid})
     }
+    const handleInputChange = (index, newValue) => {
+        const newPrayerTimes = [...prayerTimes];
+        newPrayerTimes[index] = newValue;
+        setPrayerTimes(newPrayerTimes);
+    };
+    const dismissKeyboard = () => {
+        if(Keyboard !== undefined)
+                Keyboard.dismiss();
+                dismissKeyboard
+    };
 
     return(
         <KeyboardAvoidingView  style={styles.page}
@@ -94,6 +106,9 @@ const CreateMosque = ({navigation}) => {
                                     style={[styles.minorText, styles.input]}
                                     placeholder={prayer + " prayer time"}
                                     placeholderTextColor={"rgba(255, 244, 210, .5)"}
+                                    value={prayerTimes[index]}
+                                    onChangeText={(text) => handleInputChange(index, text)}
+                                    onSubmitEditing={dismissKeyboard && console.log(prayerTimes)}
                                 />
                             ))}
 
