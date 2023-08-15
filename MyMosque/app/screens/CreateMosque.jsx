@@ -88,11 +88,11 @@ const CreateMosque = ({navigation}) => {
                         
                             />
 
-                            {[1, 2, 3, 4, 5].map((_, index) => (
+                            {["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"].map((prayer, index) => (
                                 <TextInput
                                     key={index}
                                     style={[styles.minorText, styles.input]}
-                                    placeholder={"Enter Time " + (index + 1)}
+                                    placeholder={prayer + " prayer time"}
                                     placeholderTextColor={"rgba(255, 244, 210, .5)"}
                                 />
                             ))}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity, Image, Linking  } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getDistance } from 'geolib';
@@ -194,11 +194,11 @@ const Map = ({ navigation }) => {
                         }
                         {
                             markers.length/2 >= index &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#A79A84', borderRadius: 20}}><Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#A79A84', borderRadius: 20}} onPress={() => Linking.openURL('https://www.google.com/maps/place/'+marker.vicinity.replace(/ /g, "+"))}><Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>
                         }
                         {
                             markers.length/2 < index &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#57658E', borderRadius: 20}}><Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#57658E', borderRadius: 20}} onPress={() => Linking.openURL('https://www.google.com/maps/place/'+marker.vicinity.replace(/ /g, "+"))}><Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>
                         }
                     </View> 
                     }
