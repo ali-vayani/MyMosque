@@ -1,4 +1,4 @@
-import {View, Text, Button, StyleSheet, Image, ScrollView , FlatList, TouchableOpacity, TextInput} from 'react-native'
+import {View, Text, Button, StyleSheet, Image, ScrollView , KeyboardAvoidingView, Platform, TextInput} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import { addDoc, collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore'
@@ -25,7 +25,11 @@ const CreateMosque = ({navigation}) => {
     }
 
     return(
-        <View style={styles.page}>
+        <KeyboardAvoidingView  style={styles.page}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -500} // You may need to adjust this value
+        >
+            
             <LinearGradient colors={['#679159', '#A79A84']} style={styles.background}/>
             <Image 
             source={require('../../assets/images/Random3.png')} 
@@ -97,7 +101,7 @@ const CreateMosque = ({navigation}) => {
                     <Button title='Submit' onPress={() => createMosque()}/>
                 </View>
             </ScrollView>                
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 
@@ -116,7 +120,7 @@ const styles = StyleSheet.create({
     },
     content: {
         width: '100%',
-        minHeight: '100%',
+        minHeight: '100%'
     },
     minorText: {
         fontSize: 14,
@@ -135,7 +139,7 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: '25%',
+        height: 250,
         flexDirection: 'column',
         backgroundColor: 'black',
         justifyContent: 'flex-end',
@@ -148,7 +152,7 @@ const styles = StyleSheet.create({
     },
     contentBlock:{
         width: '100%',
-        minHeight: '27%',
+        minHeight: 275,
         backgroundColor: 'rgba(255, 244, 210, .1)',
         flexDirection: 'column',
         marginBottom: 20,
@@ -176,7 +180,6 @@ const styles = StyleSheet.create({
     },
     divideBar:{
         height: 1,
-        wdith: '90%',
         backgroundColor: 'rgb(255, 244, 210)',
         marginVertical: '7%'
     },
