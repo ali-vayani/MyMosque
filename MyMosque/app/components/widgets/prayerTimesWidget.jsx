@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
 import PrayerBar from '../elements/prayerBar';
 import Location from '../elements/location';
-const PrayerTimesWidget = ({ navigation }) => {
+const PrayerTimesWidget = ({ navigation, uid }) => {
   const [time, setTime] = useState('14 min 20 sec')
   const [prayerAndTime, setPrayerAndTime] = useState([]);
   const [militaryPrayerAndTime, setMilitaryPrayerAndTime] = useState([])
@@ -54,7 +54,7 @@ const PrayerTimesWidget = ({ navigation }) => {
     }
     
   return (
-    <TouchableOpacity style={styles.widget} onPress={() => navigation.navigate('PrayerTimes', {prayerAndTime: prayerAndTime, militaryPrayerAndTime: militaryPrayerAndTime})}>
+    <TouchableOpacity style={styles.widget} onPress={() => navigation.navigate('PrayerTimes', {prayerAndTime: prayerAndTime, militaryPrayerAndTime: militaryPrayerAndTime, uid: uid})}>
       {/* <View style={{backgroundImage: require('C:/Users/aliva/Desktop/MyMosquefr/MyMosque/assets/images/1.jpg'), position: 'absolute', top: 0, bottom: 0, left:0, right:0, borderRadius: 41.5}} /> */}
       <Image 
         source={require('../../../assets/images/Random3.png')} 
@@ -71,7 +71,7 @@ const PrayerTimesWidget = ({ navigation }) => {
       <View style={styles.content}>
         <Text style={styles.mainText}> Prayer Times </Text>
           <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28} prayerAndTime={militaryPrayerAndTime}/>
-          <Location location={'Keller, TX'} setTime={setTime} />
+          <Location location={'Keller, TX'} setTime={setTime} uid={uid}/>
       </View>
     </TouchableOpacity>
   );

@@ -14,6 +14,7 @@ const Mosque = ({navigation, route}) => {
     const [address, setAddress] = useState('');
     const [website, setWebsite] = useState('');
     const [isFavorite, setFavorite] = useState(false)
+    const [isAdmin, setAdmin] = useState(false)
     const [showAnnouncementsModal, setShowAnnouncementsModal] = useState(false);
     const [allAnnouncements, setAllAnnouncements] = useState([]);
     let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
@@ -34,7 +35,8 @@ const Mosque = ({navigation, route}) => {
                     setFavorite(true)
             }
         }
-
+        if(docSnap.data()["adminUid"] === uid)
+            setAdmin(true);
         setName(docSnap.data()["name"])
         setAnnouncments(docSnap.data()["announcment"][docSnap.data()["announcment"].length-1])
         setAllAnnouncements(docSnap.data()["announcment"]);
@@ -75,10 +77,18 @@ const Mosque = ({navigation, route}) => {
                 style={styles.imageBg}
             />
             <View style={styles.content}>
-                <TouchableOpacity style={styles.star} onPress={() => toggleFavorite()}>
-                    {!isFavorite && <Ionicons name="star-outline" size={25} color={'#C8C079'}/>}
-                    {isFavorite && <Ionicons name="star" size={25} color={'#C8C079'}/>}
-                </TouchableOpacity>
+                {!isAdmin &&
+                    <TouchableOpacity style={styles.star} onPress={() => toggleFavorite()}>
+                        {!isFavorite && <Ionicons name="star-outline" size={25} color={'#C8C079'}/>}
+                        {isFavorite && <Ionicons name="star" size={25} color={'#C8C079'}/>}
+                    </TouchableOpacity>  
+                }
+                {isAdmin &&
+                    <TouchableOpacity style={styles.star} onPress={() => navigation.navigate('EditMosque', {masjidId: masjidId})}>
+                        <Ionicons name="create" size={25} color={'#C8C079'}/>
+                    </TouchableOpacity>  
+                }
+
                 
                 <View style={styles.image}>
                     <Text style={styles.mainText}>{ name }</Text>

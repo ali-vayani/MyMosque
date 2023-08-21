@@ -9,6 +9,7 @@ import Mosque from './app/screens/Mosque';
 import SignIn from './app/screens/SignIn';
 import CreateMosque from './app/screens/CreateMosque';
 import Map from './app/screens/Map';
+import EditMosque from './app/screens/EditMosque';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Stack.Screen name='Map' component={Map} options={{headerShown: false}} />
         <Stack.Screen name='Mosque' component={Mosque} options={{headerShown: false}}/>
         <Stack.Screen name='CreateMosque' component={CreateMosque} options={{headerShown: false}}/>
+        <Stack.Screen name='EditMosque' component={EditMosque} options={{headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

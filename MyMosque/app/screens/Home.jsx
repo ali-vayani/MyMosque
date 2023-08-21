@@ -28,7 +28,7 @@ const Home = ({navigation, route}) => {
         <View style={styles.page}>
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
-                <PrayerTimesWidget navigation={navigation}/>
+                <PrayerTimesWidget navigation={navigation} uid={uid}/>
                 <SearchWidget navigation={navigation} uid={uid}/>
                 <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid}/>
             </View>

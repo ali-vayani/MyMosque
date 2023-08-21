@@ -1,42 +1,89 @@
 import React, { useEffect, useState } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { FIRESTORE_DB } from '../../../firebaseConfig';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const Location = ({ setTime }) => {
+const Location = ({ setTime, uid, setMasjidPrayerTimes }) => {
+  console.log(uid + "11111111111111")
   const [isOpen, setIsOpen] = useState(false);
-  const locations = ["Location 1", "Location 2", "Location 3"]; // Sample list of locations
+  const locations = ["Location 1", "Location 2", "Location 3"];
+  const [favMasjidsNames, setFavMasjidsNames] = useState([]);
   const [text, setText] = useState('')
   useEffect(() => {
     setText('Keller, TX')
   }, [])
 
+  useEffect(() => {
+    async function fetchFavMasjids() {
+      try {
+          let userRef = doc(FIRESTORE_DB, "users", uid.replace(/\s/g, ''));
+          const userDocSnap = await getDoc(userRef);
+          const favMasjids = userDocSnap.data()["favMasjids"];
+          
+          let names = [];
+          for (let masjidId of favMasjids) {
+              let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
+              const docSnap = await getDoc(docRef);
+              names.push({ name: docSnap.data()["name"], id: masjidId });
+          }
+          
+          setFavMasjidsNames(names);
+      } catch (error) {
+          console.error("Error fetching favorite Masjids: ", error);
+      }
+  }
+  
+
+    fetchFavMasjids();
+  }, [uid]);
+  const handlePress = async (masjidId) => {
+    try {
+        let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
+        const docSnap = await getDoc(docRef);
+        setMasjidPrayerTimes(docSnap.data()["prayerTimes"]);
+        setIsOpen(false);
+    } catch (error) {
+        console.error("Error fetching prayer times: ", error);
+        setMasjidPrayerTimes(["n/a"])
+    }
+  };
+
   return (
     <View style={styles.wrapper}>
       <TouchableOpacity style={styles.content} onPress={() => setIsOpen(!isOpen)}>
           <Ionicons name="navigate-outline" size={25} color={'#FFF4D2'}/>
-          <Text style={styles.locationText}>{text}</Text>
+          <Text style={styles.locationText}>Your Location</Text>
       </TouchableOpacity>
 
       {isOpen && (
-        <View style={styles.dropdownContainer}>
-          <FlatList
-            data={locations}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.listItem} onPress={() => {
-                setText(item)
-                setTime('13 min 20 sec')
-                setIsOpen(false);
-                // Handle item selection here
-              }}>
-                <Text style={styles.dropdownText}>{item}</Text>
-              </TouchableOpacity>
+                <View style={styles.dropdownContainer}>
+                    <FlatList
+                        data={['Your Location', ...favMasjidsNames]} // Add "Your Location" to the beginning of the list
+                        keyExtractor={(item) => item.name || item}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity 
+                                style={styles.listItem} 
+                                onPress={() => {
+                                    if (item === 'Your Location') {
+                                        setText('Your Location');
+                                        setMasjidPrayerTimes('LocalTime');
+                                    } else {
+                                        setText(item.name);
+                                        handlePress(item.id);
+                                    }
+                                    setIsOpen(false);
+                                }}
+                            >
+                                <Text style={styles.dropdownText}>{item.name || item}</Text>
+                            </TouchableOpacity>
+                        )}
+                    />
+                </View>
             )}
-          />
-        </View>
-      )}
     </View>
   );
+
 };
 
 const styles = StyleSheet.create({
