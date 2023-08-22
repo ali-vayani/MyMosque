@@ -192,7 +192,7 @@ const Map = ({ navigation, route}) => {
                         }
                         {
                             masjidId === null &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('CreateMosque', {uid: uid})}><Text style={styles.nameText}>Create this Mosque</Text></TouchableOpacity>
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('CreateMosque', {uid: uid, address: marker.vicinity, name: marker.name})}><Text style={styles.nameText}>Create this Mosque</Text></TouchableOpacity>
                         }
                         {
                             markers.length/2 >= index &&

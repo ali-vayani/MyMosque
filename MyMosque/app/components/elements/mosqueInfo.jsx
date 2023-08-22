@@ -51,8 +51,7 @@ const MosqueInfo = ({ navigation, masjidId, uid }) => {
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 <Text style={[styles.modalText, {color: '#362921'}]}>Choose an option</Text>
-                <Button title="Create a Mosque" onPress={() => {navigation.navigate('CreateMosque', {uid: uid}); setModalVisible(false) }} color={'#679159'}/>
-                <Button title="Search for a Mosque" onPress={() => {navigation.navigate('Map', {uid: uid}); setModalVisible(false)}} color={'#596d91'}/>
+                <Button title="Search or Create a Mosque" onPress={() => {navigation.navigate('Map', {uid: uid}); setModalVisible(false)}} color={'#596d91'}/>
                 <Button title="Close" onPress={() => setModalVisible(false)} color={'#915959'}/>
               </View>
             </View>

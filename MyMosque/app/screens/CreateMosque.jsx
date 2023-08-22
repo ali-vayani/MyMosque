@@ -4,21 +4,23 @@ import { FIRESTORE_DB } from '../../firebaseConfig';
 import { addDoc, collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore'
 import { useState } from 'react';
 import DatePicker from 'react-native-datepicker';
-const CreateMosque = ({navigation, route}) => {
-    const { uid } = route.params;
+const CreateMosque = ({navigation, route,}) => {
+    const { uid, address, name } = route.params;
     console.log(uid)
-    const [masjidName,    setMasjidName       ] = useState('');
-    const [masjidAddress, setMasjidAddress    ] = useState('');
     const [annoucnment,   setMasjidAnnouncment] = useState('');
     const [masjidWebsite, setMasjidWebsite    ] = useState('');
     const [masjidEmail,   setMasjidEmail      ] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [prayerTimes, setPrayerTimes] = useState(["", "", "", "", ""])
+    const [whatsAppInvite, setWhatsAppInvite] = useState('');
+    const [facebookLink, setFacebookLink] = useState('');
+    const [youTubeLink, setYouTubeLink] = useState('');
 
     const createMosque = async () => {
-        const doc = await addDoc(collection(FIRESTORE_DB, 'masjids'), {name: masjidName, address: masjidAddress, annoucnment: annoucnment, website: masjidWebsite, email: masjidEmail, prayerTimes: prayerTimes})
-        setMasjidName('')
-        setMasjidAddress('')
+        const doc = await addDoc(collection(FIRESTORE_DB, 'masjids'), {name: name, address: address, annoucnment: annoucnment, website: masjidWebsite, email: masjidEmail, prayerTimes: prayerTimes, whatsAppInvite: whatsAppInvite, facebookLink: facebookLink, youTubeLink: youTubeLink})
+        setWhatsAppInvite('')
+        setFacebookLink('')
+        setYouTubeLink('')
         setMasjidAnnouncment('')
         setMasjidWebsite('')
         setMasjidEmail('')
@@ -57,8 +59,8 @@ const CreateMosque = ({navigation, route}) => {
             <ScrollView style={{width: '100%', flex: 1,}}>
                 <View style={styles.content}>
                     <View style={styles.image}>
-                        <TextInput style={[styles.mainText, styles.input]} placeholder={"Masjid Name"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidName(text)} value={masjidName}/>
-                        <TextInput style={[styles.minorText, styles.input]} placeholder={"Address"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidAddress(text)} value={masjidAddress}/>
+                        <Text style={styles.mainText}>{ name }</Text>
+                        <Text style={styles.minorText}> { address } </Text>
                     </View>
                     <View style={styles.contentBlock}>
                         <Text style={styles.mainText}>Announcments</Text>
@@ -80,10 +82,36 @@ const CreateMosque = ({navigation, route}) => {
 
                             <TextInput style={[styles.minorText, styles.input]} placeholder={"Contact Email"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidEmail(text)} value={masjidEmail}/>
                             <View style={styles.divideBar}></View>
-                            <Text style={styles.minorText}>Website: wataugamasjid.com</Text>
-                        </View>
+                            {/* WhatsApp Input */}
+                            <TextInput 
+                                style={[styles.minorText, styles.input]} 
+                                placeholder={"WhatsApp Invite"} 
+                                placeholderTextColor={"rgba(255, 244, 210, .5)"} 
+                                onChangeText={(text) => setWhatsAppInvite(text)} 
+                                value={whatsAppInvite}
+                            />
+                            <View style={styles.divideBar}></View>
 
-                        
+                            {/* Facebook Input */}
+                            <TextInput 
+                                style={[styles.minorText, styles.input]} 
+                                placeholder={"Facebook Profile Link"} 
+                                placeholderTextColor={"rgba(255, 244, 210, .5)"} 
+                                onChangeText={(text) => setFacebookLink(text)} 
+                                value={facebookLink}
+                            />
+                            <View style={styles.divideBar}></View>
+
+                            {/* YouTube Input */}
+                            <TextInput 
+                                style={[styles.minorText, styles.input]} 
+                                placeholder={"YouTube Channel Link"} 
+                                placeholderTextColor={"rgba(255, 244, 210, .5)"} 
+                                onChangeText={(text) => setYouTubeLink(text)} 
+                                value={youTubeLink}
+                            />
+                            <View style={styles.divideBar}></View>
+                        </View>
                     </View>
                     <View style={styles.contentBlock}>
                             <Text style={styles.mainText}>Prayer Times</Text>
