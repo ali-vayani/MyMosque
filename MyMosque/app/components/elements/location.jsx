@@ -5,58 +5,51 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native
 import { Ionicons } from '@expo/vector-icons';
 
 const Location = ({ setTime, uid, setMasjidPrayerTimes }) => {
-  console.log(uid + "11111111111111")
-  const [isOpen, setIsOpen] = useState(false);
-  const locations = ["Location 1", "Location 2", "Location 3"];
-  const [favMasjidsNames, setFavMasjidsNames] = useState([]);
-  const [text, setText] = useState('')
-  useEffect(() => {
-    setText('Keller, TX')
-  }, [])
+    const [isOpen, setIsOpen] = useState(false);
+    const [favMasjidsNames, setFavMasjidsNames] = useState([]);
+    const [text, setText] = useState('Your Location')
 
-  useEffect(() => {
+    useEffect(() => {
     async function fetchFavMasjids() {
-      try {
-          let userRef = doc(FIRESTORE_DB, "users", uid.replace(/\s/g, ''));
-          const userDocSnap = await getDoc(userRef);
-          const favMasjids = userDocSnap.data()["favMasjids"];
-          
-          let names = [];
-          for (let masjidId of favMasjids) {
-              let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
-              const docSnap = await getDoc(docRef);
-              names.push({ name: docSnap.data()["name"], id: masjidId });
-          }
-          
-          setFavMasjidsNames(names);
-      } catch (error) {
-          console.error("Error fetching favorite Masjids: ", error);
-      }
-  }
-  
+        try {
+            let userRef = doc(FIRESTORE_DB, "users", uid.replace(/\s/g, ''));
+            const userDocSnap = await getDoc(userRef);
+            const favMasjids = userDocSnap.data()["favMasjids"];
+            
+            let names = [];
+            for (let masjidId of favMasjids) {
+                let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
+                const docSnap = await getDoc(docRef);
+                names.push({ name: docSnap.data()["name"], id: masjidId });
+            }
+            setFavMasjidsNames(names);
+        } catch (error) {
+            console.error("Error fetching favorite Masjids: ", error);
+        }
+    }
 
     fetchFavMasjids();
-  }, [uid]);
-  const handlePress = async (masjidId) => {
-    try {
-        let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
-        const docSnap = await getDoc(docRef);
-        setMasjidPrayerTimes(docSnap.data()["prayerTimes"]);
-        setIsOpen(false);
-    } catch (error) {
-        console.error("Error fetching prayer times: ", error);
-        setMasjidPrayerTimes(["n/a"])
-    }
-  };
+    }, [uid]);
+    const handlePress = async (masjidId) => {
+        try {
+            let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
+            const docSnap = await getDoc(docRef);
+            setMasjidPrayerTimes(docSnap.data()["prayerTimes"]);
+            setIsOpen(false);
+        } catch (error) {
+            console.error("Error fetching prayer times: ", error);
+            setMasjidPrayerTimes(["n/a"])
+        }
+    };
 
-  return (
+    return (
     <View style={styles.wrapper}>
-      <TouchableOpacity style={styles.content} onPress={() => setIsOpen(!isOpen)}>
-          <Ionicons name="navigate-outline" size={25} color={'#FFF4D2'}/>
-          <Text style={styles.locationText}>Your Location</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.content} onPress={() => setIsOpen(!isOpen)}>
+            <Ionicons name="navigate-outline" size={25} color={'#FFF4D2'}/>
+            <Text style={styles.locationText}> {text} </Text>
+        </TouchableOpacity>
 
-      {isOpen && (
+        {isOpen && (
                 <View style={styles.dropdownContainer}>
                     <FlatList
                         data={['Your Location', ...favMasjidsNames]} // Add "Your Location" to the beginning of the list
@@ -81,8 +74,8 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes }) => {
                     />
                 </View>
             )}
-    </View>
-  );
+        </View>
+    );
 
 };
 

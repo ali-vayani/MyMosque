@@ -5,7 +5,6 @@ import { doc, getDoc } from "firebase/firestore";
 import MosqueInfo from '../elements/mosqueInfo';
 
 const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
-  console.log(masjidId)
   return (
     <View style={styles.widget}>
       <Image 

@@ -8,7 +8,6 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
   const [militaryPrayerAndTime, setMilitaryPrayerAndTime] = useState([])
     useEffect(() => {
         getPrayerTimes(32.508515, -97.1254872, 8, 2023, 2);
-        //console.log(prayerAndTime[0] + "test")
     }, [])
     
 
@@ -27,7 +26,6 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
       try {
         const response = await fetch(url + '?' + queryString);
         const data = await response.json();
-        //console.log(data['data'][0]['timings']);
         const timings = data['data'][0]['timings'];
         //translates the prayer times into the correct format and sets the prayer time
         setMilitaryPrayerAndTime(Object.entries(timings)
@@ -47,7 +45,6 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
             standardTime = standardTime.replace(/^0+/, ''); // removes leading zero
             return [key, standardTime];
           }));
-          console.log(prayerAndTime)
       } catch (error) {
         console.error(error);
       }

@@ -23,7 +23,6 @@ const MosqueInfo = ({ navigation, masjidId, uid }) => {
   const getInfo = async () => {
     if (!docRef) return;
     const docSnap = await getDoc(docRef);
-    console.log(docSnap.data()["announcment"])
     setName(docSnap.data()["name"]);
     setAnnouncements(docSnap.data()["announcment"][(docSnap.data()["announcment"].length)-1]);
   }

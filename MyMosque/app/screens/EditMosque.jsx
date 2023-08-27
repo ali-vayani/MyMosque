@@ -8,7 +8,6 @@ import ViewPager from '@react-native-community/viewpager';
 
 const EditMosque = ({navigation, route}) => {
     let { masjidId } = route.params;
-    console.log(uid)
     const [name, setName] = useState('');
     const [announcments, setAnnouncments] = useState('');
     const [address, setAddress] = useState('');

@@ -6,7 +6,6 @@ import { useState } from 'react';
 import DatePicker from 'react-native-datepicker';
 const CreateMosque = ({navigation, route,}) => {
     const { uid, address, name } = route.params;
-    console.log(uid)
     const [annoucnment,   setMasjidAnnouncment] = useState('');
     const [masjidWebsite, setMasjidWebsite    ] = useState('');
     const [masjidEmail,   setMasjidEmail      ] = useState('');

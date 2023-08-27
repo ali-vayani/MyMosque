@@ -8,7 +8,6 @@ import ViewPager from '@react-native-community/viewpager';
 
 const Mosque = ({navigation, route}) => {
     let { masjidId, uid } = route.params;
-    console.log(uid)
     const [name, setName] = useState('');
     const [announcments, setAnnouncments] = useState('');
     const [address, setAddress] = useState('');
@@ -49,7 +48,6 @@ const Mosque = ({navigation, route}) => {
     
         // Check if masjidId is in favMasjids
         const currentFavMasjids = userDocSnap.data()["favMasjids"] || [];
-        console.log(currentFavMasjids)
         const isCurrentlyFavorite = currentFavMasjids.includes(masjidId);
     
         let updatedFavMasjids;

@@ -5,10 +5,9 @@ import PrayerBar from '../components/elements/prayerBar';
 import Location from '../components/elements/location';
 const PrayerTimes = ({navigation, route}) => {
     const { prayerAndTime, militaryPrayerAndTime, uid } = route.params;
-    const [masjidPrayerTimes, setMasjidPrayerTimes] = useState([])
+    const [masjidPrayerTimes, setMasjidPrayerTimes] = useState('LocalTime')
+    console.log(masjidPrayerTimes)
     const prayersOrder = ['Fajr', 'Dhuhur', 'Asr', 'Maghrib', 'Isha'];
-    console.log(masjidPrayerTimes.length)
-    console.log(prayerAndTime)
 
 
     return(
@@ -29,18 +28,18 @@ const PrayerTimes = ({navigation, route}) => {
                 <Text style={styles.mainText }>Mhrm. 1, 1445 AH</Text>
                 <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={militaryPrayerAndTime}/>
                 <View style={styles.prayerArea}>
-                    { masjidPrayerTimes === "LocalTime" && prayerAndTime.map((specificPrayer, index) => (
+                    { masjidPrayerTimes === "LocalTime"  && prayerAndTime.map((specificPrayer, index) => (
                         <View key={index} style={styles.prayerAndTime}>
                             <Text style={styles.text}>{specificPrayer[0]}</Text>
                             <Text style={styles.text}>{specificPrayer[1]}</Text>
                         </View>
                     ))}
-                    { masjidPrayerTimes.length === 1 && prayersOrder.map((prayer, index) => (
+                    { masjidPrayerTimes !== undefined && (masjidPrayerTimes.length === 1 && prayersOrder.map((prayer, index) => (
                         <View key={index} style={styles.prayerAndTime}>
                             <Text style={styles.text}>{prayer}</Text>
                             <Text style={styles.text}>{masjidPrayerTimes[0][prayer]}</Text>
                         </View>
-                    ))}
+                    )))}
                 </View>
                 <Location location={'Keller, TX'} uid={uid} setMasjidPrayerTimes={setMasjidPrayerTimes}/>
             </View>
