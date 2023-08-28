@@ -2,13 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
 import PrayerBar from '../elements/prayerBar';
 import Location from '../elements/location';
+import * as LocationExpo from 'expo-location';
+
 const PrayerTimesWidget = ({ navigation, uid }) => {
   const [time, setTime] = useState('14 min 20 sec')
   const [prayerAndTime, setPrayerAndTime] = useState([]);
   const [militaryPrayerAndTime, setMilitaryPrayerAndTime] = useState([])
+    // useEffect(() => {
+    //     getPrayerTimes(32.508515, -97.1254872, 8, 2023, 2);
+    // }, [])
+
     useEffect(() => {
-        getPrayerTimes(32.508515, -97.1254872, 8, 2023, 2);
-    }, [])
+      ///setMarkers([])
+      (async () => {
+          let { status } = await LocationExpo.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+          Alert.alert('Permission Denied', 'Permission to access location was denied');
+          return;
+      }
+
+      let currentPosition = await LocationExpo.getCurrentPositionAsync({ accuracy: LocationExpo.Accuracy.High });
+      const { latitude, longitude } = currentPosition.coords;
+      let date = new Date()
+      getPrayerTimes(latitude, longitude, date.getMonth()+1, 2023, 2);
+
+      })();
+  }, []);
     
 
 

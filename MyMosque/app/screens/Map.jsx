@@ -72,6 +72,7 @@ const Map = ({ navigation, route}) => {
         try {
             const response = await fetch(url);
             const data = await response.json();
+            console.log(data.results[0]['formatted_address'])
             if (data.results) {
                 // Add distance property to each result
                 const resultsWithDistance = data.results.map(result => ({
@@ -84,7 +85,7 @@ const Map = ({ navigation, route}) => {
 
                 // Sort by distance
                 resultsWithDistance.sort((a, b) => a.distance - b.distance);
-
+                console.log(markers)
                 setMarkers(resultsWithDistance);
             }
             // ...
@@ -177,11 +178,10 @@ const Map = ({ navigation, route}) => {
                     setMasjidID(null)
                     setExpanded(expanded === index ? null : index); // Toggle expanded state
                     await masjidExistsInDatabase(marker.vicinity)
-                    console.log(masjidId)
                     }}
                 >
                     <Text style={[styles.nameText, {fontWeight: 'bold'}]}>{marker.name}</Text>
-                    <Text style={styles.nameText}>{marker.vicinity}</Text>
+                    <Text style={styles.nameText}>{marker.vicinity ?? marker.formatted_address}</Text>
                     {
                     expanded === index && 
                     <View style={{flexDirection: 'row', gap: 15, marginVertical: '3%'}}>
@@ -196,12 +196,19 @@ const Map = ({ navigation, route}) => {
                         }
                         {
                             markers.length/2 >= index &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#A79A84', borderRadius: 20}} onPress={() => Linking.openURL('https://www.google.com/maps/place/'+marker.vicinity.replace(/ /g, "+"))}><Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#A79A84', borderRadius: 20}} onPress={() => {
+                                const address = marker.vicinity || marker.formatted_address;
+                                const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
+                                Linking.openURL(url);}}>
+                                    <Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>
                         }
                         {
                             markers.length/2 < index &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#57658E', borderRadius: 20}} onPress={() => Linking.openURL('https://www.google.com/maps/place/'+marker.vicinity.replace(/ /g, "+"))}><Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>
-                        }
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#57658E', borderRadius: 20}} onPress={() => {
+                                const address = marker.vicinity || marker.formatted_address;
+                                const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
+                                Linking.openURL(url);}}>
+                                    <Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>}
                     </View> 
                     }
                 </TouchableOpacity>
