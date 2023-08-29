@@ -27,7 +27,6 @@ const CreateMosque = ({navigation, route,}) => {
         uploadBytes(storageRef, image).then((snapshot) => {
             console.log('Uploaded a blob or file!');
         });
-
         setWhatsAppInvite('')
         setFacebookLink('')
         setYouTubeLink('')
@@ -62,10 +61,6 @@ const CreateMosque = ({navigation, route,}) => {
             console.log(blob.size, blob.type);
             //Uploads it to storage
             setImage(blob);
-            const storageRef = ref(FIREBASE_STORAGE, 'images/masjids/' + uid + "/" + Date.now())
-            uploadBytes(storageRef, blob).then((snapshot) => {
-                console.log('Uploaded a blob or file!');
-            });
         }
         console.log('blob')
         console.log(image)
