@@ -177,7 +177,8 @@ const Map = ({ navigation, route}) => {
                     onMarkerPress(marker.geometry.location.lat, marker.geometry.location.lng);
                     setMasjidID(null)
                     setExpanded(expanded === index ? null : index); // Toggle expanded state
-                    await masjidExistsInDatabase(marker.vicinity)
+                    console.log(marker[0])
+                    await masjidExistsInDatabase(marker.vicinity || marker.formatted_address)
                     }}
                 >
                     <Text style={[styles.nameText, {fontWeight: 'bold'}]}>{marker.name}</Text>
@@ -192,7 +193,7 @@ const Map = ({ navigation, route}) => {
                         }
                         {
                             masjidId === null &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('CreateMosque', {uid: uid, address: marker.vicinity, name: marker.name})}><Text style={styles.nameText}>Create this Mosque</Text></TouchableOpacity>
+                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('CreateMosque', {uid: uid, address: marker.vicinity || marker.formatted_address, name: marker.name})}><Text style={styles.nameText}>Create this Mosque</Text></TouchableOpacity>
                         }
                         {
                             markers.length/2 >= index &&

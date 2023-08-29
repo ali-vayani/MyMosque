@@ -1,9 +1,13 @@
 import {View, Text, Button, StyleSheet, Image, ScrollView , KeyboardAvoidingView, Platform, TextInput} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
-import { FIRESTORE_DB } from '../../firebaseConfig';
+import { FIRESTORE_DB, FIREBASE_STORAGE } from '../../firebaseConfig';
 import { addDoc, collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore'
+import { ref, uploadBytes, getDownloadURL, listAll } from "firebase/storage";
 import { useState } from 'react';
 import DatePicker from 'react-native-datepicker';
+import * as ImagePicker from 'expo-image-picker';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
 const CreateMosque = ({navigation, route,}) => {
     const { uid, address, name } = route.params;
     const [annoucnment,   setMasjidAnnouncment] = useState('');
@@ -14,9 +18,16 @@ const CreateMosque = ({navigation, route,}) => {
     const [whatsAppInvite, setWhatsAppInvite] = useState('');
     const [facebookLink, setFacebookLink] = useState('');
     const [youTubeLink, setYouTubeLink] = useState('');
+    const [image, setImage] = useState(null);
 
     const createMosque = async () => {
         const doc = await addDoc(collection(FIRESTORE_DB, 'masjids'), {name: name, address: address, annoucnment: annoucnment, website: masjidWebsite, email: masjidEmail, prayerTimes: prayerTimes, whatsAppInvite: whatsAppInvite, facebookLink: facebookLink, youTubeLink: youTubeLink})
+        
+        const storageRef = ref(FIREBASE_STORAGE, 'images/masjids/' + doc.id + "/" + Date.now())
+        uploadBytes(storageRef, image).then((snapshot) => {
+            console.log('Uploaded a blob or file!');
+        });
+
         setWhatsAppInvite('')
         setFacebookLink('')
         setYouTubeLink('')
@@ -24,8 +35,42 @@ const CreateMosque = ({navigation, route,}) => {
         setMasjidWebsite('')
         setMasjidEmail('')
         setPrayerTimes(["", "", "", "", ""])
+
+
         navigation.navigate('Mosque', {masjidId: doc.id, uid: uid})
+
+
     }
+
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+
+            //Translates uri to blob
+            const response = await fetch(result.assets[0].uri);
+            const blob = await response.blob();
+            console.log(blob.size, blob.type);
+            //Uploads it to storage
+            setImage(blob);
+            const storageRef = ref(FIREBASE_STORAGE, 'images/masjids/' + uid + "/" + Date.now())
+            uploadBytes(storageRef, blob).then((snapshot) => {
+                console.log('Uploaded a blob or file!');
+            });
+        }
+        console.log('blob')
+        console.log(image)
+    };
+
     const handleInputChange = (index, newValue) => {
         const newPrayerTimes = [...prayerTimes];
         newPrayerTimes[index] = newValue;
@@ -57,10 +102,11 @@ const CreateMosque = ({navigation, route,}) => {
             }}/>
             <ScrollView style={{width: '100%', flex: 1,}}>
                 <View style={styles.content}>
-                    <View style={styles.image}>
+                    <TouchableOpacity style={styles.image} onPress={pickImage}>
+                        <Text style={[styles.mainText, {position: 'absolute', top: 100, right: 100}]}> Tap To Add Image </Text>
                         <Text style={styles.mainText}>{ name }</Text>
                         <Text style={styles.minorText}> { address } </Text>
-                    </View>
+                    </TouchableOpacity>
                     <View style={styles.contentBlock}>
                         <Text style={styles.mainText}>Announcments</Text>
                         <View style={styles.announcmentInfo}>
