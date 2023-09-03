@@ -10,7 +10,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const CreateMosque = ({navigation, route,}) => {
     const { uid, address, name } = route.params;
-    const [annoucnment,   setMasjidAnnouncment] = useState('');
+    const [announcement,   setMasjidAnnouncment] = useState('');
     const [masjidWebsite, setMasjidWebsite    ] = useState('');
     const [masjidEmail,   setMasjidEmail      ] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -21,7 +21,7 @@ const CreateMosque = ({navigation, route,}) => {
     const [image, setImage] = useState(null);
 
     const createMosque = async () => {
-        const doc = await addDoc(collection(FIRESTORE_DB, 'masjids'), {name: name, address: address, annoucnment: annoucnment, website: masjidWebsite, email: masjidEmail, prayerTimes: prayerTimes, whatsAppInvite: whatsAppInvite, facebookLink: facebookLink, youTubeLink: youTubeLink})
+        const doc = await addDoc(collection(FIRESTORE_DB, 'masjids'), {name: name, address: address, announcement: [announcement], website: masjidWebsite, email: masjidEmail, prayerTimes: prayerTimes, whatsAppInvite: whatsAppInvite, facebookLink: facebookLink, youTubeLink: youTubeLink})
         
         const storageRef = ref(FIREBASE_STORAGE, 'images/masjids/' + doc.id + "/" + Date.now())
         uploadBytes(storageRef, image).then((snapshot) => {
@@ -35,7 +35,7 @@ const CreateMosque = ({navigation, route,}) => {
         setMasjidEmail('')
         setPrayerTimes(["", "", "", "", ""])
 
-
+        navigation.navigate('Home', {uid: uid})
         navigation.navigate('Mosque', {masjidId: doc.id, uid: uid})
 
 
@@ -111,7 +111,7 @@ const CreateMosque = ({navigation, route,}) => {
                                 <Text style={styles.minorMinorText}>July 20th</Text>
                             </View>
                         </View>
-                        <TextInput style={[styles.minorText, styles.input]} placeholder={"Create Announcement (Optional)"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidAnnouncment(text)} value={annoucnment}/>
+                        <TextInput style={[styles.minorText, styles.input]} placeholder={"Create Announcement (Optional)"} placeholderTextColor={"rgba(255, 244, 210, .5)"} onChangeText={(text) => setMasjidAnnouncment(text)} value={announcement}/>
                     </View>
 
                     <View style={styles.contentBlock}>

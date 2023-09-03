@@ -1,7 +1,8 @@
 import {View, Text, Button, StyleSheet, Image, ImageBackground, FlatList, TouchableOpacity, Modal, ScrollView} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { FIRESTORE_DB } from '../../firebaseConfig';
+import { FIRESTORE_DB, FIREBASE_STORAGE } from '../../firebaseConfig';
+import { ref, uploadBytes, getDownloadURL, listAll } from "firebase/storage";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { Ionicons } from '@expo/vector-icons';
 import ViewPager from '@react-native-community/viewpager';
@@ -9,15 +10,17 @@ import ViewPager from '@react-native-community/viewpager';
 const Mosque = ({navigation, route}) => {
     let { masjidId, uid } = route.params;
     const [name, setName] = useState('');
-    const [announcments, setAnnouncments] = useState('');
+    const [announcments, setAnnouncements] = useState('');
     const [address, setAddress] = useState('');
     const [website, setWebsite] = useState('');
     const [isFavorite, setFavorite] = useState(false)
     const [isAdmin, setAdmin] = useState(false)
     const [showAnnouncementsModal, setShowAnnouncementsModal] = useState(false);
     const [allAnnouncements, setAllAnnouncements] = useState([]);
+    const [imageUrl, setImageUrl] = useState()
     let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
     let userRef = doc(FIRESTORE_DB, "users", uid.replace(/\s/g, ''));
+    const listRef = ref(FIREBASE_STORAGE, 'images/masjids/' + masjidId)
 
     useEffect(() => {
         getInfo()
@@ -37,10 +40,26 @@ const Mosque = ({navigation, route}) => {
         if(docSnap.data()["adminUid"] === uid)
             setAdmin(true);
         setName(docSnap.data()["name"])
-        setAnnouncments(docSnap.data()["announcment"][docSnap.data()["announcment"].length-1])
-        setAllAnnouncements(docSnap.data()["announcment"]);
+        setAnnouncements(docSnap.data()["announcement"][docSnap.data()["announcement"].length - 1]);
+        setAllAnnouncements(docSnap.data()["announcement"])
         setAddress(docSnap.data()["address"])
         setWebsite(docSnap.data()["website"])
+
+        console.log("list")
+        listAll(listRef)
+        .then((res) => {
+            console.log(res['items'])
+            res.items.forEach( async (itemRef) => {
+            const itemRefPath =  itemRef._location.path_;
+                getDownloadURL(ref(FIREBASE_STORAGE, itemRefPath)).then((url) => {
+                    setImageUrl(url)
+                    console.log(url);
+                })
+            });
+        
+        }).catch((error) => {
+            console.log(error)
+        });
     }
     const toggleFavorite = async () => {
         // Get current favMasjids of the user
@@ -89,8 +108,13 @@ const Mosque = ({navigation, route}) => {
 
                 
                 <View style={styles.image}>
-                    <Text style={styles.mainText}>{ name }</Text>
-                    <Text style={styles.minorText}> { address } </Text>
+                    <Image 
+                        source={{ uri: imageUrl }} 
+                        style={styles.masjidImage}
+                        resizeMode="cover"
+                    />
+                    <Text style={styles.mainText}>{name}</Text>
+                    <Text style={styles.minorText}>{address}</Text>
                 </View>
                 
                 <TouchableOpacity style={styles.contentBlock} onPress={() => setShowAnnouncementsModal(true)}>
@@ -202,7 +226,6 @@ const styles = StyleSheet.create({
     },
     contentBlock:{
         width: '100%',
-        height: '27%',
         backgroundColor: 'rgba(255, 244, 210, .1)',
         flexDirection: 'column',
         marginBottom: 20,
@@ -255,6 +278,10 @@ const styles = StyleSheet.create({
         borderRadius: 41.5,
         opacity: .1,
     },
+    masjidImage: {
+        width: '100%',
+        height: '100%',
+    },    
     modal:{
         width: '90%', 
         height: '70%', 
