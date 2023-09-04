@@ -45,21 +45,20 @@ const Mosque = ({navigation, route}) => {
         setAddress(docSnap.data()["address"])
         setWebsite(docSnap.data()["website"])
 
-        console.log("list")
         listAll(listRef)
-        .then((res) => {
-            console.log(res['items'])
-            res.items.forEach( async (itemRef) => {
-            const itemRefPath =  itemRef._location.path_;
-                getDownloadURL(ref(FIREBASE_STORAGE, itemRefPath)).then((url) => {
-                    setImageUrl(url)
-                    console.log(url);
-                })
+            .then((res) => {
+                console.log(res['items'])
+                res.items.forEach( async (itemRef) => {
+                const itemRefPath =  itemRef._location.path_;
+                    getDownloadURL(ref(FIREBASE_STORAGE, itemRefPath)).then((url) => {
+                        setImageUrl(url)
+                        console.log(url);
+                    })
+                });
+            
+            }).catch((error) => {
+                console.log(error)
             });
-        
-        }).catch((error) => {
-            console.log(error)
-        });
     }
     const toggleFavorite = async () => {
         // Get current favMasjids of the user
@@ -113,8 +112,11 @@ const Mosque = ({navigation, route}) => {
                         style={styles.masjidImage}
                         resizeMode="cover"
                     />
-                    <Text style={styles.mainText}>{name}</Text>
-                    <Text style={styles.minorText}>{address}</Text>
+                    <View style={{paddingBottom: 15,paddingLeft: 10}}>
+                        <Text style={[styles.mainText, {textShadowColor: 'rgba(0, 0, 0, 0.5)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 3,}]}>{name}</Text>
+                        <Text style={[styles.minorText, {textShadowColor: 'rgba(0, 0, 0, 0.5)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 3,}]}>{address}</Text>
+                    </View>
+
                 </View>
                 
                 <TouchableOpacity style={styles.contentBlock} onPress={() => setShowAnnouncementsModal(true)}>
@@ -217,8 +219,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: 'black',
         justifyContent: 'flex-end',
-        paddingBottom: 15,
-        paddingLeft: 10,
         marginBottom: 25,
         shadowColor: 'black',
         shadowOpacity: 1,
@@ -281,6 +281,8 @@ const styles = StyleSheet.create({
     masjidImage: {
         width: '100%',
         height: '100%',
+        position: 'absolute',
+        flex: 1,
     },    
     modal:{
         width: '90%', 

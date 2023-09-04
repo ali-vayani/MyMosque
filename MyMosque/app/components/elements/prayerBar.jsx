@@ -98,6 +98,8 @@ const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
                         / 
                         ((nextPrayerDate.getHours()* 60 + (nextPrayerDate.getMinutes())) + (lastPrayerTime.getHours()* 60 + (lastPrayerTime.getMinutes()))));
                 }
+                if(percentage < .14)
+                    setPercentage(.14)
             }
         };
 
@@ -143,17 +145,17 @@ const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
     }
 })
 
-  return (
-    <View style={styles.content}>
-        <View style={styles.textArea}>
-            <Text style={styles.nextPrayerText}>{nextPrayer}</Text>
-            <Text style={styles.timeText}>{timeRemaining}</Text>
+    return (
+        <View style={styles.content}>
+            <View style={styles.textArea}>
+                <Text style={styles.nextPrayerText}>{nextPrayer}</Text>
+                <Text style={styles.timeText}>{timeRemaining}</Text>
+            </View>
+            <View style={styles.progressBar}>
+                <View style={styles.progressBarDone}></View>
+            </View>
         </View>
-        <View style={styles.progressBar}>
-            <View style={styles.progressBarDone}></View>
-        </View>
-    </View>
-  )
+    )
 };
 
 

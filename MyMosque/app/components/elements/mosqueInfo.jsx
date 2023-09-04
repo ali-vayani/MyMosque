@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Button, TouchableWithoutFeedback  } from 'react-native';
-import { FIRESTORE_DB } from '../../../firebaseConfig';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Button, TouchableWithoutFeedback, Image  } from 'react-native';
+import { FIRESTORE_DB, FIREBASE_STORAGE } from '../../../firebaseConfig';
+import { ref, uploadBytes, getDownloadURL, listAll } from "firebase/storage";
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { doc, getDoc } from "firebase/firestore";
 
@@ -8,6 +9,8 @@ const MosqueInfo = ({ navigation, masjidId, uid }) => {
   const [name, setName] = useState('');
   const [announcements, setAnnouncements] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [imageUrl, setImageUrl] = useState()
+  const listRef = ref(FIREBASE_STORAGE, 'images/masjids/' + masjidId)
   let docRef;
   if (masjidId && masjidId.length > 0) {
     masjidId = masjidId.replace(/\s/g, '');
@@ -24,15 +27,38 @@ const MosqueInfo = ({ navigation, masjidId, uid }) => {
     if (!docRef) return;
     const docSnap = await getDoc(docRef);
     setName(docSnap.data()["name"]);
-    setAnnouncements(docSnap.data()["announcment"][(docSnap.data()["announcment"].length)-1]);
+    setAnnouncements(docSnap.data()["announcement"][(docSnap.data()["announcement"].length)-1]);
+
+    listAll(listRef)
+    .then((res) => {
+        console.log(res['items'])
+        res.items.forEach( async (itemRef) => {
+        const itemRefPath =  itemRef._location.path_;
+            getDownloadURL(ref(FIREBASE_STORAGE, itemRefPath)).then((url) => {
+                setImageUrl(url)
+                console.log(url);
+            })
+        });
+    
+    }).catch((error) => {
+        console.log(error)
+    });
   }
 
   if(docRef) {
     return (
       <TouchableOpacity style={styles.content} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId, uid: uid})}>
-        <Text style={styles.mainText}> { name } </Text>
-        <Text style={styles.subheadingText}> Announcements </Text>
-        <Text style={styles.minorText}> { announcements.length > 200 ? announcements.substring(0, 200) + "..." : announcements} </Text>
+        <Image 
+          source={{ uri: imageUrl }} 
+          style={styles.masjidImage}
+          resizeMode="cover"
+        />
+        <View style={{paddingVertical: '5%', paddingHorizontal: '3%',}}>
+          <Text style={[styles.mainText, {textShadowColor: 'rgba(0, 0, 0, 0.5)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 3,}]}> { name } </Text>
+          <Text style={[styles.subheadingText, {textShadowColor: 'rgba(0, 0, 0, 0.5)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 3,}]}> Announcements </Text>
+          <Text style={[styles.minorText, {textShadowColor: 'rgba(0, 0, 0, 0.5)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 3,}]}> { announcements.length > 200 ? announcements.substring(0, 200) + "..." : announcements} </Text>
+        </View>
+        
       </TouchableOpacity>
     );
   } else {
@@ -80,10 +106,14 @@ minorText: {
   color: '#FFF4D2',
   marginHorizontal: 3
 },
-    
+masjidImage: {
+  width: '100%',
+  height: '100%',
+  position: 'absolute',
+  flex: 1,
+  borderRadius: 20, 
+},     
 content: {
-    paddingVertical: '5%',
-    paddingHorizontal: '3%',
     width: '100%',
     height: 150,
     flexDirection: 'column',
