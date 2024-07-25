@@ -8,6 +8,7 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
     const [time, setTime] = useState('14 min 20 sec')
     const [prayerAndTime, setPrayerAndTime] = useState([]);
     const [militaryPrayerAndTime, setMilitaryPrayerAndTime] = useState([])
+    
         // useEffect(() => {
         //     getPrayerTimes(32.508515, -97.1254872, 8, 2023, 2);
         // }, [])
@@ -86,7 +87,7 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
         />
         <View style={styles.content}>
             <Text style={styles.mainText}> Prayer Times </Text>
-            <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28} prayerAndTime={militaryPrayerAndTime}/>
+            <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28} prayerAndTime={militaryPrayerAndTime} height={30}/>
             <Location location={'Keller, TX'} setTime={setTime} uid={uid}/>
         </View>
         </TouchableOpacity>

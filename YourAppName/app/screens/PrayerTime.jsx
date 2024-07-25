@@ -3,10 +3,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import PrayerBar from '../components/elements/PrayerBar';
 import Location from '../components/elements/Location';
+import PrayerToken from '../components/elements/PrayerToken';
+
 const PrayerTimes = ({navigation, route}) => {
     const { prayerAndTime, militaryPrayerAndTime, uid } = route.params;
     const [masjidPrayerTimes, setMasjidPrayerTimes] = useState('LocalTime')
-    console.log(masjidPrayerTimes)
     const prayersOrder = ['Fajr', 'Dhuhur', 'Asr', 'Maghrib', 'Isha'];
 
 
@@ -30,23 +31,32 @@ const PrayerTimes = ({navigation, route}) => {
             <View style={styles.content}>
                 <Text style={styles.mainText }>Mhrm. 1, 1445 AH</Text>
                 <View style={styles.prayerBar}>
-                    <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={militaryPrayerAndTime} />
+                    <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={militaryPrayerAndTime} height={20}/>
                 </View>
                 <View style={styles.prayerArea}>
                     { masjidPrayerTimes === "LocalTime"  && prayerAndTime.map((specificPrayer, index) => (
+
+                        (specificPrayer[0] != "Sunset" && specificPrayer[0] != "Sunrise") && 
+
                         <View key={index} style={styles.prayerAndTime}>
-                            <Text style={styles.text}>{specificPrayer[0]}</Text>
-                            <Text style={styles.text}>{specificPrayer[1]}</Text>
+                            {(specificPrayer[0] == "Maghrib") &&
+                                (<PrayerToken prayer={specificPrayer[0]} prayerTime={specificPrayer[1]} currentPrayer={true}/> )}
+                            {(specificPrayer[0] != "Maghrib") &&
+                                (<PrayerToken prayer={specificPrayer[0]} prayerTime={specificPrayer[1]} currentPrayer={false}/> )}
                         </View>
                     ))}
                     { masjidPrayerTimes !== undefined && (masjidPrayerTimes.length === 1 && prayersOrder.map((prayer, index) => (
                         <View key={index} style={styles.prayerAndTime}>
-                            <Text style={styles.text}>{prayer}</Text>
-                            <Text style={styles.text}>{masjidPrayerTimes[0][prayer]}</Text>
+                            {/* <Text style={styles.text}>{prayer}</Text>
+                            <Text style={styles.text}>{masjidPrayerTimes[0][prayer]}</Text> */}
+                            <PrayerToken prayer={prayer} prayerTime={masjidPrayerTimes[0][prayer]}/>
                         </View>
                     )))}
                 </View>
-                <Location location={'Keller, TX'} uid={uid} setMasjidPrayerTimes={setMasjidPrayerTimes}/>
+                <View className="absolute bottom-10 left-7">
+                    <Location location={'Keller, TX'} uid={uid} setMasjidPrayerTimes={setMasjidPrayerTimes}/>
+                </View>
+                
             </View>
         </View>
     )
@@ -84,13 +94,13 @@ const styles = StyleSheet.create({
         fontSize: 32,
         fontWeight: 'bold',
         color: '#F2EFFB',
-        marginTop: '15%',
+        marginTop: '7%',
         marginBottom: '7%'
 
     },
     prayerAndTime:{
         width: '100%',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
     },

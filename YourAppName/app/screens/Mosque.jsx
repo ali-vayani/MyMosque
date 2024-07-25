@@ -47,12 +47,10 @@ const Mosque = ({navigation, route}) => {
 
         listAll(listRef)
             .then((res) => {
-                console.log(res['items'])
                 res.items.forEach( async (itemRef) => {
                 const itemRefPath =  itemRef._location.path_;
                     getDownloadURL(ref(FIREBASE_STORAGE, itemRefPath)).then((url) => {
                         setImageUrl(url)
-                        console.log(url);
                     })
                 });
             

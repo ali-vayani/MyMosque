@@ -12,7 +12,6 @@ import { async } from '@firebase/util';
 
 const Map = ({ navigation, route}) => {
     const { uid } = route.params;
-    console.log(uid)
     const [location, setLocation] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [value, setValue] = useState();
@@ -46,13 +45,10 @@ const Map = ({ navigation, route}) => {
 
     const masjidExistsInDatabase = async (address) => {
         try {
-            console.log(address)
             const getMasjidWithAddress = query(collection(FIRESTORE_DB, "masjids"), where("address", "==", address));
             const querySnapshot = await getDocs(getMasjidWithAddress);
-            console.log(querySnapshot.docs)
             querySnapshot.forEach((doc) => {
                 setMasjidID(doc.id);
-                console.log(doc.id, " => ", doc.data());
             });
         } catch (error) {
             console.error("An error occurred:", error);
@@ -72,7 +68,6 @@ const Map = ({ navigation, route}) => {
         try {
             const response = await fetch(url);
             const data = await response.json();
-            console.log(data.results[0]['formatted_address'])
             if (data.results) {
                 // Add distance property to each result
                 const resultsWithDistance = data.results.map(result => ({
@@ -85,7 +80,6 @@ const Map = ({ navigation, route}) => {
 
                 // Sort by distance
                 resultsWithDistance.sort((a, b) => a.distance - b.distance);
-                console.log(markers)
                 setMarkers(resultsWithDistance);
             }
             // ...
@@ -177,7 +171,6 @@ const Map = ({ navigation, route}) => {
                     onMarkerPress(marker.geometry.location.lat, marker.geometry.location.lng);
                     setMasjidID(null)
                     setExpanded(expanded === index ? null : index); // Toggle expanded state
-                    console.log(marker[0])
                     await masjidExistsInDatabase(marker.vicinity || marker.formatted_address)
                     }}
                 >

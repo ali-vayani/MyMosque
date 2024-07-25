@@ -12,17 +12,14 @@ const SignIn = ({navigation}) => {
     const [email, setEmail] = useState('test2@gmail.com')
     
     const signIn = async (email, password) => {
-        console.log(email + password);
         try {
             const userCredential = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
     
             // Signed in
             const user = userCredential.user;
             const uid = user.uid;
-            console.log(uid)
             const docRef = doc(FIRESTORE_DB, "users", uid);
             const docSnap = await getDoc(docRef);
-            //console.log(docSnap.data()["favMasjid1"])
             navigation.navigate('Home', {uid: uid});
         } catch (error) {
             const errorCode = error.code;

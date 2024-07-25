@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { isBrowserExtension } from '@firebase/util';
-const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
+const PrayerBar = ({ timeTillNext, size, prayerAndTime, height,}) => {
     const [nextPrayer, setNextPrayer] = useState('');
     const [timeRemaining, setTimeRemaining] = useState('');
     const [percentage, setPercentage] = useState(0);
@@ -50,8 +50,6 @@ const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
                     iWroteBadCode.setMinutes(59);
                     iWroteBadCode.setHours(23);
                     iWroteBadCode.setSeconds(59);
-                    console.log((iWroteBadCode - now) )
-                    console.log(((nextPrayerDate.getHours() * 60 * 1000)) + (nextPrayerDate.getMinutes() * 1000))
                     differenceInMilliseconds = ((iWroteBadCode - now) + (((nextPrayerDate.getHours() * 60 * 1000)) + (nextPrayerDate.getMinutes() * 1000)));
                     differenceInHours = Math.floor(differenceInMilliseconds / (1000 * 60 * 60));
                     differenceInMinutes = Math.floor((differenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
@@ -126,7 +124,7 @@ const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
     },
     progressBar:{
         width: '90%',
-        height: 30,
+        height: height,
         backgroundColor: 'rgba(242, 239, 251, .5)', 
         borderRadius: 15,
     },

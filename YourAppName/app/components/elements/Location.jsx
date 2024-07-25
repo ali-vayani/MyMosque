@@ -45,7 +45,7 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes }) => {
     return (
     <View style={styles.wrapper}>
         <TouchableOpacity style={styles.content} onPress={() => setIsOpen(!isOpen)}>
-            <Ionicons name="navigate-outline" size={25} color={'#F2EFFB'}/>
+            <Ionicons name="navigate" size={25} color={'#F2EFFB'}/>
             <Text style={styles.locationText}> {text} </Text>
         </TouchableOpacity>
 
