@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "YourAppName",
-    "slug": "YourAppName",
+    "name": "MyMosque",
+    "slug": "MyMosque",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,12 +12,18 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      }, 
+      "config": {
+        "googleMapsApiKey": "AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c"
       }
     },
     "web": {

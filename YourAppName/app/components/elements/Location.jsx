@@ -45,7 +45,7 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes }) => {
     return (
     <View style={styles.wrapper}>
         <TouchableOpacity style={styles.content} onPress={() => setIsOpen(!isOpen)}>
-            <Ionicons name="navigate-outline" size={25} color={'#FFF4D2'}/>
+            <Ionicons name="navigate-outline" size={25} color={'#F2EFFB'}/>
             <Text style={styles.locationText}> {text} </Text>
         </TouchableOpacity>
 
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     },
     locationText: {
         fontSize: 20,
-        color: '#FFF4D2', 
+        color: '#F2EFFB', 
         marginHorizontal: '1%'
     },    
     content: {
@@ -109,11 +109,11 @@ const styles = StyleSheet.create({
     },
     listItem: {
         borderBottomWidth: 1,
-        borderBottomColor: '#FFF4D2',
+        borderBottomColor: '#F2EFFB',
     },
     dropdownText: {
         fontSize: 18,
-        color: '#FFF4D2',
+        color: '#F2EFFB',
         padding: 10,
     }
 });

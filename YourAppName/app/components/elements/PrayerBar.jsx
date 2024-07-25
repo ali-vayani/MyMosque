@@ -33,7 +33,6 @@ const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
             {
                 if(nextPrayerIndex !== 0)
                 {
-                    // console.log(prayerAndTime[nextPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number)[1])
                     const [hour, min] = prayerAndTime[nextPrayerIndex][1].replace(/[^\d:]/g, '').split(':').map(Number);
                     nextPrayerDate = new Date();
                     nextPrayerDate.setMinutes(min);
@@ -117,24 +116,24 @@ const PrayerBar = ({ timeTillNext, size, prayerAndTime}) => {
     },
     nextPrayerText:{
         fontSize: size,
-        color: '#FFF4D2', 
-        fontWeight: 'bold'
+        color: '#F2EFFB', 
+        fontWeight: 'bold',
     },
     timeText:{
         fontSize: 20,
-        color: '#FFF4D2', 
+        color: '#F2EFFB', 
         fontWeight: 'bold'
     },
     progressBar:{
         width: '90%',
         height: 30,
-        backgroundColor: 'rgba(255, 244, 210, .5)', 
+        backgroundColor: 'rgba(242, 239, 251, .5)', 
         borderRadius: 15,
     },
     progressBarDone:{
         width: `${percentage*100}%`,
         height: '100%',
-        backgroundColor: '#FFF4D2', 
+        backgroundColor: '#F2EFFB', 
         borderRadius: 15,
     },
     textArea: {

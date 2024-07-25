@@ -1,4 +1,4 @@
-import {View, Text, Button, StyleSheet, TextInput, FlatList, TouchableOpacity} from 'react-native'
+import {View, Image, Button, StyleSheet, TextInput, FlatList, TouchableOpacity} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
@@ -6,7 +6,6 @@ import PrayerTimesWidget from '../components/widgets/PrayerTimesWidget';
 import SearchWidget from '../components/widgets/SearchWidget';
 import MyMosqueWidget from '../components/widgets/MyMosquesWidget';
 import { useState, useEffect  } from 'react';
-
 const Home = ({navigation, route}) => {
     const { uid } = route.params;
     const docRef = doc(FIRESTORE_DB, "users", uid);
@@ -26,13 +25,25 @@ const Home = ({navigation, route}) => {
     }
     return(
         <View style={styles.page}>
+
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
                 <PrayerTimesWidget navigation={navigation} uid={uid}/>
                 <SearchWidget navigation={navigation} uid={uid}/>
                 <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid}/>
             </View>
-
+            <Image 
+            source={require('../../assets/Random3.png')} 
+            style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            opacity: .05,
+            zIndex:-1
+            }}
+        />
         </View>
     )
 }
@@ -49,7 +60,8 @@ const styles = StyleSheet.create({
     background:{
         width: '100%',
         height: '100%',
-        position: 'absolute'
+        position: 'absolute',
+        zIndex:-2,
     },
     content: {
         width: '100%',
@@ -57,4 +69,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: '2%',
     },
+    
 })
