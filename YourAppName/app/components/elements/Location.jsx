@@ -1,3 +1,6 @@
+// 1 Firebase Function
+// 1 Redesign
+
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../../firebaseConfig';
@@ -10,26 +13,28 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes }) => {
     const [text, setText] = useState('Your Location')
 
     useEffect(() => {
-    async function fetchFavMasjids() {
-        try {
-            let userRef = doc(FIRESTORE_DB, "users", uid.replace(/\s/g, ''));
-            const userDocSnap = await getDoc(userRef);
-            const favMasjids = userDocSnap.data()["favMasjids"];
-            
-            let names = [];
-            for (let masjidId of favMasjids) {
-                let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
-                const docSnap = await getDoc(docRef);
-                names.push({ name: docSnap.data()["name"], id: masjidId });
+        async function fetchFavMasjids() {
+            try {
+                let userRef = doc(FIRESTORE_DB, "users", uid.replace(/\s/g, ''));
+                const userDocSnap = await getDoc(userRef);
+                const favMasjids = userDocSnap.data()["favMasjids"];
+                
+                let names = [];
+                for (let masjidId of favMasjids) {
+                    let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
+                    const docSnap = await getDoc(docRef);
+                    names.push({ name: docSnap.data()["name"], id: masjidId });
+                }
+                setFavMasjidsNames(names);
+            } catch (error) {
+                console.error("Error fetching favorite Masjids: ", error);
             }
-            setFavMasjidsNames(names);
-        } catch (error) {
-            console.error("Error fetching favorite Masjids: ", error);
-        }
     }
 
     fetchFavMasjids();
     }, [uid]);
+
+    // Gets Masjid Prayer Times & Sets flatlist to close
     const handlePress = async (masjidId) => {
         try {
             let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
@@ -51,8 +56,11 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes }) => {
 
         {isOpen && (
                 <View style={styles.dropdownContainer}>
+
+                    {/* This Flatlist is very ugly, redesign and reimplement*/}
+
                     <FlatList
-                        data={['Your Location', ...favMasjidsNames]} // Add "Your Location" to the beginning of the list
+                        data={['Your Location', ...favMasjidsNames]}
                         keyExtractor={(item) => item.name || item}
                         renderItem={({ item }) => (
                             <TouchableOpacity 
@@ -94,16 +102,16 @@ const styles = StyleSheet.create({
     },
     dropdownContainer: {
         position: 'absolute',
-        top: 35, // Adjust based on the size of the icon and text
+        top: 35, 
         left: 0,
         right: 0,
         backgroundColor: 'rgb(103, 81, 154)',
         borderRadius: 5,
-        elevation: 5, // For shadow on Android
-        shadowColor: '#000', // For shadow on iOS
-        shadowOffset: { width: 0, height: 5 }, // For shadow on iOS
-        shadowOpacity: 0.3, // For shadow on iOS
-        shadowRadius: 5, // For shadow on iOS
+        elevation: 5, 
+        shadowColor: '#000', 
+        shadowOffset: { width: 0, height: 5 }, 
+        shadowOpacity: 0.3, 
+        shadowRadius: 5, 
         width: 150,
         paddingVertical: 3
     },

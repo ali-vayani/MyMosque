@@ -1,3 +1,6 @@
+// 1 Firebase Function
+// Probs needa remake this widget 
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Button, TouchableWithoutFeedback, Image  } from 'react-native';
 import { FIRESTORE_DB, FIREBASE_STORAGE } from '../../../firebaseConfig';
@@ -23,6 +26,7 @@ const MosqueInfo = ({ navigation, masjidId, uid }) => {
         }
     }, [docRef]);
 
+    // Gets All Masjid Information
     const getInfo = async () => {
         if (!docRef) return;
         const docSnap = await getDoc(docRef);
