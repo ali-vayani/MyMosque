@@ -32,18 +32,6 @@ const Home = ({navigation, route}) => {
                 <SearchWidget navigation={navigation} uid={uid}/>
                 <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid}/>
             </View>
-            <Image 
-            source={require('../../assets/Random3.png')} 
-            style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            opacity: .05,
-            zIndex:-1
-            }}
-        />
         </View>
     )
 }

@@ -8,7 +8,7 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
     return (
         <View style={styles.widget}>
         <Image 
-            source={require('../../../assets/Random3.png')} 
+            source={require('../../../assets/feedBg.png')} 
             style={{
             width: '100%',
             height: '100%',
@@ -16,7 +16,7 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
             top: 0,
             left: 0,
             borderRadius: 41.5,
-            opacity: .1,
+            opacity: .25,
             }}
         />
         <View style={styles.content}>
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     mainText: {
         fontSize: 32,
         fontWeight: 'bold',
-        color: '#FFF4D2',
+        color: '#EBFEEA',
     },
     content: {
         paddingTop: '10%',

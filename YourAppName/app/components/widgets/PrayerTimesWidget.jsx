@@ -74,7 +74,7 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
         <TouchableOpacity style={styles.widget} onPress={() => navigation.navigate('PrayerTimes', {prayerAndTime: prayerAndTime, militaryPrayerAndTime: militaryPrayerAndTime, uid: uid})}>
         {/* <View style={{backgroundImage: require('C:/Users/aliva/Desktop/MyMosquefr/MyMosque/assets/images/1.jpg'), position: 'absolute', top: 0, bottom: 0, left:0, right:0, borderRadius: 41.5}} /> */}
         <Image 
-            source={require('../../../assets/Random3.png')} 
+            source={require('../../../assets/prayerBg.png')} 
             style={{
             width: '100%',
             height: '100%',
@@ -82,7 +82,7 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
             top: 0,
             left: 0,
             borderRadius: 41.5,
-            opacity: .1,
+            opacity: .2,
             }}
         />
         <View style={styles.content}>
@@ -109,7 +109,8 @@ const styles = StyleSheet.create({
     mainText: {
         fontSize: 32,
         fontWeight: 'bold',
-        color: '#FFF4D2',
+        color: '#F2EFFB',
+        marginTop: 10,
     },
     content: {
         paddingTop: '10%',

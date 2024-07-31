@@ -28,7 +28,7 @@ const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value, uid
         },
         textarea: {
             borderColor: 'rgba(0,0,0,0)',
-            color: '#FFF4D2',
+            color: '#E6E8EC',
             fontSize: 24,
             marginHorizontal: '3%'
         }
@@ -40,8 +40,8 @@ const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value, uid
         };
         return (
             <View style={[styles.widget]} >
-            <Image 
-                    source={require('../../../assets/Random3.png')} 
+                <Image 
+                    source={require('../../../assets/searchBg.png')} 
                     style={{
                     width: '100%',
                     height: '100%',
@@ -49,7 +49,7 @@ const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value, uid
                     top: 0,
                     left: 0,
                     borderRadius: 41.5,
-                    opacity: .1,
+                    opacity: .15,
                     }}
                 />
             {
@@ -57,7 +57,7 @@ const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value, uid
                 <TouchableOpacity style={{width:'100%', height:'100%', margin: 0}} onPress={() => navigation.navigate('Map', {uid: uid})}>
 
                 <View style={[styles.content]}>
-                    <Ionicons name="search-outline" size={36} color={'#FFF4D2'}/>
+                    <Ionicons name="search-outline" size={36} color={'#E6E8EC'}/>
                     <Text style={styles.textarea} >Search for a Mosque</Text>
                 </View>
                 </TouchableOpacity>
