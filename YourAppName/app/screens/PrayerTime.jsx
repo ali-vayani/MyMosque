@@ -1,3 +1,5 @@
+// make functionality where masjid id can be param and this page works
+
 import {View, Text, Button, StyleSheet, Image, FlatList, TouchableOpacity} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';

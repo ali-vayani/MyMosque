@@ -8,6 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { async } from '@firebase/util';
+import MapList from '../components/elements/MapList';
 
 
 const Map = ({ navigation, route}) => {
@@ -49,6 +50,7 @@ const Map = ({ navigation, route}) => {
             const querySnapshot = await getDocs(getMasjidWithAddress);
             querySnapshot.forEach((doc) => {
                 setMasjidID(doc.id);
+                return doc.id;
             });
         } catch (error) {
             console.error("An error occurred:", error);
@@ -157,55 +159,56 @@ const Map = ({ navigation, route}) => {
                 />
                 ))}
         </MapView>
-        <ScrollView style={styles.list}>
+        <ScrollView 
+            style={styles.list}
+            contentContainerStyle={{ justifyContent: 'center', alignItems: 'center'}}
+        >
             <LinearGradient colors={['#57658E', '#A79A84']} style={styles.background}/>
-            <Image 
-                source={require('../../assets/Random3.png')} 
-                style={styles.imageBg}
-            />
             {markers.map((marker, index) => (
-                <TouchableOpacity 
-                    key={index} 
-                    style={styles.listItem} 
-                    onPress={ async () => {
-                    onMarkerPress(marker.geometry.location.lat, marker.geometry.location.lng);
-                    setMasjidID(null)
-                    setExpanded(expanded === index ? null : index); // Toggle expanded state
-                    await masjidExistsInDatabase(marker.vicinity || marker.formatted_address)
-                    }}
-                >
-                    <Text style={[styles.nameText, {fontWeight: 'bold'}]}>{marker.name}</Text>
-                    <Text style={styles.nameText}>{marker.vicinity ?? marker.formatted_address}</Text>
-                    {
-                    expanded === index && 
-                    <View style={{flexDirection: 'row', gap: 15, marginVertical: '3%'}}>
+                
+                <MapList key={index} marker={marker} name={index}/>
+                // <TouchableOpacity 
+                //     key={index} 
+                //     style={styles.listItem} 
+                //     onPress={ async () => {
+                //     onMarkerPress(marker.geometry.location.lat, marker.geometry.location.lng);
+                //     setMasjidID(null)
+                //     setExpanded(expanded === index ? null : index); // Toggle expanded state
+                //     await masjidExistsInDatabase(marker.vicinity || marker.formatted_address)
+                //     }}
+                // >
+                //     <Text style={[styles.nameText, {fontWeight: 'bold'}]}>{marker.name}</Text>
+                //     <Text style={styles.nameText}>{marker.vicinity ?? marker.formatted_address}</Text>
+                //     {
+                //     expanded === index && 
+                //     <View style={{flexDirection: 'row', gap: 15, marginVertical: '3%'}}>
                         
-                        {
-                            masjidId !== null &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId, uid: uid})}><Text style={styles.nameText}>Learn More</Text></TouchableOpacity>
-                        }
-                        {
-                            masjidId === null &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('CreateMosque', {uid: uid, address: marker.vicinity || marker.formatted_address, name: marker.name})}><Text style={styles.nameText}>Create this Mosque</Text></TouchableOpacity>
-                        }
-                        {
-                            markers.length/2 >= index &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#A79A84', borderRadius: 20}} onPress={() => {
-                                const address = marker.vicinity || marker.formatted_address;
-                                const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
-                                Linking.openURL(url);}}>
-                                    <Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>
-                        }
-                        {
-                            markers.length/2 < index &&
-                            <TouchableOpacity style={{padding: '5%', backgroundColor: '#57658E', borderRadius: 20}} onPress={() => {
-                                const address = marker.vicinity || marker.formatted_address;
-                                const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
-                                Linking.openURL(url);}}>
-                                    <Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>}
-                    </View> 
-                    }
-                </TouchableOpacity>
+                //         {
+                //             masjidId !== null &&
+                //             <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('Mosque', {masjidId: masjidId, uid: uid})}><Text style={styles.nameText}>Learn More</Text></TouchableOpacity>
+                //         }
+                //         {
+                //             masjidId === null &&
+                //             <TouchableOpacity style={{padding: '5%', backgroundColor: '#679159', borderRadius: 20,}} onPress={() => navigation.navigate('CreateMosque', {uid: uid, address: marker.vicinity || marker.formatted_address, name: marker.name})}><Text style={styles.nameText}>Create this Mosque</Text></TouchableOpacity>
+                //         }
+                //         {
+                //             markers.length/2 >= index &&
+                //             <TouchableOpacity style={{padding: '5%', backgroundColor: '#A79A84', borderRadius: 20}} onPress={() => {
+                //                 const address = marker.vicinity || marker.formatted_address;
+                //                 const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
+                //                 Linking.openURL(url);}}>
+                //                     <Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>
+                //         }
+                //         {
+                //             markers.length/2 < index &&
+                //             <TouchableOpacity style={{padding: '5%', backgroundColor: '#57658E', borderRadius: 20}} onPress={() => {
+                //                 const address = marker.vicinity || marker.formatted_address;
+                //                 const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
+                //                 Linking.openURL(url);}}>
+                //                     <Text style={styles.nameText}>Get Directions</Text></TouchableOpacity>}
+                //     </View> 
+                //     }
+                // </TouchableOpacity>
             ))}
         </ScrollView>
         </View>
@@ -221,6 +224,7 @@ const Map = ({ navigation, route}) => {
     },
     list: {
         flex: 1,
+        marginTop: 200,
     },
     listItem: {
         padding: 10,
