@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 // Get all users
 router.get('/', async (req, res) => {
-    await dbConnect('DiscordCloneApp')
+    await dbConnect('MyMosque')
     try {
         const users = await User.find(); 
         res.json(users);
@@ -19,10 +19,10 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/create', async (req, res) => {
-    await dbConnect('DiscordCloneApp')
+    await dbConnect('MyMosque')
     // creates user and adds to db
     const newUser = new User({
-        userName: req.body.userName,
+        username: req.body.username,
     });
     try {
         // sends to DB
@@ -35,7 +35,7 @@ router.post('/create', async (req, res) => {
     }
 });
 router.post('/updateStatus', async (req, res) => {
-    await dbConnect('DiscordCloneApp')
+    await dbConnect('MyMosque')
     try {
         User.findByIdAndUpdate(
             req.body.userId,  // The _id of the document
@@ -53,12 +53,12 @@ router.post('/updateStatus', async (req, res) => {
         //mongoose.disconnect();
     }
 })
-router.post('/addFriend', async(req, res) => {
-    await dbConnect('DiscordCloneApp');
+router.post('/addMosque', async(req, res) => {
+    await dbConnect('MyMosque');
     try {
         User.findByIdAndUpdate(
             req.body.userId, 
-            { $push: { friends: req.body.friendId } },
+            { $push: { status: req.body.mosqueId } },
             { new: true}
         ).then(updatedUser => {
             console.log("Updated user:", updatedUser);
