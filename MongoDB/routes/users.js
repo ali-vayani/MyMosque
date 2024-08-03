@@ -18,11 +18,18 @@ router.get('/', async (req, res) => {
     }
 });
 
+/*
+* Creates User
+* Inputs: username, firebaseID, email
+*/
+
 router.post('/create', async (req, res) => {
     await dbConnect('MyMosque')
     // creates user and adds to db
     const newUser = new User({
         username: req.body.username,
+        email: req.body.email,
+        firebaseID: req.body.firebaseID,
     });
     try {
         // sends to DB
@@ -34,32 +41,19 @@ router.post('/create', async (req, res) => {
         mongoose.disconnect(); // Disconnect after the operation 
     }
 });
-router.post('/updateStatus', async (req, res) => {
-    await dbConnect('MyMosque')
-    try {
-        User.findByIdAndUpdate(
-            req.body.userId,  // The _id of the document
-            { $set: { status: req.body.userStatus } }, // Update operator
-            { new: true }
-        )
-        .then(updatedUser => {
-            console.log("Updated user:", updatedUser);
-            res.status(201).json(updatedUser);
-        })
-        .catch(err => console.error("Error updating user:", err));
-    } catch {
-        res.status(400).json({ message: err.message });
-    } finally {
-        //mongoose.disconnect();
-    }
-})
+
+
+/*
+* Adds Mosque To User's Follow List
+* Inputs: uid & mosque id
+*/
 router.post('/addMosque', async(req, res) => {
     await dbConnect('MyMosque');
     try {
         User.findByIdAndUpdate(
-            req.body.userId, 
-            { $push: { status: req.body.mosqueId } },
-            { new: true}
+            req.body.userId, // Find the right conversation
+            { $push: { mosquesFollowed: req.body.mosqueId}}, // Add to 'messages'
+            { new: true } // Return the updated document
         ).then(updatedUser => {
             console.log("Updated user:", updatedUser);
             res.status(201).json(updatedUser);
