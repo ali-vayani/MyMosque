@@ -2,15 +2,16 @@ const mongoose = require('mongoose');
 
 
 const userSchema = new mongoose.Schema({
+    _id: String,
     username: {
         type: String,
         required: true,
     },
-    firebaseID: {
-        type: String,
-        required: true,
-        unique: true
-    },
+    // firebaseID: {
+    //     type: String,
+    //     required: true,
+    //     unique: true
+    // },
     email: {
         type: String,
         required: true,
@@ -19,7 +20,7 @@ const userSchema = new mongoose.Schema({
     mosquesFollowed: [{
         type: String,
         required: true
-    }],
+    }, { _id: false }],
 }, { collection: 'Users' });
 
 

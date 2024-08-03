@@ -44,8 +44,9 @@ router.post('/create', async (req, res) => {
     const newUser = new User({
         username: req.body.username,
         email: req.body.email,
-        firebaseID: req.body.firebaseID,
+        _id: req.body.firebaseID,
     });
+    newUser
     try {
         // sends to DB
         const savedUser = await newUser.save();
@@ -75,8 +76,6 @@ router.post('/addMosque', async(req, res) => {
         }).catch(err => console.error("Error updating user:", err));
     } catch {
         res.status(400).json({message: err.message})
-    } finally {
-        mongoose.disconnect();
     }
 })
 
