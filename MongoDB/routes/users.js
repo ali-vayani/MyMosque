@@ -19,10 +19,25 @@ router.get('/', async (req, res) => {
 });
 
 /*
+* Gets User
+* Inputs: userId
+*/
+router.get('/getUser', async(req, res) => {
+    await dbConnect('MyMosque');
+    try {
+        const user = await User.findById(req.body.userId)
+        res.json(user)
+    } catch {
+        res.status(500).json({message: err.message})
+    } finally {
+        mongoose.disconnect();
+    }
+})
+
+/*
 * Creates User
 * Inputs: username, firebaseID, email
 */
-
 router.post('/create', async (req, res) => {
     await dbConnect('MyMosque')
     // creates user and adds to db
@@ -60,6 +75,8 @@ router.post('/addMosque', async(req, res) => {
         }).catch(err => console.error("Error updating user:", err));
     } catch {
         res.status(400).json({message: err.message})
+    } finally {
+        mongoose.disconnect();
     }
 })
 

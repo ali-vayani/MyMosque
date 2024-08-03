@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/users');
-const friendRoutes = require('./routes/friends');
+const mosqueRoute = require('./routes/mosques');
 const convoRoutes = require('./routes/conversations')
 const cors = require('cors');
 
@@ -14,7 +14,7 @@ app.use(cors());
 
 // Sets up routes
 app.use('/user', userRoutes)
-app.use('/friend', friendRoutes)
+app.use('/mosque', mosqueRoute)
 app.use('/convos', convoRoutes)
 
 app.listen(port, () => console.log(`Server listening on port ${port}`));
