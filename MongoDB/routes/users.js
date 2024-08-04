@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
 router.get('/getUser', async(req, res) => {
     await dbConnect('MyMosque');
     try {
-        const user = await User.findById(req.body.userId)
+        const user = await User.findById(req.query.userId)
         res.json(user)
     } catch {
         res.status(500).json({message: err.message})

@@ -1,28 +1,38 @@
-import {View, Image, Button, StyleSheet, TextInput, FlatList, TouchableOpacity} from 'react-native'
+import {View, StyleSheet} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
-import { FIRESTORE_DB } from '../../firebaseConfig';
-import { doc, getDoc } from "firebase/firestore";
 import PrayerTimesWidget from '../components/widgets/PrayerTimesWidget';
 import SearchWidget from '../components/widgets/SearchWidget';
 import MyMosqueWidget from '../components/widgets/MyMosquesWidget';
 import { useState, useEffect  } from 'react';
+import axios from "axios";
+
 const Home = ({navigation, route}) => {
     const { uid } = route.params;
-    const docRef = doc(FIRESTORE_DB, "users", uid);
     const [masjidId, setMasjidId] = useState([])
 
     useEffect(() => {
         getMasjidId()
     }, [])
-    const getMasjidId = async () => {
-        try{
-            const docSnap = await getDoc(docRef);
-            setMasjidId(docSnap.data()["favMasjids"]);
-        } catch {
-            setMasjidId(undefined);
-        }
+    
+    const getMasjidId = () =>{
+        const options = {
+            method: 'GET',
+            url: 'http://192.168.1.77:3000/user/getUser',
+            params: {userId: uid},
+            headers: {'Content-Type': 'application/json'}
+        };
+        
+        axios.request(options).then(function (response) {
+                console.log(response.data.mosquesFollowed);
+                setMasjidId(response.data.mosquesFollowed);
+            }).catch(function (error) {
+                console.error(error);
+        });
 
     }
+
+
+    
     return(
         <View style={styles.page}>
 
