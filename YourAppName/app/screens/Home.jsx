@@ -12,12 +12,13 @@ const Home = ({navigation, route}) => {
 
     useEffect(() => {
         getMasjidId()
+        console.log(uid)
     }, [])
     
     const getMasjidId = () =>{
         const options = {
             method: 'GET',
-            url: 'http://192.168.1.77:3000/user/getUser',
+            url: 'http://10.150.225.170:3000/user/getUser',
             params: {userId: uid},
             headers: {'Content-Type': 'application/json'}
         };

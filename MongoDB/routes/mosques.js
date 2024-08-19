@@ -51,6 +51,34 @@ router.get('/getPosts', async(req, res) => {
 })
 
 /*
+* Creates Post
+* Inputs: postInfo, mosqueId
+*/
+router.post('/post', async (req, res) => {
+    await dbConnect('MyMosque')
+
+    try {
+        const mosquePost = await Mosque.findByIdAndUpdate(
+            req.body.mosqueId, 
+            { $push: { posts: req.body.postInfo }}, 
+            { new: true }
+        );
+
+        if (!mosquePost) {
+            return res.status(404).json({ message: "Mosque not found" });
+        }
+
+        console.log("mosque post: ", mosquePost);
+        res.status(201).json(mosquePost);
+    } catch (err) {
+        console.error("Error updating prayers:", err);
+        res.status(400).json({ message: err.message });
+    } finally {
+        mongoose.disconnect();
+    }
+})
+
+/*
 * Creates Mosque
 * Inputs: username, address, prayer times
 */
