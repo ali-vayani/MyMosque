@@ -46,7 +46,6 @@ router.post('/create', async (req, res) => {
         email: req.body.email,
         _id: req.body.firebaseID,
     });
-    newUser
     try {
         // sends to DB
         const savedUser = await newUser.save();
