@@ -35,6 +35,22 @@ router.get('/getMosque', async(req, res) => {
 })
 
 /*
+* Gets Mosque Posts
+* Inputs: MosqueId
+*/
+router.get('/getPosts', async(req, res) => {
+    await dbConnect('MyMosque');
+    try {
+        const mosque = await Mosque.findById(req.body.mosqueId)
+        res.json(mosque.posts)
+    } catch {
+        res.status(500).json({message: err.message})
+    } finally {
+        mongoose.disconnect();
+    }
+})
+
+/*
 * Creates Mosque
 * Inputs: username, address, prayer times
 */
