@@ -5,7 +5,7 @@ import SearchWidget from '../components/widgets/SearchWidget';
 import MyMosqueWidget from '../components/widgets/MyMosquesWidget';
 import { useState, useEffect  } from 'react';
 import axios from "axios";
-
+import {IP_URL} from '@env'
 const Home = ({navigation, route}) => {
     const { uid } = route.params;
     const [masjidId, setMasjidId] = useState([])
@@ -18,7 +18,7 @@ const Home = ({navigation, route}) => {
     const getMasjidId = () =>{
         const options = {
             method: 'GET',
-            url: 'http://10.150.225.170:3000/user/getUser',
+            url: `${IP_URL}/user/getUser`,
             params: {userId: uid},
             headers: {'Content-Type': 'application/json'}
         };
