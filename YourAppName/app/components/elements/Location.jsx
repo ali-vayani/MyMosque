@@ -6,45 +6,70 @@ import { doc, getDoc } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../../firebaseConfig';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import {IP_URL} from '@env'
+import axios from "axios";
 
 const Location = ({ setTime, uid, setMasjidPrayerTimes }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [favMasjidIds, setFavMasjidsIds] = useState([]);
     const [favMasjidsNames, setFavMasjidsNames] = useState([]);
     const [text, setText] = useState('Your Location')
 
+    console.log("test")
+    console.log(uid)
     useEffect(() => {
         async function fetchFavMasjids() {
-            try {
-                let userRef = doc(FIRESTORE_DB, "users", uid.replace(/\s/g, ''));
-                const userDocSnap = await getDoc(userRef);
-                const favMasjids = userDocSnap.data()["favMasjids"];
-                
-                let names = [];
-                for (let masjidId of favMasjids) {
-                    let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
-                    const docSnap = await getDoc(docRef);
-                    names.push({ name: docSnap.data()["name"], id: masjidId });
+            console.log("test2")
+            const options = {
+                method: 'GET',
+                url: `${IP_URL}/user/getUser`,
+                params: {userId: uid},
+                headers: {'Content-Type': 'application/json'}
+            };
+            
+            axios.request(options).then(function (response) {
+                setFavMasjidsIds(response.data.mosquesFollowed);
+                console.log(response.data.mosquesFollowed)
+                }).catch(function (error) {
+                    console.error(error);
+            });
+            
+            console.log(favMasjidIds)
+
+            for(let id of favMasjidIds)
+            {
+                const options = {
+                    method: 'GET',
+                url: `${IP_URL}/mosque/getMosque`,
+                params: {mosqueId: id},
+                headers: {'Content-Type': 'application/json'}
                 }
-                setFavMasjidsNames(names);
-            } catch (error) {
-                console.error("Error fetching favorite Masjids: ", error);
+                axios.request(options).then(function (response) {
+                    console.log(response.data)
+                    setFavMasjidsNames(prevState => [...prevState, response.data.mosqueName])
+                }).catch(function (error) {
+                    console.error(error);
+                });
+                
             }
+
     }
 
     fetchFavMasjids();
-    }, [uid]);
+    }, []);
 
+    console.log(favMasjidIds)
     // Gets Masjid Prayer Times & Sets flatlist to close
     const handlePress = async (masjidId) => {
-        try {
-            let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
-            const docSnap = await getDoc(docRef);
-            setMasjidPrayerTimes(docSnap.data()["prayerTimes"]);
-            setIsOpen(false);
-        } catch (error) {
-            console.error("Error fetching prayer times: ", error);
-            setMasjidPrayerTimes(["n/a"])
-        }
+        // try {
+        //     let docRef = doc(FIRESTORE_DB, "masjids", masjidId.replace(/\s/g, ''));
+        //     const docSnap = await getDoc(docRef);
+        //     setMasjidPrayerTimes(docSnap.data()["prayerTimes"]);
+        //     setIsOpen(false);
+        // } catch (error) {
+        //     console.error("Error fetching prayer times: ", error);
+        //     setMasjidPrayerTimes(["n/a"])
+        // }
     };
 
     return (
@@ -102,7 +127,7 @@ const styles = StyleSheet.create({
     },
     dropdownContainer: {
         position: 'absolute',
-        top: 35, 
+        top: -150, 
         left: 0,
         right: 0,
         backgroundColor: 'rgb(103, 81, 154)',

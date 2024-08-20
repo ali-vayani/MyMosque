@@ -11,7 +11,6 @@ const PrayerTimes = ({navigation, route}) => {
     const { prayerAndTime, currentPrayer, uid } = route.params;
     const [masjidPrayerTimes, setMasjidPrayerTimes] = useState('LocalTime')
     const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-    (console.log(currentPrayer))
 
     function convertMilitaryTime(militaryTime) {
         // split into hours & mins
@@ -65,8 +64,8 @@ const PrayerTimes = ({navigation, route}) => {
                         </View>
                     )))}
                 </View>
-                <View className="absolute bottom-10 left-7">
-                    <Location location={'Keller, TX'} uid={uid} setMasjidPrayerTimes={setMasjidPrayerTimes}/>
+                <View style={styles.location}>
+                    <Location location={'Your Location'} uid={uid} setMasjidPrayerTimes={setMasjidPrayerTimes}/>
                 </View>
                 
             </View>
@@ -77,6 +76,11 @@ const PrayerTimes = ({navigation, route}) => {
 export default PrayerTimes;
 
 const styles = StyleSheet.create({
+    location: {
+        position: 'absolute',
+        bottom: 30,
+        left: 21
+    },
     page: {
         width: '100%',
         height: '100%',

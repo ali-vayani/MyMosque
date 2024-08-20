@@ -27,6 +27,7 @@ router.get('/getUser', async(req, res) => {
     try {
         const user = await User.findById(req.query.userId)
         res.json(user)
+        console.log("getUser")
     } catch {
         res.status(500).json({message: err.message})
     } finally {

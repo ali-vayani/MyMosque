@@ -52,8 +52,6 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
         })
         .then(data => {
             setPrayerAndTime(data.data.timings);
-            console.log("prayer widget: ")
-            console.log(prayerAndTime)
             const currentPrayer = getCurrentPrayer(data.data.timings);
             setCurrentPrayer(currentPrayer);
         })

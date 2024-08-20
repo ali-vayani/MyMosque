@@ -13,7 +13,6 @@ const Home = ({navigation, route}) => {
 
     useEffect(() => {
         getMasjidId()
-        console.log(uid)
     }, [])
     
     const getMasjidId = () =>{
@@ -25,12 +24,10 @@ const Home = ({navigation, route}) => {
         };
         
         axios.request(options).then(function (response) {
-                console.log(response.data.mosquesFollowed);
                 setMasjidId(response.data.mosquesFollowed);
             }).catch(function (error) {
                 console.error(error);
         });
-
     }
 
 
@@ -42,8 +39,8 @@ const Home = ({navigation, route}) => {
             <View style={styles.content}>
                 <PrayerTimesWidget navigation={navigation} uid={uid}/>
                 <SearchWidget navigation={navigation} uid={uid}/>
-                {/* <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid}/> */}
-                <Feed navigation={navigation}/>
+                <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid}/>
+                {/* <Feed navigation={navigation}/> */}
             </View>
         </View>
     )
