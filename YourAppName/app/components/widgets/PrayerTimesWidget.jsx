@@ -6,72 +6,97 @@ import * as LocationExpo from 'expo-location';
 
 const PrayerTimesWidget = ({ navigation, uid }) => {
     const [time, setTime] = useState('14 min 20 sec')
-    const [prayerAndTime, setPrayerAndTime] = useState([]);
-    const [militaryPrayerAndTime, setMilitaryPrayerAndTime] = useState([])
-    
-        // useEffect(() => {
-        //     getPrayerTimes(32.508515, -97.1254872, 8, 2023, 2);
-        // }, [])
+    const [prayerAndTime, setPrayerAndTime] = useState({});
+    const [currentPrayer, setCurrentPrayer] = useState();
 
-        useEffect(() => {
-        ///setMarkers([])
-        (async () => {
-            let { status } = await LocationExpo.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
+    useEffect(() => {
+        getUserLocation();
+    }, [])
+
+    function getCurrentPrayer(prayerTimes) {
+        const prayerKeys = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+        
+        // Get current time in hours and minutes
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const currentTimeInMinutes = currentHour * 60 + currentMinute;
+    
+        // Find the closest upcoming or current prayer time
+        let currentPrayer = null;
+    
+        for (let key of prayerKeys) {
+            const [hour, minute] = prayerTimes[key].split(':').map(Number);
+            const prayerTimeInMinutes = hour * 60 + minute;
+
+            if (currentTimeInMinutes >= prayerTimeInMinutes) {
+                currentPrayer = key;
+                //break;
+            }
+        }
+    
+        return currentPrayer || "Isha";
+    }
+    
+    
+    
+    const getPrayerTimes = (location) => {
+        let today = new Date();
+        const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=2&adjustment=1`
+        return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setPrayerAndTime(data.data.timings);
+            console.log("prayer widget: ")
+            console.log(prayerAndTime)
+            const currentPrayer = getCurrentPrayer(data.data.timings);
+            setCurrentPrayer(currentPrayer);
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+    }
+
+    const getUserLocation = async () => {
+        let { status } = await LocationExpo.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
             Alert.alert('Permission Denied', 'Permission to access location was denied');
             return;
         }
-
         let currentPosition = await LocationExpo.getCurrentPositionAsync({ accuracy: LocationExpo.Accuracy.High });
         const { latitude, longitude } = currentPosition.coords;
-        let date = new Date()
-        getPrayerTimes(latitude, longitude, date.getMonth()+1, 2023, 2);
-
-        })();
-    }, []);
+        getCityName(latitude, longitude).then(location => {
+            getPrayerTimes(location)
+        });
         
+    }
 
-
-        //Useas the prayer time api to get prayer times based off of lat and lon
-        const getPrayerTimes = async (latitude, longitude, month, year, method) => {
-        const url = `http://api.aladhan.com/v1/calendar/${year}/${month}`;
-        const params = {
-            latitude: latitude,
-            longitude: longitude,
-            method: method,
-        };
-        const queryString = Object.keys(params)
-            .map(key => key + '=' + params[key])
-            .join('&');
-        try {
-            const response = await fetch(url + '?' + queryString);
-            const data = await response.json();
-            const timings = data['data'][0]['timings'];
-            //translates the prayer times into the correct format and sets the prayer time
-            setMilitaryPrayerAndTime(Object.entries(timings)
-            .slice(0, 7).map(([key, value]) => {
-            const militaryTime = value.replace(' (CDT)', '');
-            return [key, militaryTime]
-            }));
-            setPrayerAndTime(Object.entries(timings)
-            .slice(0, 7)
-            .map(([key, value]) => {
-                const militaryTime = value.replace(' (CDT)', '');
-                const [hours, minutes] = militaryTime.split(':');
-                const date = new Date();
-                date.setHours(+hours);
-                date.setMinutes(+minutes);
-                let standardTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-                standardTime = standardTime.replace(/^0+/, ''); // removes leading zero
-                return [key, standardTime];
-            }));
-        } catch (error) {
-            console.error(error);
-        }
-        }
+    const getCityName = (lat, lng) => {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+        return fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.address && data.address.city) {
+                    return data.address;
+                } else {
+                    console.log("City not found.");
+                    return null;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                return null;
+            });
+    }
+    
         
     return (
-        <TouchableOpacity style={styles.widget} onPress={() => navigation.navigate('PrayerTimes', {prayerAndTime: prayerAndTime, militaryPrayerAndTime: militaryPrayerAndTime, uid: uid})}>
+        <TouchableOpacity style={styles.widget} onPress={() => navigation.navigate('PrayerTimes', {prayerAndTime: prayerAndTime, currentPrayer: currentPrayer, uid: uid})}>
         {/* <View style={{backgroundImage: require('C:/Users/aliva/Desktop/MyMosquefr/MyMosque/assets/images/1.jpg'), position: 'absolute', top: 0, bottom: 0, left:0, right:0, borderRadius: 41.5}} /> */}
         <Image 
             source={require('../../../assets/prayerBg.png')} 
@@ -87,7 +112,7 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
         />
         <View style={styles.content}>
             <Text style={styles.mainText}> Prayer Times </Text>
-            <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28} prayerAndTime={militaryPrayerAndTime} height={30}/>
+            <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28} prayerAndTime={prayerAndTime} currentPrayer={currentPrayer} height={30}/>
             <Location location={'Keller, TX'} setTime={setTime} uid={uid}/>
         </View>
         </TouchableOpacity>

@@ -8,9 +8,22 @@ import Location from '../components/elements/Location';
 import PrayerToken from '../components/elements/PrayerToken';
 
 const PrayerTimes = ({navigation, route}) => {
-    const { prayerAndTime, militaryPrayerAndTime, uid } = route.params;
+    const { prayerAndTime, currentPrayer, uid } = route.params;
     const [masjidPrayerTimes, setMasjidPrayerTimes] = useState('LocalTime')
-    const prayersOrder = ['Fajr', 'Dhuhur', 'Asr', 'Maghrib', 'Isha'];
+    const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+    (console.log(currentPrayer))
+
+    function convertMilitaryTime(militaryTime) {
+        // split into hours & mins
+        let [hours, minutes] = militaryTime.split(':').map(Number);
+        // am or pm
+        const suffix = hours >= 12 ? 'PM' : 'AM';
+        // hours to 12 hr format
+        hours = hours % 12 || 12;
+    
+        return `${hours}:${minutes.toString().padStart(2, '0')} ${suffix}`;
+    }
+
 
 
     return(
@@ -33,18 +46,15 @@ const PrayerTimes = ({navigation, route}) => {
             <View style={styles.content}>
                 <Text style={styles.mainText }>Mhrm. 1, 1445 AH</Text>
                 <View style={styles.prayerBar}>
-                    <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={militaryPrayerAndTime} height={20}/>
+                    <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={prayerAndTime} height={20} currentPrayer={currentPrayer}/>
                 </View>
                 <View style={styles.prayerArea}>
-                    { masjidPrayerTimes === "LocalTime"  && prayerAndTime.map((specificPrayer, index) => (
-
-                        (specificPrayer[0] != "Sunset" && specificPrayer[0] != "Sunrise") && 
-
+                    { masjidPrayerTimes === "LocalTime"  && prayersOrder.map((prayer, index) => (
                         <View key={index} style={styles.prayerAndTime}>
-                            {(specificPrayer[0] == "Maghrib") &&
-                                (<PrayerToken prayer={specificPrayer[0]} prayerTime={specificPrayer[1]} currentPrayer={true}/> )}
-                            {(specificPrayer[0] != "Maghrib") &&
-                                (<PrayerToken prayer={specificPrayer[0]} prayerTime={specificPrayer[1]} currentPrayer={false}/> )}
+                            {(prayer == currentPrayer) &&
+                                (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(prayerAndTime[prayer])} currentPrayer={true}/> )}
+                            {(prayer != currentPrayer) &&
+                                (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(prayerAndTime[prayer])} currentPrayer={false}/> )}
                         </View>
                     ))}
                     { masjidPrayerTimes !== undefined && (masjidPrayerTimes.length === 1 && prayersOrder.map((prayer, index) => (

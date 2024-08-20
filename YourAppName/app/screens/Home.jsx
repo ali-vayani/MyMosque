@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import PrayerTimesWidget from '../components/widgets/PrayerTimesWidget';
 import SearchWidget from '../components/widgets/SearchWidget';
 import MyMosqueWidget from '../components/widgets/MyMosquesWidget';
+import Feed from '../components/widgets/Feed';
 import { useState, useEffect  } from 'react';
 import axios from "axios";
 import {IP_URL} from '@env'
@@ -41,7 +42,8 @@ const Home = ({navigation, route}) => {
             <View style={styles.content}>
                 <PrayerTimesWidget navigation={navigation} uid={uid}/>
                 <SearchWidget navigation={navigation} uid={uid}/>
-                <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid}/>
+                {/* <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid}/> */}
+                <Feed navigation={navigation}/>
             </View>
         </View>
     )
