@@ -27,7 +27,7 @@ router.get('/getMosque', async(req, res) => {
     try {
         const mosque = await Mosque.findById(req.body.mosqueId)
         res.json(mosque)
-    } catch {
+    } catch (err) {
         res.status(500).json({message: err.message})
     } finally {
         mongoose.disconnect();

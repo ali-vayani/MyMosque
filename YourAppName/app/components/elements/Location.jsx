@@ -9,34 +9,19 @@ import { Ionicons } from '@expo/vector-icons';
 import {IP_URL} from '@env'
 import axios from "axios";
 
-const Location = ({ setTime, uid, setMasjidPrayerTimes }) => {
+const Location = ({ setTime, userInfo, setMasjidPrayerTimes }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [favMasjidIds, setFavMasjidsIds] = useState([]);
     const [favMasjidsNames, setFavMasjidsNames] = useState([]);
     const [text, setText] = useState('Your Location')
 
-    console.log("test")
-    console.log(uid)
     useEffect(() => {
-        async function fetchFavMasjids() {
-            console.log("test2")
-            const options = {
-                method: 'GET',
-                url: `${IP_URL}/user/getUser`,
-                params: {userId: uid},
-                headers: {'Content-Type': 'application/json'}
-            };
-            
-            axios.request(options).then(function (response) {
-                setFavMasjidsIds(response.data.mosquesFollowed);
-                console.log(response.data.mosquesFollowed)
-                }).catch(function (error) {
-                    console.error(error);
-            });
-            
-            console.log(favMasjidIds)
+        if(userInfo)
+            setFavMasjidsIds(userInfo.mosquesFollowed)
+    }, [userInfo]);
 
-            for(let id of favMasjidIds)
+    useEffect(() => {
+        for(let id of favMasjidIds)
             {
                 const options = {
                     method: 'GET',
@@ -52,11 +37,7 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes }) => {
                 });
                 
             }
-
-    }
-
-    fetchFavMasjids();
-    }, []);
+    }, [favMasjidIds])
 
     console.log(favMasjidIds)
     // Gets Masjid Prayer Times & Sets flatlist to close

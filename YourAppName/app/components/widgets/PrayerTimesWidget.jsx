@@ -4,7 +4,7 @@ import PrayerBar from '../elements/PrayerBar';
 import Location from '../elements/Location';
 import * as LocationExpo from 'expo-location';
 
-const PrayerTimesWidget = ({ navigation, uid }) => {
+const PrayerTimesWidget = ({ navigation, uid, userInfo }) => {
     const [time, setTime] = useState('14 min 20 sec')
     const [prayerAndTime, setPrayerAndTime] = useState({});
     const [currentPrayer, setCurrentPrayer] = useState();
@@ -111,7 +111,7 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
         <View style={styles.content}>
             <Text style={styles.mainText}> Prayer Times </Text>
             <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28} prayerAndTime={prayerAndTime} currentPrayer={currentPrayer} height={30}/>
-            <Location location={'Keller, TX'} setTime={setTime} uid={uid}/>
+            <Location location={'Keller, TX'} setTime={setTime} userInfo={userInfo}/>
         </View>
         </TouchableOpacity>
     );

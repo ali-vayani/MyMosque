@@ -10,6 +10,7 @@ import {IP_URL} from '@env'
 const Home = ({navigation, route}) => {
     const { uid } = route.params;
     const [masjidId, setMasjidId] = useState([])
+    const [userInfo, setUserInfo] = useState();
 
     useEffect(() => {
         getMasjidId()
@@ -24,6 +25,7 @@ const Home = ({navigation, route}) => {
         };
         
         axios.request(options).then(function (response) {
+                setUserInfo(response.data)
                 setMasjidId(response.data.mosquesFollowed);
             }).catch(function (error) {
                 console.error(error);
@@ -37,9 +39,9 @@ const Home = ({navigation, route}) => {
 
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
-                <PrayerTimesWidget navigation={navigation} uid={uid}/>
-                <SearchWidget navigation={navigation} uid={uid}/>
-                <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid}/>
+                <PrayerTimesWidget navigation={navigation} uid={uid} userInfo={userInfo}/>
+                <SearchWidget navigation={navigation} uid={uid} userInfo={userInfo}/>
+                <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid} userInfo={userInfo}/>
                 {/* <Feed navigation={navigation}/> */}
             </View>
         </View>
