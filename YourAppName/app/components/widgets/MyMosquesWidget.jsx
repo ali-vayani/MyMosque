@@ -62,7 +62,8 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderBottomWidth: 0,
         borderColor: '#ebfeea80', // Green with 50% opacity
-        gap: '15px'
+        gap: '15px',
+        position: 'sticky'
     },
     scrollContainer: {
         width: '100%',

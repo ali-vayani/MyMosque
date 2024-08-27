@@ -1,56 +1,121 @@
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../../firebaseConfig';
-import { View, Text, Linking, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Linking, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default MapList = ({pageLink, directions, prayerLink, marker}) => {
+export default MapList = ({ pageLink, directions, prayerLink, marker }) => {
     const [address, setAddress] = useState(marker.vicinity || marker.formatted_address);
     const [name, setName] = useState(marker.name);
 
-
-    // create function that uses address to check if masjid has a registred page
-    // if masjid has registred page then return a view button else return create mosque button
-
-    console.log(marker)
-    return(
-        <View className="w-[95%] my-1 h-48 bg-darkBlue flex rounded-2xl">
-            <View className=" h-full flex justify-start align-start mx-2">
-
-                <ScrollView 
-                    horizontal 
-                    contentContainerStyle={{ flexDirection: 'row'}}
+    return (
+        <View style={styles.container}>
+            <View style={styles.innerContainer}>
+                <ScrollView
+                    horizontal
+                    contentContainerStyle={styles.scrollViewContent}
                     showsHorizontalScrollIndicator={false}
-                    className={"mt-2"}
+                    style={styles.scrollView}
                 >
-                    <View className="bg-lightBlue/50 m-1 rounded-md w-40"></View>
-                    <View className="bg-lightBlue/50 m-1 rounded-md w-40"></View>
-                    <View className="bg-lightBlue/50 m-1 rounded-md w-40"></View>
-                    <View className="bg-lightBlue/50 m-1 rounded-md w-40"></View>
+                    <View style={styles.imagePlaceholder}></View>
+                    <View style={styles.imagePlaceholder}></View>
+                    <View style={styles.imagePlaceholder}></View>
+                    <View style={styles.imagePlaceholder}></View>
                 </ScrollView>
 
-                <Text className="text-lg text-blueText font-bold my-2">{name}</Text>
+                <Text style={styles.nameText}>{name}</Text>
 
-                <View className="w-full mb-3 flex flex-row gap-2">
-                    <TouchableOpacity className="w-28 h-8 bg-green rounded-md flex justify-center align-center">
-                        <Text className="text-sm font-bold text-blueText text-center">View Page</Text>
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.viewPageButton}>
+                        <Text style={styles.buttonText}>View Page</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity className="w-28 h-8 bg-blue rounded-md flex justify-center align-center" 
+                    <TouchableOpacity
+                        style={styles.directionsButton}
                         onPress={() => {
                             const address = marker.vicinity || marker.formatted_address;
                             const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
                             Linking.openURL(url);
-                            }}
+                        }}
                     >
-                        <Text className="text-sm font-bold text-blueText text-center">Directions</Text>
+                        <Text style={styles.buttonText}>Directions</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity className="w-28 h-8 bg-purple rounded-md flex justify-center align-center">
-                        <Text className="text-sm font-bold text-blueText text-center">Prayer Times</Text>
+                    <TouchableOpacity style={styles.prayerTimesButton}>
+                        <Text style={styles.buttonText}>Prayer Times</Text>
                     </TouchableOpacity>
                 </View>
             </View>
         </View>
-    )
-} 
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        width: '95%',
+        marginVertical: 4,
+        height: 192,
+        backgroundColor: '#364866', // Equivalent to bg-darkBlue
+        borderRadius: 20,
+    },
+    innerContainer: {
+        height: '100%',
+        marginHorizontal: 8,
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+    },
+    scrollView: {
+        marginTop: 8,
+    },
+    scrollViewContent: {
+        flexDirection: 'row',
+    },
+    imagePlaceholder: {
+        backgroundColor: 'rgba(166, 182, 209, 0.5)', // Equivalent to bg-lightBlue/50
+        margin: 4,
+        borderRadius: 4,
+        width: 160,
+    },
+    nameText: {
+        fontSize: 18,
+        color: '#e6e8ec', // Equivalent to text-blueText
+        fontWeight: 'bold',
+        marginVertical: 8,
+    },
+    buttonContainer: {
+        width: '100%',
+        marginBottom: 12,
+        flexDirection: 'row',
+        gap: 8,
+    },
+    viewPageButton: {
+        width: 112,
+        height: 32,
+        backgroundColor: '#699a51', // Equivalent to bg-green
+        borderRadius: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    directionsButton: {
+        width: 112,
+        height: 32,
+        backgroundColor: '#516d9a', // Equivalent to bg-blue
+        borderRadius: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    prayerTimesButton: {
+        width: 112,
+        height: 32,
+        backgroundColor: '#67519a', // Equivalent to bg-purple
+        borderRadius: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonText: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#e6e8ec', // Equivalent to text-blueText
+        textAlign: 'center',
+    },
+});

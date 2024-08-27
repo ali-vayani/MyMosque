@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 28,
         borderTopWidth: 0,
         borderBottomWidth: 0,
-        borderColor: '#ebfeea80', // Green with 50% opacity
+        borderColor: '#ebfeea80', 
         gap: '15px'
     },
     headerContainer: {
@@ -34,16 +34,16 @@ const styles = StyleSheet.create({
     nameText: {
         fontSize: 15,
         fontWeight: 'bold',
-        color: '#ebfeea', // Dark green text color for the name
+        color: '#ebfeea', 
     },
     timeText: {
         fontSize: 10,
         fontWeight: 'bold',
-        color: '#ebfeea', // Dark green text color for the time
+        color: '#ebfeea', 
     },
     postText: {
         fontSize: 12,
-        color: '#ebfeea', // Dark green text color for the post content
+        color: '#ebfeea', 
         fontWeight: 'bold',
     },
 });

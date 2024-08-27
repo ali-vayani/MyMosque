@@ -14,13 +14,16 @@ const ImagePost = ({ navigation, masjidId, uid }) => {
         { uri: 'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
         { uri: 'https://images.unsplash.com/photo-1716222350384-763cc1ec344a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8OXx8fGVufDB8fHx8fA%3D%3D' },
         { uri: 'https://images.unsplash.com/photo-1716339140080-be256d3270ce?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { uri: 'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
     ];
 
     const handleScroll = (event) => {
         const slideSize = event.nativeEvent.layoutMeasurement.width;
-        const index = Math.floor(event.nativeEvent.contentOffset.x / slideSize);
+        const contentOffsetX = event.nativeEvent.contentOffset.x;
+        const index = Math.round(contentOffsetX / slideSize); // Use Math.round instead of Math.floor
         setCurrentIndex(index);
     };
+    
 
     const renderImage = ({ item }) => (
         <ImageBackground
@@ -92,7 +95,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     postImage: {
-        width: width - 95.5, // Account for padding
+        width: width - 95.5, 
         height: 250,
         justifyContent: 'flex-end',
         alignItems: 'center',
