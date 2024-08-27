@@ -4,6 +4,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 import MosqueInfo from '../elements/MosqueInfo';
 import TextPost from '../elements/TextPost';
+import ImagePost from '../elements/ImagePost';
 
 const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
     return (
@@ -26,6 +27,8 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
                 <View style={styles.mosqueInfoContent}>
                     <View style={styles.line}></View>
                     <TextPost/>
+                    <View style={styles.line}></View>
+                    <ImagePost/>
                     {masjidId && masjidId.map((id, index) => (
                         <React.Fragment key={index}>
                             <View style={styles.line}></View>
