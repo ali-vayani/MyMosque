@@ -20,24 +20,24 @@ const Location = ({ setTime, userInfo, setMasjidPrayerTimes }) => {
             setFavMasjidsIds(userInfo.mosquesFollowed)
     }, [userInfo]);
 
-    useEffect(() => {
-        for(let id of favMasjidIds)
-            {
-                const options = {
-                    method: 'GET',
-                url: `${IP_URL}/mosque/getMosque`,
-                params: {mosqueId: id},
-                headers: {'Content-Type': 'application/json'}
-                }
-                axios.request(options).then(function (response) {
-                    console.log(response.data)
-                    setFavMasjidsNames(prevState => [...prevState, response.data.mosqueName])
-                }).catch(function (error) {
-                    console.error(error);
-                });
+    // useEffect(() => {
+    //     for(let id of favMasjidIds)
+    //         {
+    //             const options = {
+    //                 method: 'GET',
+    //             url: `${IP_URL}/mosque/getMosque`,
+    //             params: {mosqueId: id},
+    //             headers: {'Content-Type': 'application/json'}
+    //             }
+    //             axios.request(options).then(function (response) {
+    //                 console.log(response.data)
+    //                 setFavMasjidsNames(prevState => [...prevState, response.data.mosqueName])
+    //             }).catch(function (error) {
+    //                 console.error(error);
+    //             });
                 
-            }
-    }, [favMasjidIds])
+    //         }
+    // }, [favMasjidIds])
 
     console.log(favMasjidIds)
     // Gets Masjid Prayer Times & Sets flatlist to close

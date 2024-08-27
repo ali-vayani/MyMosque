@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'rea
 import { doc, getDoc } from "firebase/firestore";
 
 import MosqueInfo from '../elements/MosqueInfo';
+import TextPost from '../elements/TextPost';
 
 const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
     return (
@@ -20,11 +21,16 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
             }}
         />
         <View style={styles.content}>
-            <Text style={styles.mainText}>My Mosques</Text>
+            <Text style={styles.mainText}>Your Feed</Text>
             <ScrollView style={styles.scrollContainer}>
                 <View style={styles.mosqueInfoContent}>
+                    <View style={styles.line}></View>
+                    <TextPost/>
                     {masjidId && masjidId.map((id, index) => (
-                        <MosqueInfo key={index} masjidId={id} navigation={navigation} uid={uid}/>
+                        <React.Fragment key={index}>
+                            <View style={styles.line}></View>
+                            <MosqueInfo masjidId={id} navigation={navigation} uid={uid}/>
+                        </React.Fragment>
                     ))}
                     <MosqueInfo masjidId={undefined} navigation={navigation}/>
                 </View>
@@ -39,13 +45,21 @@ export default MyMosqueWidget;
 
 const styles = StyleSheet.create({
     widget: {
-        width: '97%',
+        width: '100%',
         height: '56%',
         backgroundColor: '#679159',
         borderRadius: 41.5,
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: -1
+        zIndex: -1,
+    },
+    line: {
+        width: '100%',
+        height: '1px',
+        borderTopWidth: 1,
+        borderBottomWidth: 0,
+        borderColor: '#ebfeea80', // Green with 50% opacity
+        gap: '15px'
     },
     scrollContainer: {
         width: '100%',
