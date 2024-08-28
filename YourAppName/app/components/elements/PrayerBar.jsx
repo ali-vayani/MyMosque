@@ -63,9 +63,11 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
             ? nextPrayerTime - currPrayerTime
             : (24 * 60 - currPrayerTime) + nextPrayerTime;
 
-        const percentage = getPercentage(currPrayerTime, nextPrayerTime, currentTimeInMinutes);
+        let percentage = getPercentage(currPrayerTime, nextPrayerTime, currentTimeInMinutes);
         const timeTillNext = calculateRemaining(percentage, timeBetween);
 
+        if(percentage < .1)
+            percentage = .1;
         setTimeData({
             timeBetween,
             timeTillNext,

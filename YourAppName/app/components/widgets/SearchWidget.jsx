@@ -7,7 +7,7 @@ const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value, uid
     let height;
     if(!inputVersion)
         height = '10%'
-    else height = '100%'
+    else height = '75%'
     const styles = StyleSheet.create({
         widget: {
             width: '97%',

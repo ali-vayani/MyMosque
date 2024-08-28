@@ -4,12 +4,12 @@ import { FIRESTORE_DB } from '../../../firebaseConfig';
 import { View, Text, Linking, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default MapList = ({ pageLink, directions, prayerLink, marker }) => {
+export default MapList = ({ pageLink, directions, prayerLink, marker, onPress }) => {
     const [address, setAddress] = useState(marker.vicinity || marker.formatted_address);
     const [name, setName] = useState(marker.name);
 
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={onPress}>
             <View style={styles.innerContainer}>
                 <ScrollView
                     horizontal
@@ -46,7 +46,7 @@ export default MapList = ({ pageLink, directions, prayerLink, marker }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };
 

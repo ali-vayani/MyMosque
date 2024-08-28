@@ -17,6 +17,8 @@ const Map = ({ navigation, route }) => {
     const [expanded, setExpanded] = useState(null);
     const [masjidId, setMasjidID] = useState(null);
 
+    console.log(markers);
+
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -31,26 +33,14 @@ const Map = ({ navigation, route }) => {
             setLocation({
                 latitude,
                 longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
+                latitudeDelta: 0.075,
+                longitudeDelta: 0.075,
             });
 
-            fetchNearbyMosques(latitude, longitude);
+            fetchNearbyMosques(latitude, longitude)
+            //fetchQueryMosque("San Francisco", latitude, longitude);
         })();
     }, []);
-
-    const masjidExistsInDatabase = async (address) => {
-        try {
-            const getMasjidWithAddress = query(collection(FIRESTORE_DB, "masjids"), where("address", "==", address));
-            const querySnapshot = await getDocs(getMasjidWithAddress);
-            querySnapshot.forEach((doc) => {
-                setMasjidID(doc.id);
-                return doc.id;
-            });
-        } catch (error) {
-            console.error("An error occurred:", error);
-        }
-    }
 
     const fetchNearbyMosques = async (lat, lng, nextPageToken = null) => {
         const radius = 24000;
@@ -85,20 +75,74 @@ const Map = ({ navigation, route }) => {
         setLocation({
             latitude,
             longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+            latitudeDelta: 0.075,
+            longitudeDelta: 0.075,
         });
     };
 
+    const onListItemPress = (latitude, longitude) => {
+        setLocation({
+            latitude,
+            longitude,
+            latitudeDelta: 0.075,
+            longitudeDelta: 0.075,
+        });
+    };
+
+    const fetchQueryMosque = async (query, lat, lng, nextPageToken = null) => {
+        const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
+        const radius = 24000;
+        let url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&type=mosque&radius=${radius}&key=${apiKey}`;
+        
+        if (nextPageToken) {
+            url += `&pagetoken=${nextPageToken}`;
+        }
+    
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.results) {
+                const resultsWithDistance = data.results.map(result => ({
+                    ...result,
+                    distance: getDistance(
+                        { latitude: lat, longitude: lng },
+                        { latitude: result.geometry.location.lat, longitude: result.geometry.location.lng }
+                    ),
+                }));
+    
+                resultsWithDistance.sort((a, b) => a.distance - b.distance);
+    
+                setMarkers(resultsWithDistance);
+    
+                if (resultsWithDistance.length > 0) {
+                    const nearestMarker = resultsWithDistance[0];
+                    setLocation({
+                        latitude: nearestMarker.geometry.location.lat,
+                        longitude: nearestMarker.geometry.location.lng,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    });
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching mosques: ", error);
+        }
+    };    
+
     return (
         <View style={styles.container}>
-            <LinearGradient colors={['#57658E', '#A79A84']} style={styles.background}/>
+            <LinearGradient colors={['#57658E', '#A79A84']} style={styles.background} />
             <Image 
                 source={require('../../assets/Random3.png')} 
-                style={styles.imageBg}
+                style={styles.imageBg} 
             />
             <View style={styles.searchContainer}>
-                <SearchWidget inputVersion={true} onSubmit={() => value ? fetchNearbyMosques(location.latitude, location.longitude) : null} setValue={setValue} value={value}/>
+                <SearchWidget 
+                    inputVersion={true} 
+                    onSubmit={() => value ? fetchQueryMosque(value, location.latitude, location.longitude) : null} 
+                    setValue={setValue} 
+                    value={value} 
+                />
             </View>
             
             <MapView
@@ -107,22 +151,29 @@ const Map = ({ navigation, route }) => {
             >
                 {markers.map((marker, index) => (
                     <Marker
-                        key={index}
+                        key={marker.place_id}
                         coordinate={{
                             latitude: marker.geometry.location.lat,
                             longitude: marker.geometry.location.lng,
                         }}
                         title={marker.name}
+                        onPress={() => onMarkerPress(marker.geometry.location.lat, marker.geometry.location.lng)}
                     />
                 ))}
             </MapView>
+
             <ScrollView 
                 style={styles.list}
-                contentContainerStyle={{ justifyContent: 'center', alignItems: 'center'}}
+                contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
             >
-                <LinearGradient colors={['#57658E', '#A79A84']} style={styles.background}/>
+                <LinearGradient colors={['#57658E', '#A79A84']} style={styles.background} />
                 {markers.map((marker, index) => (
-                    <MapList key={index} marker={marker} name={index}/>
+                    <MapList 
+                        key={marker.place_id} 
+                        marker={marker} 
+                        name={index} 
+                        onPress={() => onListItemPress(marker.geometry.location.lat, marker.geometry.location.lng)}
+                    />
                 ))}
             </ScrollView>
         </View>
@@ -144,10 +195,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#FFF4D2',
     },
-    background:{
+    background: {
         width: '100%',
         height: '100%',
-        position: 'absolute'
+        position: 'absolute',
     },
     imageBg: {
         width: '100%',
@@ -156,14 +207,14 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         borderRadius: 41.5,
-        opacity: .05,
+        opacity: 0.05,
     },
     nameText: {
         color: '#FFF4D2',
     },
     searchContainer: {
         position: 'absolute',
-        top: 30, 
+        top: 50, 
         left: 0, 
         right: 0, 
         zIndex: 10, 
