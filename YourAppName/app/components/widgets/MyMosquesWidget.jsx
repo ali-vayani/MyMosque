@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { doc, getDoc } from "firebase/firestore";
-
+import { Ionicons } from '@expo/vector-icons';
 import MosqueInfo from '../elements/MosqueInfo';
 import TextPost from '../elements/TextPost';
 import ImagePost from '../elements/ImagePost';
@@ -22,7 +22,10 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
             }}
         />
         <View style={styles.content}>
-            <Text style={styles.mainText}>Your Feed</Text>
+            <View style={styles.header}>
+                <Text style={styles.mainText}>Your Feed</Text>
+                <Ionicons name="chevron-forward-outline" size={32} color={'#EBFEEA'}/>
+            </View>
             <ScrollView style={styles.scrollContainer}>
                 <View style={styles.mosqueInfoContent}>
                     <View style={styles.line}></View>
@@ -64,6 +67,12 @@ const styles = StyleSheet.create({
         borderColor: '#ebfeea80', // Green with 50% opacity
         gap: '15px',
         position: 'sticky'
+    },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     scrollContainer: {
         width: '100%',

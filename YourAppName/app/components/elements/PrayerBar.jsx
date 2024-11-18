@@ -97,6 +97,7 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
             height: height,
             backgroundColor: 'rgba(242, 239, 251, .5)',
             borderRadius: 15,
+            marginVertical: 5
         },
         progressBarDone: {
             width: `${timeData.percentage * 100}%`,

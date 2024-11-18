@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const app = express();
 const port = 3000;
-const ip = process.env.IP 
+const ip = "0.0.0.0"
 
 app.use(bodyParser.json());
 app.use(express.json());
