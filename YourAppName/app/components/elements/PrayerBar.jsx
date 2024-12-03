@@ -28,12 +28,13 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
             const midnight = 24 * 60;
             const ishaToMidnight = midnight - currPrayerTime;
             const timeBetween = ishaToMidnight + nextPrayerTime;
-            return currentTimeInMinutes / timeBetween;
+            return (currentTimeInMinutes - currPrayerTime) / timeBetween;
         }
     };
 
     const calculateRemaining = (percentage, timeBetween) => {
         const timeInMin = (1 - percentage) * timeBetween;
+        console.log(formatTime(timeInMin))
         return formatTime(timeInMin);
     };
 

@@ -16,32 +16,23 @@ const Home = ({navigation, route}) => {
         getMasjidId()
     }, [])
     
-    const getMasjidId = () =>{
-        const options = {
-            method: 'GET',
-            url: `${IP_URL}/user/getUser`,
-            params: {userId: uid},
-            headers: {'Content-Type': 'application/json'}
-        };
-        
-        axios.request(options).then(function (response) {
-                setUserInfo(response.data)
-                setMasjidId(response.data.mosquesFollowed);
-            }).catch(function (error) {
-                console.error(error);
-        });
+    const getMasjidId = async () => {
+        try{
+            const docSnap = await getDoc(docRef);
+            setMasjidId(docSnap.data()["favMasjids"]);
+        } catch {
+            setMasjidId(undefined);
+        }
     }
-
-
     
     return(
         <View style={styles.page}>
 
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
-                <PrayerTimesWidget navigation={navigation} uid={uid} userInfo={userInfo}/>
-                <SearchWidget navigation={navigation} uid={uid} userInfo={userInfo}/>
-                <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid} userInfo={userInfo}/>
+                <PrayerTimesWidget navigation={navigation} uid={uid}/>
+                <SearchWidget navigation={navigation} uid={uid}/>
+                <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid}/>
                 {/* <Feed navigation={navigation}/> */}
             </View>
         </View>
