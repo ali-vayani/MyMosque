@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity, Image, Linking } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -11,6 +11,7 @@ import MapList from '../components/elements/MapList';
 
 const Map = ({ navigation, route }) => {
     const { uid } = route.params;
+    const mapRef = useRef(null)
     const [location, setLocation] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [value, setValue] = useState();
@@ -72,21 +73,31 @@ const Map = ({ navigation, route }) => {
     };
 
     const onMarkerPress = (latitude, longitude) => {
-        setLocation({
-            latitude,
-            longitude,
-            latitudeDelta: 0.075,
-            longitudeDelta: 0.075,
-        });
+        if (mapRef.current) {
+            mapRef.current.animateToRegion(
+                {
+                    latitude,
+                    longitude,
+                    latitudeDelta: 0.075,
+                    longitudeDelta: 0.075,
+                },
+                500
+            );
+        }
     };
 
     const onListItemPress = (latitude, longitude) => {
-        setLocation({
-            latitude,
-            longitude,
-            latitudeDelta: 0.075,
-            longitudeDelta: 0.075,
-        });
+        if (mapRef.current) {
+            mapRef.current.animateToRegion(
+                {
+                    latitude,
+                    longitude,
+                    latitudeDelta: 0.075,
+                    longitudeDelta: 0.075,
+                },
+                500
+            );
+        }
     };
 
     const fetchQueryMosque = async (query, lat, lng, nextPageToken = null) => {
@@ -148,6 +159,7 @@ const Map = ({ navigation, route }) => {
             <MapView
                 style={styles.map}
                 region={location}
+                ref={mapRef}
             >
                 {markers.map((marker, index) => (
                     <Marker

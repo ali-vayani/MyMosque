@@ -30,7 +30,8 @@ const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value, uid
             borderColor: 'rgba(0,0,0,0)',
             color: '#E6E8EC',
             fontSize: 24,
-            marginHorizontal: '3%'
+            marginHorizontal: '3%',
+            fontWeight: '600',
         }
     });
         const dismissKeyboard = () => {
@@ -57,8 +58,8 @@ const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value, uid
                 <TouchableOpacity style={{width:'100%', height:'100%', margin: 0}} onPress={() => navigation.navigate('Map', {uid: uid})}>
 
                 <View style={[styles.content]}>
-                    <Ionicons name="search-outline" size={36} color={'#E6E8EC'}/>
-                    <Text style={styles.textarea} >Search for a Mosque</Text>
+                    <Ionicons name="search-sharp" size={36} color={'#E6E8EC'} />
+                    <Text style={styles.textarea} >Find a Mosque</Text>
                 </View>
                 </TouchableOpacity>
             }

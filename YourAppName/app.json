@@ -15,13 +15,14 @@
       "supportsTablet": true,
       "config": {
         "googleMapsApiKey": "AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c"
-      }
+      },
+      "bundleIdentifier": "com.anonymous.MyMosque"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }, 
+      },
       "config": {
         "googleMapsApiKey": "AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c"
       }
