@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { doc, getDoc } from "firebase/firestore";
 import { Ionicons } from '@expo/vector-icons';
 import MosqueInfo from '../elements/MosqueInfo';
 import TextPost from '../elements/TextPost';
 import ImagePost from '../elements/ImagePost';
-import Feed from '../../screens/Feed';
+import Post from '../elements/Post';
+
 
 const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
+    // for testing
+    const [name, setName] = useState("Masjid Name");
+    const [post, setPost] = useState("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...");
+    const images = [
+        { uri: 'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { uri: 'https://images.unsplash.com/photo-1716222350384-763cc1ec344a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8OXx8fGVufDB8fHx8fA%3D%3D' },
+        { uri: 'https://images.unsplash.com/photo-1716339140080-be256d3270ce?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+        { uri: 'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+    ];
+
     return (
         <View style={styles.widget}>
         <Image 
@@ -35,9 +46,9 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
             <ScrollView style={styles.scrollContainer}>
                 <View style={styles.mosqueInfoContent}>
                     <View style={styles.line}></View>
-                    <TextPost/>
+                    <Post isText={true} time="1 Day Ago" text={post} masjidName={name}/>
                     <View style={styles.line}></View>
-                    <ImagePost/>
+                    <Post isText={false} time="1 Day Ago" text={post} masjidName={name}  images={images}/>
                     {masjidId && masjidId.map((id, index) => (
                         <React.Fragment key={index}>
                             <View style={styles.line}></View>
