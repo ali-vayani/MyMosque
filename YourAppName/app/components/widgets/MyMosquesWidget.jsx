@@ -37,7 +37,7 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
             <View style={styles.header}>
                 <Text style={styles.mainText}>Your Feed</Text>
                 <TouchableOpacity 
-                    onPress={() => navigation.navigate('Feed', 
+                    onPress={() => navigation.navigate('MosquePage', 
                     {masjidId: masjidId, uid: uid, navigation: navigation})}>
 
                     <Ionicons name="chevron-forward-outline" size={32} color={'#EBFEEA'}/>

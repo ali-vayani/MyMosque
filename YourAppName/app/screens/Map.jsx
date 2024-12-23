@@ -39,7 +39,6 @@ const Map = ({ navigation, route }) => {
             });
 
             fetchNearbyMosques(latitude, longitude)
-            //fetchQueryMosque("San Francisco", latitude, longitude);
         })();
     }, []);
 
@@ -68,7 +67,7 @@ const Map = ({ navigation, route }) => {
                 setMarkers(resultsWithDistance);
             }
         } catch (error) {
-            console.error("Error fetching mosques: ", error);
+            console.error("Error fetching: ", error);
         }
     };
 

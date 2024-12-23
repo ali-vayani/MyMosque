@@ -11,6 +11,7 @@ import Mosque from './app/screens/Mosque';
 import CreateMosque from './app/screens/CreateMosque';
 import EditMosque from './app/screens/EditMosque';
 import Feed from './app/screens/Feed';
+import MosquePage from './app/screens/MosquePage';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ export default function App() {
         <Stack.Screen name='CreateMosque' component={CreateMosque} options={{headerShown: false}} />
         <Stack.Screen name='EditMosque' component={EditMosque} options={{headerShown: false}} />
         <Stack.Screen name='Feed' component={Feed} options={{headerShown: false}} />
+        <Stack.Screen name='MosquePage' component={MosquePage} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

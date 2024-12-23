@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     viewPageButton: {
         width: 112,
         height: 32,
-        backgroundColor: '#699a51', // Equivalent to bg-green
+        backgroundColor: '#699a51',
         borderRadius: 4,
         justifyContent: 'center',
         alignItems: 'center',
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     directionsButton: {
         width: 112,
         height: 32,
-        backgroundColor: '#516d9a', // Equivalent to bg-blue
+        backgroundColor: '#516d9a', 
         borderRadius: 4,
         justifyContent: 'center',
         alignItems: 'center',
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     prayerTimesButton: {
         width: 112,
         height: 32,
-        backgroundColor: '#67519a', // Equivalent to bg-purple
+        backgroundColor: '#67519a', 
         borderRadius: 4,
         justifyContent: 'center',
         alignItems: 'center',
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 14,
         fontWeight: 'bold',
-        color: '#e6e8ec', // Equivalent to text-blueText
+        color: '#e6e8ec', 
         textAlign: 'center',
     },
 });
