@@ -1,58 +1,73 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground, FlatList, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, FlatList, Dimensions, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
-const Post = ({masjidName, time, text, images, isText}) => {
+const Post = ({ masjidName, time, text, images, isText, color }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    color = color || '#ebfeea'; 
+
+    const handleScroll = (event) => {
+        const slideSize = event.nativeEvent.layoutMeasurement.width;
+        const contentOffsetX = event.nativeEvent.contentOffset.x;
+        const index = Math.round(contentOffsetX / slideSize);
+        setCurrentIndex(index);
+    };
+
+    const renderImage = ({ item }) => (
+        <ImageBackground
+            source={{ uri: item.uri }}
+            style={styles.postImage}
+            imageStyle={styles.imageRounded}
+        >
+            <LinearGradient
+                colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+                style={styles.gradient}
+            >
+                <Text style={styles.imageText}>{text}</Text>
+            </LinearGradient>
+        </ImageBackground>
+    );
+
     if (isText) {
-        
         return (
-            <View style={styles.container}>
+            <View style={styles.textContainer}>
                 <View style={styles.headerContainer}>
-                    <Text style={styles.nameText}>{masjidName}</Text>
-                    <Text style={styles.timeText}>{time}</Text>
+                    <Image
+                        source={require('../../../assets/icon.png')} 
+                        style={{
+                        width: 35,
+                        height: 35,
+                        borderRadius: 10000,
+                        }}
+                    />
+                    <View style={{gap: 15, width: '90%'}}>
+                        <View style={{gap: 2}}>
+                            <Text style={[styles.nameText, { color: color }]}>{masjidName}</Text>
+                            <Text style={[styles.timeText, { color: color }]}>{time}</Text>
+                        </View>
+                        <Text style={[styles.postText, { color: color }]}>{text}</Text>
+                    </View>
                 </View>
-                <Text style={styles.postText}>{text}</Text>
             </View>
         );
     } else {
-        const [currentIndex, setCurrentIndex] = useState(0);
-        const images = [
-            { uri: 'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-            { uri: 'https://images.unsplash.com/photo-1716222350384-763cc1ec344a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8OXx8fGVufDB8fHx8fA%3D%3D' },
-            { uri: 'https://images.unsplash.com/photo-1716339140080-be256d3270ce?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-            { uri: 'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-        ];
-    
-        const handleScroll = (event) => {
-            const slideSize = event.nativeEvent.layoutMeasurement.width;
-            const contentOffsetX = event.nativeEvent.contentOffset.x;
-            const index = Math.round(contentOffsetX / slideSize); // Use Math.round instead of Math.floor
-            setCurrentIndex(index);
-        };
-        
-    
-        const renderImage = ({ item }) => (
-            <ImageBackground
-                source={{ uri: item.uri }}
-                style={styles.postImage}
-                imageStyle={styles.imageRounded}
-            >
-                <LinearGradient
-                    colors={['transparent', 'rgba(0, 0, 0, 0.75)']}
-                    style={styles.gradient}
-                >
-                    <Text style={styles.postText}>{text}</Text>
-                </LinearGradient>
-            </ImageBackground>
-        );
-    
         return (
-            <View style={styles.container}>
+            <View style={styles.imageContainer}>
                 <View style={styles.headerContainer}>
-                    <Text style={styles.nameText}>{masjidName}</Text>
-                    <Text style={styles.timeText}>{time}</Text>
+                    <Image
+                        source={require('../../../assets/icon.png')} 
+                        style={{
+                        width: 35,
+                        height: 35,
+                        borderRadius: 10000,
+                        }}
+                    />
+                    <View style={{gap: 2}}>
+                        <Text style={[styles.nameText, { color: color }]}>{masjidName}</Text>
+                        <Text style={[styles.timeText, { color: color }]}>{time}</Text>
+                    </View>
                 </View>
                 <View style={styles.post}>
                     <FlatList
@@ -80,23 +95,32 @@ const Post = ({masjidName, time, text, images, isText}) => {
             </View>
         );
     }
-    
-    
-}
+};
+
 const styles = StyleSheet.create({
+    imageContainer: {
+        width: '90%',
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 15,
+        marginVertical: 15,
+    },
+    textContainer: {
+        width: '90%',
+        display: 'flex',
+        justifyContent: 'center',
+        marginVertical: 15,
+    },
     container: {
-        flex: 1,
+        display: 'flex',
         flexDirection: 'column',
         paddingHorizontal: 28,
-        borderTopWidth: 0,
-        borderBottomWidth: 0,
-        borderColor: '#ebfeea80',
         gap: 15,
     },
     headerContainer: {
-        flex: 1,
-        flexDirection: 'column',
-        gap: 2,
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 7,
     },
     post: {
         width: '100%',
@@ -105,7 +129,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     postImage: {
-        width: width - 95.5, 
+        width: width - 123, 
         height: 250,
         justifyContent: 'flex-end',
         alignItems: 'center',
@@ -116,29 +140,33 @@ const styles = StyleSheet.create({
     gradient: {
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'flex-end',
-        borderRadius: 10,
-        padding: 10,
     },
     nameText: {
         fontSize: 15,
-        fontWeight: 'bold',
+        fontWeight: '600',
         color: '#ebfeea',
     },
     timeText: {
         fontSize: 10,
-        fontWeight: 'bold',
+        fontWeight: '500',
         color: '#ebfeea',
     },
     postText: {
         fontSize: 12,
-        color: '#ebfeea',
+        color: '#ffff',
+        fontWeight: '500',
+    },
+    imageText: {
+        fontSize: 12,
+        color: '#ffff',
         fontWeight: 'bold',
-        paddingHorizontal: 5,
-        paddingVertical: 3,
-        borderRadius: 5,
+        width: '87%',
+        marginLeft: 10,
+        marginBottom: 10
     },
     flatList: {
         borderRadius: 10,
+        width: 270,
     },
     pagination: {
         flexDirection: 'row',
@@ -160,4 +188,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Post
+export default Post;
