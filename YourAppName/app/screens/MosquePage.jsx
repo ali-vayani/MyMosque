@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
 import {View, Text, Button, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView} from 'react-native'
 import Post from '../components/elements/Post';
-const MosquePage = ({masjidId}) => {
+import { doc, getDoc } from 'firebase/firestore';
+import { FIRESTORE_DB } from '../../firebaseConfig';
+
+const MosquePage = ({masjidId, uid, navigation}) => {
+    console.log(masjidId) // issue with transfering data across pages. read docs
+    const [posts, setPosts] = useState();
+    const docRef = masjidId ? doc(FIRESTORE_DB, "mosques", masjidId.replace(/\s/g, '')) : null;
+    const getPosts = async () => {
+        const docSnap = await getDoc(docRef);
+        console.log(docSnap.data())
+    }
+    
     // for testing
     const [name, setName] = useState("Nueces Mosque");
     const [post, setPost] = useState("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...");
