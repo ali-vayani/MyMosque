@@ -1,20 +1,34 @@
-import React, { useState } from 'react';
-import {View, Text, Button, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView} from 'react-native'
+import React, { useState, useEffect } from 'react';
+import {View, Text, Button, StyleSheet, Image, Linking, TouchableOpacity, ScrollView} from 'react-native'
 import Post from '../components/elements/Post';
 import { doc, getDoc } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 
-const MosquePage = ({masjidId, uid, navigation}) => {
-    console.log(masjidId) // issue with transfering data across pages. read docs
+const MosquePage = ({navigation, route}) => {
+    const {masjidId, uid} = route.params;
+    console.log("tedtedt " + masjidId);
     const [posts, setPosts] = useState();
+    const [name, setName] = useState("Nueces Mosque");
+    const [bio, setBio] = useState();
+    const [members, setMembers] = useState();
+    const [address, setAddress] = useState();
     const docRef = masjidId ? doc(FIRESTORE_DB, "mosques", masjidId.replace(/\s/g, '')) : null;
-    const getPosts = async () => {
+
+    const getInfo = async () => {
         const docSnap = await getDoc(docRef);
-        console.log(docSnap.data())
+        setPosts(docSnap.data()["posts"])
+        setName(docSnap.data()["name"])
+        setBio(docSnap.data()["bio"]);
+        setMembers(docSnap.data()["members"])
+        setAddress(docSnap.data()["address"])
     }
+
+    useEffect(() => {
+        getInfo();
+    },[])
     
     // for testing
-    const [name, setName] = useState("Nueces Mosque");
+    //const [name, setName] = useState("Nueces Mosque");
     const [post, setPost] = useState("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...");
     const images = [
         { uri: 'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
@@ -35,7 +49,7 @@ const MosquePage = ({masjidId, uid, navigation}) => {
                 }}
             />
             <View style={styles.mainInfo}>
-                <Text style={styles.mainText}>Nueces Mosque</Text>
+                <Text style={styles.mainText}>{name}</Text>
                 <View style={styles.info}>
                     <Image
                         source={require('../../assets/icon.png')} 
@@ -48,7 +62,7 @@ const MosquePage = ({masjidId, uid, navigation}) => {
                     
                     <View style={styles.generalInfo}>
                         <View style={styles.infoSegment}>
-                            <Text style={{fontSize:14, fontWeight: 600}}>3,000</Text>
+                            <Text style={{fontSize:14, fontWeight: 600}}>{members}</Text>
                             <Text style={{fontSize:14}}>Members</Text>
                         </View>
                         <View style={styles.infoSegment}>
@@ -63,7 +77,7 @@ const MosquePage = ({masjidId, uid, navigation}) => {
                 </View>
                 <Text 
                     style={{ marginLeft: 25, marginTop: 15, fontSize:11 }}>
-                    The University of Texas at Austin | West Campus{"\n"}Est. 1977{"\n"}•  Fully student-run mosque {"\n"}•  “Come as you are, to Islam as it is”
+                    {bio}
                 </Text>
                 <View style={styles.buttons}>
                     <TouchableOpacity style={styles.viewPageButton}>
@@ -72,6 +86,10 @@ const MosquePage = ({masjidId, uid, navigation}) => {
 
                     <TouchableOpacity
                         style={styles.directionsButton}
+                        onPress={() => {
+                            const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
+                            Linking.openURL(url);
+                        }}
                     >
                         <Text style={styles.buttonText}>Directions</Text>
                     </TouchableOpacity>
@@ -83,8 +101,13 @@ const MosquePage = ({masjidId, uid, navigation}) => {
             </View>
 
             <View style={styles.posts}>
-                <View style={styles.line}></View>
-                <Post isText={true} time="1 day ago" text={post} masjidName={name} color={"#000000"}/>
+                    {posts && posts.map((post, index) => (
+                        <View key={index}>
+                            <View style={styles.line}></View>
+                            <Post isText={post["isText"]} time="1 day ago" text={post["text"]} masjidName={post["name"]} color={"#000000"}/>
+                        </View>
+                    ))}
+
                 <View style={styles.line}></View>
                 <Post isText={false} time="1 day ago" text={post} masjidName={name}  images={images} color={"#000000"}/>
                 <View style={styles.line}></View>

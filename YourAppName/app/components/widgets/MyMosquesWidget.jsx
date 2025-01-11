@@ -60,7 +60,7 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
                             console.log("pressed", masjidId[0])
                             if (masjidId[0]) {  
                                 navigation.navigate('MosquePage', 
-                                { masjidId: masjidId[0], uid: uid, navigation: navigation });
+                                { masjidId: masjidId[0], uid: uid});
                             } else {
                                 console.error("masjidId[0] is undefined");
                             }
@@ -72,10 +72,10 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
             <ScrollView style={styles.scrollContainer}>
                 <View style={styles.mosqueInfoContent}>
                     {posts && posts.map((post, index) => (
-                        <>
+                        <View key={index}>
                             <View style={styles.line}></View>
                             <Post isText={post["isText"]} time="1 day ago" text={post["text"]} masjidName={post["name"]}/>
-                        </>
+                        </View>
                     ))}
                     {/* <View style={styles.line}></View>
                     <Post isText={true} time="1 Day Ago" text={post} masjidName={name}/> */}

@@ -111,7 +111,7 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
         <View style={styles.content}>
             <Text style={styles.mainText}> Prayer Times </Text>
             <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28} prayerAndTime={prayerAndTime} currentPrayer={currentPrayer} height={30}/>
-            <Location location={'Keller, TX'} setTime={setTime} uid={uid}/>
+            {/* <Location location={'Keller, TX'} setTime={setTime} uid={uid}/> */}
         </View>
         </TouchableOpacity>
     );
