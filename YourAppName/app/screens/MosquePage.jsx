@@ -5,6 +5,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import getLocalPrayerTimes from '../functions/getLocalPrayerTimes';
 import getCurrentPrayer from '../functions/getCurrentPrayer';
+import convertMilitaryTime from '../functions/convertMilitaryTime';
 
 const MosquePage = ({navigation, route}) => {
     const {masjidId, uid} = route.params;
@@ -122,8 +123,18 @@ const MosquePage = ({navigation, route}) => {
                             <Text style={{fontSize:14}}>Members</Text>
                         </View>
                         <View style={styles.infoSegment}>
-                            <Text style={{fontSize:14, fontWeight: 600}}>6:30</Text>
-                            <Text style={{fontSize:14}}>Maghrib</Text>
+                            {currentPrayerTimes && currentPrayer ? (
+                                <>
+                                    <Text style={{fontSize:14, fontWeight: 600}}>{convertMilitaryTime(currentPrayerTimes[currentPrayer])}</Text>
+                                    <Text style={{fontSize:14}}>{currentPrayer}</Text>
+                                </>
+                                
+                            ) : <>
+                                    <Text style={{fontSize:14, fontWeight: 600}}>Loading...</Text>
+                                    <Text style={{fontSize:14}}>Loading...</Text>
+                                </>
+                            }
+                            
                         </View>
                         <View style={styles.infoSegment}>
                             <Text style={{fontSize:14, fontWeight: 600}}>5</Text>
