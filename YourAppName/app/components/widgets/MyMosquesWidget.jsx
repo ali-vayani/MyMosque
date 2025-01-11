@@ -57,7 +57,6 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
                 {masjidId && masjidId.length > 0 ? (
                     <TouchableOpacity 
                         onPress={() => {
-                            console.log("pressed", masjidId[0])
                             if (masjidId[0]) {  
                                 navigation.navigate('MosquePage', 
                                 { masjidId: masjidId[0], uid: uid});

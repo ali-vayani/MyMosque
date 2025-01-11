@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
 import PrayerBar from '../elements/PrayerBar';
 import Location from '../elements/Location';
+import getCurrentPrayer from '../../functions/getCurrentPrayer';
 import * as LocationExpo from 'expo-location';
+import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
 
 const PrayerTimesWidget = ({ navigation, uid }) => {
     const [time, setTime] = useState('14 min 20 sec')
@@ -13,53 +15,6 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
         getUserLocation();
     }, [])
 
-    function getCurrentPrayer(prayerTimes) {
-        const prayerKeys = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
-        
-        // Get current time in hours and minutes
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const currentTimeInMinutes = currentHour * 60 + currentMinute;
-    
-        // Find the closest upcoming or current prayer time
-        let currentPrayer = null;
-    
-        for (let key of prayerKeys) {
-            const [hour, minute] = prayerTimes[key].split(':').map(Number);
-            const prayerTimeInMinutes = hour * 60 + minute;
-
-            if (currentTimeInMinutes >= prayerTimeInMinutes) {
-                currentPrayer = key;
-                //break;
-            }
-        }
-    
-        return currentPrayer || "Isha";
-    }
-    
-    
-    
-    const getPrayerTimes = (location) => {
-        let today = new Date();
-        const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=2&adjustment=1`
-        return fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            setPrayerAndTime(data.data.timings);
-            const currentPrayer = getCurrentPrayer(data.data.timings);
-            setCurrentPrayer(currentPrayer);
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
-    }
-
     const getUserLocation = async () => {
         let { status } = await LocationExpo.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
@@ -69,7 +24,15 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
         let currentPosition = await LocationExpo.getCurrentPositionAsync({ accuracy: LocationExpo.Accuracy.High });
         const { latitude, longitude } = currentPosition.coords;
         getCityName(latitude, longitude).then(location => {
-            getPrayerTimes(location)
+            getLocalPrayerTimes(location.city, location.country)
+            .then(data => {
+                setPrayerAndTime(data.data.timings);
+                const currentPrayer = getCurrentPrayer(data.data.timings);
+                setCurrentPrayer(currentPrayer);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
         });
         
     }

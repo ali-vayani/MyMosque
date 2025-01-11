@@ -12,6 +12,10 @@ const PrayerTimes = ({navigation, route}) => {
     const [masjidPrayerTimes, setMasjidPrayerTimes] = useState('LocalTime')
     const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
+    useEffect(() => {
+        console.log('Received params:', route.params);
+    }, []);
+    
     function convertMilitaryTime(militaryTime) {
         // split into hours & mins
         let [hours, minutes] = militaryTime.split(':').map(Number);
@@ -41,34 +45,34 @@ const PrayerTimes = ({navigation, route}) => {
                 }}
             />
 
+            {prayerAndTime || currentPrayer ? (
+                <View style={styles.content}>
+                    <Text style={styles.mainText }>Mhrm. 1, 1445 AH</Text>
+                    <View style={styles.prayerBar}>
+                        <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={prayerAndTime} height={20} currentPrayer={currentPrayer}/>
+                    </View>
+                    <View style={styles.prayerArea}>
+                        { masjidPrayerTimes === "LocalTime"  && prayersOrder.map((prayer, index) => (
+                            <View key={index} style={styles.prayerAndTime}>
+                                {(prayer == currentPrayer) &&
+                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(prayerAndTime[prayer])} currentPrayer={true}/> )}
+                                {(prayer != currentPrayer) &&
+                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(prayerAndTime[prayer])} currentPrayer={false}/> )}
+                            </View>
+                        ))}
+                        { masjidPrayerTimes !== undefined && (masjidPrayerTimes.length === 1 && prayersOrder.map((prayer, index) => (
+                            <View key={index} style={styles.prayerAndTime}>
+                                <PrayerToken prayer={prayer} prayerTime={masjidPrayerTimes[0][prayer]}/>
+                            </View>
+                        )))}
+                    </View>
+                    <View style={styles.location}>
+                        <Location location={'Your Location'} uid={uid} setMasjidPrayerTimes={setMasjidPrayerTimes}/>
+                    </View>
+                    
+                </View>
+            ) : <></>}
             
-            <View style={styles.content}>
-                <Text style={styles.mainText }>Mhrm. 1, 1445 AH</Text>
-                <View style={styles.prayerBar}>
-                    <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={prayerAndTime} height={20} currentPrayer={currentPrayer}/>
-                </View>
-                <View style={styles.prayerArea}>
-                    { masjidPrayerTimes === "LocalTime"  && prayersOrder.map((prayer, index) => (
-                        <View key={index} style={styles.prayerAndTime}>
-                            {(prayer == currentPrayer) &&
-                                (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(prayerAndTime[prayer])} currentPrayer={true}/> )}
-                            {(prayer != currentPrayer) &&
-                                (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(prayerAndTime[prayer])} currentPrayer={false}/> )}
-                        </View>
-                    ))}
-                    { masjidPrayerTimes !== undefined && (masjidPrayerTimes.length === 1 && prayersOrder.map((prayer, index) => (
-                        <View key={index} style={styles.prayerAndTime}>
-                            {/* <Text style={styles.text}>{prayer}</Text>
-                            <Text style={styles.text}>{masjidPrayerTimes[0][prayer]}</Text> */}
-                            <PrayerToken prayer={prayer} prayerTime={masjidPrayerTimes[0][prayer]}/>
-                        </View>
-                    )))}
-                </View>
-                <View style={styles.location}>
-                    <Location location={'Your Location'} uid={uid} setMasjidPrayerTimes={setMasjidPrayerTimes}/>
-                </View>
-                
-            </View>
         </View>
     )
 }

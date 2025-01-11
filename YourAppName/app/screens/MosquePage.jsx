@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {View, Text, Button, StyleSheet, Image, Linking, TouchableOpacity, ScrollView} from 'react-native'
 import Post from '../components/elements/Post';
 import { doc, getDoc } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../firebaseConfig';
+import getLocalPrayerTimes from '../functions/getLocalPrayerTimes';
+import getCurrentPrayer from '../functions/getCurrentPrayer';
 
 const MosquePage = ({navigation, route}) => {
     const {masjidId, uid} = route.params;
@@ -11,7 +13,27 @@ const MosquePage = ({navigation, route}) => {
     const [bio, setBio] = useState();
     const [members, setMembers] = useState();
     const [address, setAddress] = useState();
+    const [prayers, setPrayers] = useState([]);
+    const [currentPrayerTimes, setCurrentPrayerTimes] = useState();
+    const [currentPrayer, setCurrentPrayer] = useState("")
     const docRef = masjidId ? doc(FIRESTORE_DB, "mosques", masjidId.replace(/\s/g, '')) : null;
+
+    useEffect(() => {
+        getInfo();
+    },[])
+
+    useEffect(() => {
+        getCurrentPrayerTimes();
+    }, [prayers]);
+
+    const handleNavigate = useCallback(() => {
+        navigation.navigate('PrayerTimes', {
+            prayerAndTime: currentPrayerTimes,
+            currentPrayer: currentPrayer,
+            uid: uid
+        });
+    }, [currentPrayerTimes, currentPrayer, uid]); // Add dependencies
+    
 
     const images = [
         'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -27,16 +49,47 @@ const MosquePage = ({navigation, route}) => {
         setBio(docSnap.data()["bio"]);
         setMembers(docSnap.data()["members"])
         setAddress(docSnap.data()["address"])
-        console.log(posts[1]["images"])
-        console.log(images)
+        setPrayers(docSnap.data()["prayerTimes"])
     }
 
-    useEffect(() => {
-        getInfo();
-    },[])
+    const getCurrentPrayerTimes = async () => {
+        for(const prayer of prayers) {
+            const now = new Date();
+            const endDate = new Date(prayer["endDate"].seconds * 1000 + prayer["endDate"].nanoseconds / 1e6);
+            const startDate = new Date(prayer["startDate"].seconds * 1000 + prayer["endDate"].nanoseconds / 1e6);
+            if(now < endDate && now > startDate) {
+                let updatedPrayerTimes = { ...prayer };
+                await updateMaghribTime(updatedPrayerTimes);
+                setCurrentPrayer(getCurrentPrayer(updatedPrayerTimes));
+                break;
+            }
+        }
+    }
+
+    const updateMaghribTime = async (prayerTimes) => {
+        const url = `https://nominatim.openstreetmap.org/search?q=${address}&format=json&addressdetails=1`;
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        const localPrayerTimes = await getLocalPrayerTimes(data[0].address.city, data[0].address.country);
+        const maghribTime = localPrayerTimes.data.timings.Maghrib;
+    
+        let [hour, minute] = maghribTime.split(':').map(Number);
+        const maghribAddition = parseInt(prayerTimes.Maghrib);
+        minute += maghribAddition;
+        if (minute > 59) {
+            hour++;
+            minute -= 60;
+        }
+        let newMaghrib = hour.toString().padStart(2, '0') + ":" + minute.toString().padStart(2, '0');
+        prayerTimes.Maghrib = newMaghrib;
+        setCurrentPrayerTimes(prayerTimes);
+    };
+    
     
     // for testing
-    //const [name, setName] = useState("Nueces Mosque");
     const [post2, setPost] = useState("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...");
 
     return (
@@ -97,7 +150,11 @@ const MosquePage = ({navigation, route}) => {
                         <Text style={styles.buttonText}>Directions</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.prayerTimesButton}>
+                    <TouchableOpacity 
+                        style={styles.prayerTimesButton}
+                        onPress={handleNavigate}
+                        
+                    >
                         <Text style={styles.buttonText}>Prayer Times</Text>
                     </TouchableOpacity>
                 </View>
