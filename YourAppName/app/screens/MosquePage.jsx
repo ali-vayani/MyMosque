@@ -6,13 +6,19 @@ import { FIRESTORE_DB } from '../../firebaseConfig';
 
 const MosquePage = ({navigation, route}) => {
     const {masjidId, uid} = route.params;
-    console.log("tedtedt " + masjidId);
     const [posts, setPosts] = useState();
     const [name, setName] = useState("Nueces Mosque");
     const [bio, setBio] = useState();
     const [members, setMembers] = useState();
     const [address, setAddress] = useState();
     const docRef = masjidId ? doc(FIRESTORE_DB, "mosques", masjidId.replace(/\s/g, '')) : null;
+
+    const images = [
+        'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        'https://images.unsplash.com/photo-1716222350384-763cc1ec344a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8OXx8fGVufDB8fHx8fA%3D%3D',
+        'https://images.unsplash.com/photo-1716339140080-be256d3270ce?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    ];
 
     const getInfo = async () => {
         const docSnap = await getDoc(docRef);
@@ -21,6 +27,8 @@ const MosquePage = ({navigation, route}) => {
         setBio(docSnap.data()["bio"]);
         setMembers(docSnap.data()["members"])
         setAddress(docSnap.data()["address"])
+        console.log(posts[1]["images"])
+        console.log(images)
     }
 
     useEffect(() => {
@@ -29,13 +37,8 @@ const MosquePage = ({navigation, route}) => {
     
     // for testing
     //const [name, setName] = useState("Nueces Mosque");
-    const [post, setPost] = useState("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...");
-    const images = [
-        { uri: 'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-        { uri: 'https://images.unsplash.com/photo-1716222350384-763cc1ec344a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8OXx8fGVufDB8fHx8fA%3D%3D' },
-        { uri: 'https://images.unsplash.com/photo-1716339140080-be256d3270ce?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-        { uri: 'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-    ];
+    const [post2, setPost] = useState("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...");
+
     return (
         <ScrollView style={styles.page} contentContainerStyle={{ flexGrow: 1 }}>
             <Image 
@@ -102,18 +105,15 @@ const MosquePage = ({navigation, route}) => {
 
             <View style={styles.posts}>
                     {posts && posts.map((post, index) => (
-                        <View key={index}>
+                        <View style={styles.posts} key={index}>
                             <View style={styles.line}></View>
-                            <Post isText={post["isText"]} time="1 day ago" text={post["text"]} masjidName={post["name"]} color={"#000000"}/>
+                            <Post isText={post["isText"]} time="1 day ago" text={post["text"]} masjidName={post["name"]} color={"#000000"} images={post["images"]}/>
                         </View>
                     ))}
-
                 <View style={styles.line}></View>
-                <Post isText={false} time="1 day ago" text={post} masjidName={name}  images={images} color={"#000000"}/>
+                <Post isText={true} time="1 day ago" text={post2} masjidName={name} color={"#000000"}/>
                 <View style={styles.line}></View>
-                <Post isText={true} time="1 day ago" text={post} masjidName={name} color={"#000000"}/>
-                <View style={styles.line}></View>
-                <Post isText={false} time="1 day ago" text={post} masjidName={name}  images={images} color={"#000000"}/>
+                <Post isText={false} time="1 day ago" text={post2} masjidName={name}  images={images} color={"#000000"}/>
             </View>
         </ScrollView>
     )

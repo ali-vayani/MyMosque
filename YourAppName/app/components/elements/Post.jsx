@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 const { width } = Dimensions.get('window');
 
 const Post = ({ masjidName, time, text, images, isText, color }) => {
+    images = images || [];
     const [currentIndex, setCurrentIndex] = useState(0);
     color = color || '#ebfeea'; 
 
@@ -17,7 +18,7 @@ const Post = ({ masjidName, time, text, images, isText, color }) => {
 
     const renderImage = ({ item }) => (
         <ImageBackground
-            source={{ uri: item.uri }}
+            source={{ uri: item }}
             style={styles.postImage}
             imageStyle={styles.imageRounded}
         >
