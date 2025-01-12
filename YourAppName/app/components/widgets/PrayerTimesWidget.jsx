@@ -6,7 +6,7 @@ import getCurrentPrayer from '../../functions/getCurrentPrayer';
 import * as LocationExpo from 'expo-location';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
 
-const PrayerTimesWidget = ({ navigation, uid }) => {
+const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
     const [time, setTime] = useState('14 min 20 sec')
     const [prayerAndTime, setPrayerAndTime] = useState({});
     const [currentPrayer, setCurrentPrayer] = useState();
@@ -57,8 +57,15 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
     
         
     return (
-        <TouchableOpacity style={styles.widget} onPress={() => navigation.navigate('PrayerTimes', {prayerAndTime: prayerAndTime, currentPrayer: currentPrayer, uid: uid})}>
-        {/* <View style={{backgroundImage: require('C:/Users/aliva/Desktop/MyMosquefr/MyMosque/assets/images/1.jpg'), position: 'absolute', top: 0, bottom: 0, left:0, right:0, borderRadius: 41.5}} /> */}
+        <TouchableOpacity 
+            style={styles.widget} 
+            onPress={() => navigation.navigate('PrayerTimes', {
+                prayerAndTime: prayerAndTime, 
+                currentPrayer: 
+                currentPrayer, 
+                uid: uid,
+                favMasjids: favMasjids
+            })}>
         <Image 
             source={require('../../../assets/prayerBg.png')} 
             style={{
@@ -74,7 +81,14 @@ const PrayerTimesWidget = ({ navigation, uid }) => {
         <View style={styles.content}>
             <Text style={styles.mainText}> Prayer Times </Text>
             <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28} prayerAndTime={prayerAndTime} currentPrayer={currentPrayer} height={30}/>
-            {/* <Location location={'Keller, TX'} setTime={setTime} uid={uid}/> */}
+            <Location 
+                location={'Your Location'} 
+                setTime={setTime} 
+                uid={uid} 
+                favMasjids={favMasjids} 
+                setMasjidPrayerTimes={null}
+                setCurrPrayer={null}
+            />
         </View>
         </TouchableOpacity>
     );

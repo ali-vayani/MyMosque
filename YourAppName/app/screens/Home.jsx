@@ -31,7 +31,7 @@ const Home = ({navigation, route}) => {
 
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
-                <PrayerTimesWidget navigation={navigation} uid={uid}/>
+                <PrayerTimesWidget navigation={navigation} uid={uid} favMasjids={masjidId}/>
                 <SearchWidget navigation={navigation} uid={uid}/>
                 {masjidId && masjidId.length > 0 ? (
                 <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid}/>

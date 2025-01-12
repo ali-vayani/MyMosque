@@ -3,9 +3,8 @@ import {View, Text, Button, StyleSheet, Image, Linking, TouchableOpacity, Scroll
 import Post from '../components/elements/Post';
 import { doc, getDoc } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../firebaseConfig';
-import getLocalPrayerTimes from '../functions/getLocalPrayerTimes';
-import getCurrentPrayer from '../functions/getCurrentPrayer';
 import convertMilitaryTime from '../functions/convertMilitaryTime';
+import getMosquePrayerTimes from '../functions/getMosquePrayerTimes';
 
 const MosquePage = ({navigation, route}) => {
     const {masjidId, uid} = route.params;
@@ -24,7 +23,12 @@ const MosquePage = ({navigation, route}) => {
     },[])
 
     useEffect(() => {
-        getCurrentPrayerTimes();
+        const fetchPrayerTimes = async () => {
+            const info = await getMosquePrayerTimes(prayers, address);
+            setCurrentPrayerTimes(info.mosquePrayerTimes);
+            setCurrentPrayer(info.currentPrayer);
+        }
+        fetchPrayerTimes();
     }, [prayers]);
 
     const handleNavigate = useCallback(() => {
@@ -33,7 +37,7 @@ const MosquePage = ({navigation, route}) => {
             currentPrayer: currentPrayer,
             uid: uid
         });
-    }, [currentPrayerTimes, currentPrayer, uid]); // Add dependencies
+    }, [currentPrayerTimes, currentPrayer, uid]);
     
 
     const images = [
@@ -52,43 +56,6 @@ const MosquePage = ({navigation, route}) => {
         setAddress(docSnap.data()["address"])
         setPrayers(docSnap.data()["prayerTimes"])
     }
-
-    const getCurrentPrayerTimes = async () => {
-        for(const prayer of prayers) {
-            const now = new Date();
-            const endDate = new Date(prayer["endDate"].seconds * 1000 + prayer["endDate"].nanoseconds / 1e6);
-            const startDate = new Date(prayer["startDate"].seconds * 1000 + prayer["endDate"].nanoseconds / 1e6);
-            if(now < endDate && now > startDate) {
-                let updatedPrayerTimes = { ...prayer };
-                await updateMaghribTime(updatedPrayerTimes);
-                setCurrentPrayer(getCurrentPrayer(updatedPrayerTimes));
-                break;
-            }
-        }
-    }
-
-    const updateMaghribTime = async (prayerTimes) => {
-        const url = `https://nominatim.openstreetmap.org/search?q=${address}&format=json&addressdetails=1`;
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        const localPrayerTimes = await getLocalPrayerTimes(data[0].address.city, data[0].address.country);
-        const maghribTime = localPrayerTimes.data.timings.Maghrib;
-    
-        let [hour, minute] = maghribTime.split(':').map(Number);
-        const maghribAddition = parseInt(prayerTimes.Maghrib);
-        minute += maghribAddition;
-        if (minute > 59) {
-            hour++;
-            minute -= 60;
-        }
-        let newMaghrib = hour.toString().padStart(2, '0') + ":" + minute.toString().padStart(2, '0');
-        prayerTimes.Maghrib = newMaghrib;
-        setCurrentPrayerTimes(prayerTimes);
-    };
-    
     
     // for testing
     const [post2, setPost] = useState("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...");
