@@ -10,7 +10,7 @@ import convertMilitaryTime from '../functions/convertMilitaryTime';
 
 const PrayerTimes = ({navigation, route}) => {
     const { prayerAndTime, currentPrayer, uid, favMasjids } = route.params;
-    const [masjidPrayerTimes, setMasjidPrayerTimes] = useState('LocalTime')
+    const [masjidPrayerTimes, setMasjidPrayerTimes] = useState(prayerAndTime)
     const [currPrayer, setCurrPrayer] = useState ("")
     const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
@@ -19,7 +19,7 @@ const PrayerTimes = ({navigation, route}) => {
     }, []);
 
     useEffect(() => {
-        console.log(masjidPrayerTimes.length);
+        //prayerAndTime = masjidPrayerTimes;
     }, [masjidPrayerTimes])
 
     return(
@@ -42,25 +42,25 @@ const PrayerTimes = ({navigation, route}) => {
                 <View style={styles.content}>
                     <Text style={styles.mainText }>Mhrm. 1, 1445 AH</Text>
                     <View style={styles.prayerBar}>
-                        <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={prayerAndTime} height={20} currentPrayer={currentPrayer}/>
+                        <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={masjidPrayerTimes} height={20} currentPrayer={currentPrayer}/>
                     </View>
                     <View style={styles.prayerArea}>
-                        {masjidPrayerTimes === "LocalTime"  && prayersOrder.map((prayer, index) => (
-                            <View key={index} style={styles.prayerAndTime}>
-                                {(prayer == currentPrayer) &&
-                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(prayerAndTime[prayer])} currentPrayer={true}/> )}
-                                {(prayer != currentPrayer) &&
-                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(prayerAndTime[prayer])} currentPrayer={false}/> )}
-                            </View>
-                        ))}
-                        {masjidPrayerTimes !== 'LocalTime' && (prayersOrder.map((prayer, index) => (
+                        {masjidPrayerTimes && prayersOrder.map((prayer, index) => (
                             <View key={index} style={styles.prayerAndTime}>
                                 {(prayer == currentPrayer) &&
                                     (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(masjidPrayerTimes[prayer])} currentPrayer={true}/> )}
                                 {(prayer != currentPrayer) &&
                                     (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(masjidPrayerTimes[prayer])} currentPrayer={false}/> )}
                             </View>
-                        )))}
+                        ))}
+                        {/* {masjidPrayerTimes !== 'LocalTime' && (prayersOrder.map((prayer, index) => (
+                            <View key={index} style={styles.prayerAndTime}>
+                                {(prayer == currentPrayer) &&
+                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(masjidPrayerTimes[prayer])} currentPrayer={true}/> )}
+                                {(prayer != currentPrayer) &&
+                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(masjidPrayerTimes[prayer])} currentPrayer={false}/> )}
+                            </View>
+                        )))} */}
                     </View>
                     <View style={styles.location}>
                         <Location 

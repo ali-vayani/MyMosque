@@ -17,6 +17,7 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
     ]), []);
 
     const toMin = (time) => {
+        console.log(time);
         const [hour, minute] = time.split(':').map(Number);
         return hour * 60 + minute;
     };
@@ -51,7 +52,6 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
 
     useEffect(() => {
         if (!prayerAndTime || !currentPrayer) return;
-
         const currPrayerTime = toMin(prayerAndTime[currentPrayer]);
         const nextPrayerTime = toMin(prayerAndTime[prayerKey.get(currentPrayer)]);
         

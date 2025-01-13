@@ -3,7 +3,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../../firebaseConfig';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
+import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
 
 const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjids}) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -54,8 +54,6 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjid
         fetchPrayers();
     }, [prayers])
     
-
-    // Gets Masjid Prayer Times & Sets flatlist to close
     const handlePress = async (masjidId) => {
         try {
             let docRef = doc(FIRESTORE_DB, "mosques", masjidId.replace(/\s/g, ''));
@@ -92,7 +90,6 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjid
                         opacity: .2,
                         }}
                     />
-                    {/* This Flatlist is very ugly, redesign and reimplement*/}
 
                     <FlatList
                         data={['Your Location', ...favMasjidsNames]}
@@ -100,10 +97,11 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjid
                         renderItem={({ item }) => (
                             <TouchableOpacity 
                                 style={styles.listItem} 
-                                onPress={() => {
+                                onPress={ async () => {
                                     if (item === 'Your Location') {
                                         setText('Your Location');
-                                        setMasjidPrayerTimes('LocalTime');
+                                        if(setMasjidPrayerTimes !== null)
+                                            setMasjidPrayerTimes((await getLocalPrayerTimes()).data.timings);
                                     } else {
                                         setText(item.name);
                                         handlePress(item.id);
@@ -121,7 +119,7 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjid
                             </TouchableOpacity>
                         )}
                         ItemSeparatorComponent={() => <View style={styles.separator} />}
-                        ListFooterComponent={<View />} // Adds an empty view after the last item
+                        ListFooterComponent={<View />} 
                     />
 
                 </View>

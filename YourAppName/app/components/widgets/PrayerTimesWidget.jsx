@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
 import PrayerBar from '../elements/PrayerBar';
 import Location from '../elements/Location';
 import getCurrentPrayer from '../../functions/getCurrentPrayer';
-import * as LocationExpo from 'expo-location';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
 
 const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
@@ -12,48 +11,15 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
     const [currentPrayer, setCurrentPrayer] = useState();
 
     useEffect(() => {
-        getUserLocation();
-    }, [])
-
-    const getUserLocation = async () => {
-        let { status } = await LocationExpo.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-            Alert.alert('Permission Denied', 'Permission to access location was denied');
-            return;
+        const getTime = async () => {
+            const data = await getLocalPrayerTimes();
+            console.log(data)
+            setPrayerAndTime(data.data.timings);
+            const currentPrayer = getCurrentPrayer(data.data.timings);
+            setCurrentPrayer(currentPrayer);
         }
-        let currentPosition = await LocationExpo.getCurrentPositionAsync({ accuracy: LocationExpo.Accuracy.High });
-        const { latitude, longitude } = currentPosition.coords;
-        getCityName(latitude, longitude).then(location => {
-            getLocalPrayerTimes(location.city, location.country)
-            .then(data => {
-                setPrayerAndTime(data.data.timings);
-                const currentPrayer = getCurrentPrayer(data.data.timings);
-                setCurrentPrayer(currentPrayer);
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
-        });
-        
-    }
-
-    const getCityName = (lat, lng) => {
-        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
-        return fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                if (data.address && data.address.city) {
-                    return data.address;
-                } else {
-                    console.log("City not found.");
-                    return null;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                return null;
-            });
-    }
+        getTime();
+    }, [])
     
         
     return (
@@ -61,8 +27,7 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
             style={styles.widget} 
             onPress={() => navigation.navigate('PrayerTimes', {
                 prayerAndTime: prayerAndTime, 
-                currentPrayer: 
-                currentPrayer, 
+                currentPrayer: currentPrayer, 
                 uid: uid,
                 favMasjids: favMasjids
             })}>
@@ -86,8 +51,8 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
                 setTime={setTime} 
                 uid={uid} 
                 favMasjids={favMasjids} 
-                setMasjidPrayerTimes={null}
-                setCurrPrayer={null}
+                setMasjidPrayerTimes={setPrayerAndTime}
+                setCurrPrayer={setCurrentPrayer}
             />
         </View>
         </TouchableOpacity>
@@ -104,7 +69,7 @@ const styles = StyleSheet.create({
         borderRadius: 41.5,
         justifyContent: 'center',
         alignItems: 'center',
-        position: 'relative', // Add position relative to contain absolute-positioned dots
+        position: 'relative',
     },
     mainText: {
         fontSize: 32,
