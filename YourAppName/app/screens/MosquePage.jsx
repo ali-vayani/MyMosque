@@ -25,6 +25,7 @@ const MosquePage = ({navigation, route}) => {
     useEffect(() => {
         const fetchPrayerTimes = async () => {
             const info = await getMosquePrayerTimes(prayers, address);
+            console.log(info.mosquePrayerTimes)
             setCurrentPrayerTimes(info.mosquePrayerTimes);
             setCurrentPrayer(info.currentPrayer);
         }

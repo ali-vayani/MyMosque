@@ -29,7 +29,6 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
                 prayerAndTime: prayerAndTime, 
                 currentPrayer: currentPrayer, 
                 uid: uid,
-                favMasjids: favMasjids
             })}>
         <Image 
             source={require('../../../assets/prayerBg.png')} 

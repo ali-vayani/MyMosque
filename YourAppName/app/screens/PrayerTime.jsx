@@ -1,6 +1,5 @@
-// make functionality where masjid id can be param and this page works
-
-import {View, Text, Button, StyleSheet, Image, FlatList, TouchableOpacity} from 'react-native'
+import { FIRESTORE_DB } from '../../firebaseConfig';
+import { doc, getDoc } from "firebase/firestore";import {View, Text, Button, StyleSheet, Image, FlatList, TouchableOpacity} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import PrayerBar from '../components/elements/PrayerBar';
@@ -9,18 +8,25 @@ import PrayerToken from '../components/elements/PrayerToken';
 import convertMilitaryTime from '../functions/convertMilitaryTime';
 
 const PrayerTimes = ({navigation, route}) => {
-    const { prayerAndTime, currentPrayer, uid, favMasjids } = route.params;
+    const { prayerAndTime, currentPrayer, uid } = route.params;
+    const [favMasjids, setFavoriteMasjids] = useState([]);
     const [masjidPrayerTimes, setMasjidPrayerTimes] = useState(prayerAndTime)
     const [currPrayer, setCurrPrayer] = useState ("")
     const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+    const docRef = doc(FIRESTORE_DB, "users", uid);
 
     useEffect(() => {
-        console.log('Received params:', route.params);
+        const getMasjidId = async () => {
+            try{
+                const docSnap = await getDoc(docRef);
+                setFavoriteMasjids(docSnap.data()["favMasjids"]);
+            } catch {
+                setFavoriteMasjids([]);
+            }
+        }
+        getMasjidId();
     }, []);
 
-    useEffect(() => {
-        //prayerAndTime = masjidPrayerTimes;
-    }, [masjidPrayerTimes])
 
     return(
         <View style={styles.page}>

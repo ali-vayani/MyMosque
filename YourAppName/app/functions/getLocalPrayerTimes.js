@@ -1,7 +1,8 @@
 import * as LocationExpo from 'expo-location';
 
-export default getLocalPrayerTimes = async () => {
-    const location = await getUserLocation();
+export default getLocalPrayerTimes = async (location) => {
+    if(!location)
+        location = await getUserLocation();
     let today = new Date();
     const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=2&adjustment=1`
     return fetch(url)
