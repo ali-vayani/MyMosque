@@ -19,6 +19,5 @@ export default function getCurrentPrayer(prayerTimes) {
             //break;
         }
     }
-
     return currentPrayer || "Isha";
 }

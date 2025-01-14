@@ -5,6 +5,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import convertMilitaryTime from '../functions/convertMilitaryTime';
 import getMosquePrayerTimes from '../functions/getMosquePrayerTimes';
+import { BallIndicator } from 'react-native-indicators';
 
 const MosquePage = ({navigation, route}) => {
     const {masjidId, uid} = route.params;
@@ -16,16 +17,34 @@ const MosquePage = ({navigation, route}) => {
     const [prayers, setPrayers] = useState([]);
     const [currentPrayerTimes, setCurrentPrayerTimes] = useState();
     const [currentPrayer, setCurrentPrayer] = useState("")
+    const [isLoading, setIsLoading] = useState(true);
     const docRef = masjidId ? doc(FIRESTORE_DB, "mosques", masjidId.replace(/\s/g, '')) : null;
 
+    const nextPrayer = {
+        "Fajr": "Dhuhr",
+        "Dhuhr": "Asr",
+        "Asr": "Maghrib",
+        "Maghrib": "Isha",
+        "Isha": "Fajr",
+    };
+
     useEffect(() => {
+        const getInfo = async () => {
+            const docSnap = await getDoc(docRef);
+            setPosts(docSnap.data()["posts"])
+            setName(docSnap.data()["name"])
+            setBio(docSnap.data()["bio"]);
+            setMembers(docSnap.data()["members"])
+            setAddress(docSnap.data()["address"])
+            setPrayers(docSnap.data()["prayerTimes"])
+            setIsLoading(false);
+        }
         getInfo();
     },[])
 
     useEffect(() => {
         const fetchPrayerTimes = async () => {
-            const info = await getMosquePrayerTimes(prayers, address);
-            console.log(info.mosquePrayerTimes)
+            const info = await getMosquePrayerTimes(prayers, address)
             setCurrentPrayerTimes(info.mosquePrayerTimes);
             setCurrentPrayer(info.currentPrayer);
         }
@@ -47,16 +66,6 @@ const MosquePage = ({navigation, route}) => {
         'https://images.unsplash.com/photo-1716339140080-be256d3270ce?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     ];
-
-    const getInfo = async () => {
-        const docSnap = await getDoc(docRef);
-        setPosts(docSnap.data()["posts"])
-        setName(docSnap.data()["name"])
-        setBio(docSnap.data()["bio"]);
-        setMembers(docSnap.data()["members"])
-        setAddress(docSnap.data()["address"])
-        setPrayers(docSnap.data()["prayerTimes"])
-    }
     
     // for testing
     const [post2, setPost] = useState("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...");
@@ -73,84 +82,87 @@ const MosquePage = ({navigation, route}) => {
                 left: 0,
                 }}
             />
-            <View style={styles.mainInfo}>
-                <Text style={styles.mainText}>{name}</Text>
-                <View style={styles.info}>
-                    <Image
-                        source={require('../../assets/icon.png')} 
-                        style={{
-                        width: 100,
-                        height: 100,
-                        borderRadius: 10000,
-                        }}
-                    />
-                    
-                    <View style={styles.generalInfo}>
-                        <View style={styles.infoSegment}>
-                            <Text style={{fontSize:14, fontWeight: 600}}>{members}</Text>
-                            <Text style={{fontSize:14}}>Members</Text>
-                        </View>
-                        <View style={styles.infoSegment}>
-                            {currentPrayerTimes && currentPrayer ? (
-                                <>
-                                    <Text style={{fontSize:14, fontWeight: 600}}>{convertMilitaryTime(currentPrayerTimes[currentPrayer])}</Text>
-                                    <Text style={{fontSize:14}}>{currentPrayer}</Text>
-                                </>
+            {isLoading ? <BallIndicator color="#F2EFFB" /> : (
+            <>
+                <View style={styles.mainInfo}>
+                    <Text style={styles.mainText}>{name}</Text>
+                    <View style={styles.info}>
+                        <Image
+                            source={require('../../assets/icon.png')} 
+                            style={{
+                            width: 100,
+                            height: 100,
+                            borderRadius: 10000,
+                            }}
+                        />
+                        
+                        <View style={styles.generalInfo}>
+                            <View style={styles.infoSegment}>
+                                <Text style={{fontSize:14, fontWeight: 600}}>{members}</Text>
+                                <Text style={{fontSize:14}}>Members</Text>
+                            </View>
+                            <View style={styles.infoSegment}>
+                                {currentPrayerTimes && currentPrayer ? (
+                                    <>
+                                        <Text style={{fontSize:14, fontWeight: 600}}>{convertMilitaryTime(currentPrayerTimes[nextPrayer[currentPrayer]])}</Text>
+                                        <Text style={{fontSize:14}}>{nextPrayer[currentPrayer]}</Text>
+                                    </>
+                                    
+                                ) : <>
+                                        <Text style={{fontSize:14, fontWeight: 600}}>Loading...</Text>
+                                        <Text style={{fontSize:14}}>Loading...</Text>
+                                    </>
+                                }
                                 
-                            ) : <>
-                                    <Text style={{fontSize:14, fontWeight: 600}}>Loading...</Text>
-                                    <Text style={{fontSize:14}}>Loading...</Text>
-                                </>
-                            }
-                            
-                        </View>
-                        <View style={styles.infoSegment}>
-                            <Text style={{fontSize:14, fontWeight: 600}}>5</Text>
-                            <Text style={{fontSize:14}}>Events</Text>
+                            </View>
+                            <View style={styles.infoSegment}>
+                                <Text style={{fontSize:14, fontWeight: 600}}>5</Text>
+                                <Text style={{fontSize:14}}>Events</Text>
+                            </View>
                         </View>
                     </View>
+                    <Text 
+                        style={{ marginLeft: 25, marginTop: 15, fontSize:11 }}>
+                        {bio}
+                    </Text>
+                    <View style={styles.buttons}>
+                        <TouchableOpacity style={styles.viewPageButton}>
+                            <Text style={styles.buttonText}>View Calander</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.directionsButton}
+                            onPress={() => {
+                                const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
+                                Linking.openURL(url);
+                            }}
+                        >
+                            <Text style={styles.buttonText}>Directions</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity 
+                            style={styles.prayerTimesButton}
+                            onPress={handleNavigate}
+                            
+                        >
+                            <Text style={styles.buttonText}>Prayer Times</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <Text 
-                    style={{ marginLeft: 25, marginTop: 15, fontSize:11 }}>
-                    {bio}
-                </Text>
-                <View style={styles.buttons}>
-                    <TouchableOpacity style={styles.viewPageButton}>
-                        <Text style={styles.buttonText}>View Calander</Text>
-                    </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={styles.directionsButton}
-                        onPress={() => {
-                            const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
-                            Linking.openURL(url);
-                        }}
-                    >
-                        <Text style={styles.buttonText}>Directions</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity 
-                        style={styles.prayerTimesButton}
-                        onPress={handleNavigate}
-                        
-                    >
-                        <Text style={styles.buttonText}>Prayer Times</Text>
-                    </TouchableOpacity>
+                <View style={styles.posts}>
+                        {posts && posts.map((post, index) => (
+                            <View style={styles.posts} key={index}>
+                                <View style={styles.line}></View>
+                                <Post isText={post["isText"]} time="1 day ago" text={post["text"]} masjidName={post["name"]} color={"#000000"} images={post["images"]}/>
+                            </View>
+                        ))}
+                    <View style={styles.line}></View>
+                    <Post isText={true} time="1 day ago" text={post2} masjidName={name} color={"#000000"}/>
+                    <View style={styles.line}></View>
+                    <Post isText={false} time="1 day ago" text={post2} masjidName={name}  images={images} color={"#000000"}/>
                 </View>
-            </View>
-
-            <View style={styles.posts}>
-                    {posts && posts.map((post, index) => (
-                        <View style={styles.posts} key={index}>
-                            <View style={styles.line}></View>
-                            <Post isText={post["isText"]} time="1 day ago" text={post["text"]} masjidName={post["name"]} color={"#000000"} images={post["images"]}/>
-                        </View>
-                    ))}
-                <View style={styles.line}></View>
-                <Post isText={true} time="1 day ago" text={post2} masjidName={name} color={"#000000"}/>
-                <View style={styles.line}></View>
-                <Post isText={false} time="1 day ago" text={post2} masjidName={name}  images={images} color={"#000000"}/>
-            </View>
+            </>)}
         </ScrollView>
     )
 }

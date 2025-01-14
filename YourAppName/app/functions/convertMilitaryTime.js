@@ -1,4 +1,5 @@
 export default function convertMilitaryTime(militaryTime) {
+    console.log(militaryTime);
     // split into hours & mins
     let [hours, minutes] = militaryTime.split(':').map(Number);
     // am or pm

@@ -5,17 +5,16 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
 
-const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjids}) => {
+const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjids, setLoading}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [favMasjidsNames, setFavMasjidsNames] = useState([]);
     const [text, setText] = useState('Your Location')
     const [prayers, setPrayers] = useState([]);
     const [address, setAddress] = useState("");
     const [currentPrayerTimes, setCurrentPrayerTimes] = useState(null);
-    const [currentPrayer, setCurrentPrayer] = useState("")
+    const [currentPrayer, setCurrentPrayer] = useState(null)
 
     const fetchFavMasjids = async () => {
-
         try {
             let names = [];
             for (let masjidId of favMasjids) {
@@ -39,11 +38,14 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjid
         }
     }, [currentPrayerTimes])
 
-    useEffect(() => {
-        if(currentPrayer !== null && setCurrPrayer != null) {
-            setCurrPrayer(currentPrayer);
-        }
-    }, [setCurrPrayer])
+    // commented out bc it was breaking my code 
+    // useEffect(() => {
+    //     if((currentPrayer !== null || currentPrayer !== "") && setCurrPrayer != null) {
+    //         console.log("test")
+    //         console.log(currentPrayer)
+    //         setCurrPrayer(currentPrayer);
+    //     }
+    // }, [setCurrPrayer])
     
     useEffect(() => {
         const fetchPrayers = async () => {
@@ -69,12 +71,10 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjid
 
     return (
     <View style={styles.wrapper}>
-        {favMasjidsNames.length > 0 ? (
-            <TouchableOpacity style={styles.content} onPress={() => setIsOpen(!isOpen)}>
-                <Ionicons name="navigate" size={25} color={'#F2EFFB'}/>
-                <Text style={styles.locationText}> {text} </Text>
-            </TouchableOpacity>
-        ) : <></>}
+        <TouchableOpacity style={styles.content} onPress={() => setIsOpen(!isOpen)}>
+            <Ionicons name="navigate" size={25} color={'#F2EFFB'}/>
+            <Text style={styles.locationText}> {text} </Text>
+        </TouchableOpacity>
 
         {isOpen && (
                 <View style={styles.dropdownContainer}>
@@ -99,9 +99,14 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjid
                                 style={styles.listItem} 
                                 onPress={ async () => {
                                     if (item === 'Your Location') {
-                                        setText('Your Location');
-                                        if(setMasjidPrayerTimes !== null)
-                                            setMasjidPrayerTimes((await getLocalPrayerTimes()).data.timings);
+                                        if(text !== 'Your Location') {
+                                            setText('Your Location');
+                                            setLoading(true);
+                                            if(setMasjidPrayerTimes !== null) {
+                                                setMasjidPrayerTimes((await getLocalPrayerTimes()).data.timings);
+                                                setLoading(false);
+                                            }
+                                        }
                                     } else {
                                         setText(item.name);
                                         handlePress(item.id);
@@ -144,6 +149,7 @@ const styles = StyleSheet.create({
     },
     dropdownContainer: {
         position: 'absolute',
+        top: -100,
         left: 2,
         right: 0,
         backgroundColor: 'rgb(103, 81, 154)',

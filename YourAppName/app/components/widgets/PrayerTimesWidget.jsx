@@ -4,24 +4,37 @@ import PrayerBar from '../elements/PrayerBar';
 import Location from '../elements/Location';
 import getCurrentPrayer from '../../functions/getCurrentPrayer';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
+import { BallIndicator } from 'react-native-indicators';
 
 const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
     const [time, setTime] = useState('14 min 20 sec')
     const [prayerAndTime, setPrayerAndTime] = useState({});
-    const [currentPrayer, setCurrentPrayer] = useState();
+    const [currentPrayer, setCurrentPrayer] = useState(null);
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const getTime = async () => {
-            const data = await getLocalPrayerTimes();
-            console.log(data)
-            setPrayerAndTime(data.data.timings);
-            const currentPrayer = getCurrentPrayer(data.data.timings);
-            setCurrentPrayer(currentPrayer);
-        }
-        getTime();
-    }, [])
+            setIsLoading(true);
+            await getLocalPrayerTimes()
+                .then((res) => {
+                    const prayer = getCurrentPrayer(res.data.timings);
+                    console.log("Setting currentPrayer locally:", prayer);
+                    setCurrentPrayer(prayer); // Update state
+                    setPrayerAndTime(res.data.timings);
+                })
+                .catch((err) => console.error(err));
     
-        
+            setIsLoading(false);
+        };
+    
+        getTime();
+    }, []);
+    
+    useEffect(() => {
+        console.log("Updated currentPrayer from state:", currentPrayer);
+    }, [currentPrayer]);
+    
+    
     return (
         <TouchableOpacity 
             style={styles.widget} 
@@ -30,30 +43,37 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
                 currentPrayer: currentPrayer, 
                 uid: uid,
             })}>
-        <Image 
-            source={require('../../../assets/prayerBg.png')} 
-            style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            borderRadius: 41.5,
-            opacity: .2,
-            }}
-        />
-        <View style={styles.content}>
-            <Text style={styles.mainText}> Prayer Times </Text>
-            <PrayerBar timeTillNext={ time } nextPrayer={'Maghrib'} size={28} prayerAndTime={prayerAndTime} currentPrayer={currentPrayer} height={30}/>
-            <Location 
-                location={'Your Location'} 
-                setTime={setTime} 
-                uid={uid} 
-                favMasjids={favMasjids} 
-                setMasjidPrayerTimes={setPrayerAndTime}
-                setCurrPrayer={setCurrentPrayer}
+            <Image 
+                source={require('../../../assets/prayerBg.png')} 
+                style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                borderRadius: 41.5,
+                opacity: .2,
+                }}
             />
-        </View>
+            {!isLoading ? (
+                <View style={styles.content}>
+                    <Text style={styles.mainText}> Prayer Times </Text>
+                    <PrayerBar timeTillNext={time} nextPrayer={'Maghrib'} size={28} prayerAndTime={prayerAndTime} currentPrayer={currentPrayer} height={30}/>
+                    <Location 
+                        location={'Your Location'} 
+                        setTime={setTime} 
+                        uid={uid} 
+                        favMasjids={favMasjids} 
+                        setMasjidPrayerTimes={setPrayerAndTime}
+                        setCurrPrayer={setCurrentPrayer}
+                        isLoading={setIsLoading}
+                    />
+                </View>
+            ) : 
+            <View style={styles.loading}>
+                <BallIndicator color="#F2EFFB" />
+            </View>}
+        
         </TouchableOpacity>
     );
 };
@@ -83,4 +103,11 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent: 'space-between',
     },
+    loading : {
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        justifyContent:'center',
+        alignItems: 'center'
+    }
 });

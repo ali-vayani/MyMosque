@@ -17,7 +17,6 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
     ]), []);
 
     const toMin = (time) => {
-        console.log(time);
         const [hour, minute] = time.split(':').map(Number);
         return hour * 60 + minute;
     };
@@ -35,7 +34,6 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
 
     const calculateRemaining = (percentage, timeBetween) => {
         const timeInMin = (1 - percentage) * timeBetween;
-        console.log(formatTime(timeInMin))
         return formatTime(timeInMin);
     };
 
@@ -113,10 +111,6 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
             alignItems: 'center',
         }
     });
-
-    if (!prayerAndTime || !currentPrayer) {
-        return <Text>Loading...</Text>;
-    }
 
     return (
         <View style={styles.content}>

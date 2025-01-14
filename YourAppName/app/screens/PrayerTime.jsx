@@ -1,32 +1,41 @@
-import { FIRESTORE_DB } from '../../firebaseConfig';
-import { doc, getDoc } from "firebase/firestore";import {View, Text, Button, StyleSheet, Image, FlatList, TouchableOpacity} from 'react-native'
+import {View, Text, Button, StyleSheet, Image, FlatList, TouchableOpacity} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import PrayerBar from '../components/elements/PrayerBar';
 import Location from '../components/elements/Location';
 import PrayerToken from '../components/elements/PrayerToken';
 import convertMilitaryTime from '../functions/convertMilitaryTime';
+import { FIRESTORE_DB } from '../../firebaseConfig';
+import { doc, getDoc } from "firebase/firestore";
+import { BallIndicator } from 'react-native-indicators';
 
 const PrayerTimes = ({navigation, route}) => {
     const { prayerAndTime, currentPrayer, uid } = route.params;
     const [favMasjids, setFavoriteMasjids] = useState([]);
     const [masjidPrayerTimes, setMasjidPrayerTimes] = useState(prayerAndTime)
     const [currPrayer, setCurrPrayer] = useState ("")
+    const [isLoading, setIsLoading] = useState(true);
     const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
     const docRef = doc(FIRESTORE_DB, "users", uid);
 
     useEffect(() => {
         const getMasjidId = async () => {
+            setIsLoading(true)
             try{
                 const docSnap = await getDoc(docRef);
                 setFavoriteMasjids(docSnap.data()["favMasjids"]);
             } catch {
                 setFavoriteMasjids([]);
             }
+            setIsLoading(false);
         }
         getMasjidId();
     }, []);
 
+    useEffect(() => {
+        console.log(masjidPrayerTimes)
+        //setIsLoading(false); 
+    }, [masjidPrayerTimes])
 
     return(
         <View style={styles.page}>
@@ -44,7 +53,7 @@ const PrayerTimes = ({navigation, route}) => {
                 }}
             />
 
-            {prayerAndTime || currentPrayer ? (
+            {(prayerAndTime || currentPrayer) && !isLoading ? (
                 <View style={styles.content}>
                     <Text style={styles.mainText }>Mhrm. 1, 1445 AH</Text>
                     <View style={styles.prayerBar}>
@@ -75,11 +84,12 @@ const PrayerTimes = ({navigation, route}) => {
                             setMasjidPrayerTimes={setMasjidPrayerTimes} 
                             favMasjids={favMasjids}
                             setCurrPrayer={setCurrPrayer}
+                            setLoading={setIsLoading}
                         />
                     </View>
                     
                 </View>
-            ) : <></>}
+            ) : <BallIndicator color="#F2EFFB" />}
             
         </View>
     )

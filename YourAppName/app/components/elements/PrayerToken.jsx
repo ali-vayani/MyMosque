@@ -3,11 +3,6 @@ import { View, Text, StyleSheet } from "react-native";
 
 export default PrayerToken = ({ prayer, prayerTime, currentPrayer }) => {
 
-    console.log(prayer);
-
-    // if(prayer == "Sunrise" || prayer == "Sunset")
-    //     return null;
-
     return (
         <>
             {currentPrayer && (
