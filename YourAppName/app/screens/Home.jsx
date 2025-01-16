@@ -20,9 +20,13 @@ const Home = ({navigation, route}) => {
     const getMasjidId = async () => {
         try{
             const docSnap = await getDoc(docRef);
-            setMasjidId(docSnap.data()["favMasjids"]);
+            console.log(docSnap.data()["favMasjids"])
+            if(docSnap.data()["favMasjids"].length > 0)
+                setMasjidId(docSnap.data()["favMasjids"]);
+            else
+                setMasjidId([]);
         } catch {
-            setMasjidId(undefined);
+            setMasjidId([]);
         }
     }
     
@@ -33,7 +37,7 @@ const Home = ({navigation, route}) => {
             <View style={styles.content}>
                 <PrayerTimesWidget navigation={navigation} uid={uid} favMasjids={masjidId}/>
                 <SearchWidget navigation={navigation} uid={uid}/>
-                {masjidId && masjidId.length > 0 ? (
+                {masjidId ? (
                 <MyMosqueWidget navigation={navigation} masjidId={masjidId} uid={uid}/>
                 ) : (
                     <></>

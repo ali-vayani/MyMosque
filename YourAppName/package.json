@@ -27,7 +27,8 @@
     "react-native-date-picker": "^5.0.4",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-indicators": "^0.17.0",
-    "react-native-maps": "1.14.0"
+    "react-native-maps": "1.14.0",
+    "expo-checkbox": "~3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

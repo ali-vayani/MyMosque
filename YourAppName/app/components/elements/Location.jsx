@@ -27,7 +27,8 @@ const Location = ({ setTime, uid, setMosqueInfo, setCurrPrayer, favMasjids, setL
     }
 
     useEffect(() => {
-        fetchFavMasjids();
+        if(favMasjids)
+            fetchFavMasjids();
     }, [favMasjids]);
 
     const handlePress = async (item) => {
