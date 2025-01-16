@@ -5,14 +5,12 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
 
-const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjids, setLoading}) => {
+const Location = ({ setTime, uid, setMosqueInfo, setCurrPrayer, favMasjids, setLoading, name}) => {
+    if(name == undefined)
+        name = 'Your Location'
     const [isOpen, setIsOpen] = useState(false);
     const [favMasjidsNames, setFavMasjidsNames] = useState([]);
-    const [text, setText] = useState('Your Location')
-    const [prayers, setPrayers] = useState([]);
-    const [address, setAddress] = useState("");
-    const [currentPrayerTimes, setCurrentPrayerTimes] = useState(null);
-    const [currentPrayer, setCurrentPrayer] = useState(null)
+    const [text, setText] = useState(name)
 
     const fetchFavMasjids = async () => {
         try {
@@ -32,40 +30,29 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjid
         fetchFavMasjids();
     }, [favMasjids]);
 
-    useEffect(() => {
-        if(setMasjidPrayerTimes !== null && currentPrayerTimes != null) {
-            setMasjidPrayerTimes(currentPrayerTimes);
-        }
-    }, [currentPrayerTimes])
-
-    // commented out bc it was breaking my code 
-    // useEffect(() => {
-    //     if((currentPrayer !== null || currentPrayer !== "") && setCurrPrayer != null) {
-    //         console.log("test")
-    //         console.log(currentPrayer)
-    //         setCurrPrayer(currentPrayer);
-    //     }
-    // }, [setCurrPrayer])
-    
-    useEffect(() => {
-        const fetchPrayers = async () => {
-            const info = await getMosquePrayerTimes(prayers, address);
-            setCurrentPrayerTimes(info.mosquePrayerTimes);
-            setCurrentPrayer(info.currentPrayer);
-        }
-        fetchPrayers();
-    }, [prayers])
-    
-    const handlePress = async (masjidId) => {
+    const handlePress = async (item) => {
         try {
-            let docRef = doc(FIRESTORE_DB, "mosques", masjidId.replace(/\s/g, ''));
+            let docRef = doc(FIRESTORE_DB, "mosques", item.id.replace(/\s/g, ''));
             const docSnap = await getDoc(docRef);
-            setAddress(docSnap.data()["address"])
-            setPrayers(docSnap.data()["prayerTimes"]);
+            const prayers = docSnap.data()["prayerTimes"];
+            const address = docSnap.data()["address"]
+            const info = await getMosquePrayerTimes(prayers, address);
+            
+            if(setMosqueInfo !== null && info != null) {
+                const mosqueInfo = {
+                    prayer: info.mosquePrayerTimes,
+                    name: item.name,
+                }
+                setMosqueInfo(mosqueInfo);
+            }
+
+            if(info.currentPrayer && setCurrPrayer) {
+                setCurrPrayer(info.currentPrayer);
+            }
             setIsOpen(false);
         } catch (error) {
             console.error("Error fetching prayer times: ", error);
-            setMasjidPrayerTimes(["n/a"])
+            setMasjidPrayerTimes([])
         }
     };
 
@@ -104,12 +91,13 @@ const Location = ({ setTime, uid, setMasjidPrayerTimes, setCurrPrayer, favMasjid
                                             setLoading(true);
                                             if(setMasjidPrayerTimes !== null) {
                                                 setMasjidPrayerTimes((await getLocalPrayerTimes()).data.timings);
-                                                setLoading(false);
+                                                setLoading(false)
                                             }
                                         }
                                     } else {
                                         setText(item.name);
-                                        handlePress(item.id);
+                                        setLoading(true)
+                                        await handlePress(item);
                                     }
                                     setIsOpen(false);
                                 }}

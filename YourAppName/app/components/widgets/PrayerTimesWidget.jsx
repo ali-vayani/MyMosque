@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
 import PrayerBar from '../elements/PrayerBar';
 import Location from '../elements/Location';
@@ -12,14 +12,24 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
     const [currentPrayer, setCurrentPrayer] = useState(null);
     const [isLoading, setIsLoading] = useState(true)
 
+    const handleNavigate = useCallback(() => {
+        const mosqueInfo = {
+            prayer: prayerAndTime,
+            name: "Your Location"
+        }
+        navigation.navigate('PrayerTimes', {
+            info: mosqueInfo, 
+            currentPrayer: currentPrayer, 
+            uid: uid,
+        });
+    }, [prayerAndTime, currentPrayer, uid]);
     useEffect(() => {
         const getTime = async () => {
             setIsLoading(true);
             await getLocalPrayerTimes()
                 .then((res) => {
                     const prayer = getCurrentPrayer(res.data.timings);
-                    console.log("Setting currentPrayer locally:", prayer);
-                    setCurrentPrayer(prayer); // Update state
+                    setCurrentPrayer(prayer); 
                     setPrayerAndTime(res.data.timings);
                 })
                 .catch((err) => console.error(err));
@@ -38,11 +48,7 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
     return (
         <TouchableOpacity 
             style={styles.widget} 
-            onPress={() => navigation.navigate('PrayerTimes', {
-                prayerAndTime: prayerAndTime, 
-                currentPrayer: currentPrayer, 
-                uid: uid,
-            })}>
+            onPress={handleNavigate}>
             <Image 
                 source={require('../../../assets/prayerBg.png')} 
                 style={{

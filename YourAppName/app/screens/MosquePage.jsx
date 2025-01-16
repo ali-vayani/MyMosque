@@ -55,7 +55,8 @@ const MosquePage = ({navigation, route}) => {
         navigation.navigate('PrayerTimes', {
             prayerAndTime: currentPrayerTimes,
             currentPrayer: currentPrayer,
-            uid: uid
+            uid: uid,
+            name: name
         });
     }, [currentPrayerTimes, currentPrayer, uid]);
     

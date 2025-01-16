@@ -10,9 +10,10 @@ import { doc, getDoc } from "firebase/firestore";
 import { BallIndicator } from 'react-native-indicators';
 
 const PrayerTimes = ({navigation, route}) => {
-    const { prayerAndTime, currentPrayer, uid } = route.params;
+    const { info, currentPrayer, uid, name } = route.params;
+    const [locationText, setLocText] = useState('Your Location')
     const [favMasjids, setFavoriteMasjids] = useState([]);
-    const [masjidPrayerTimes, setMasjidPrayerTimes] = useState(prayerAndTime)
+    const [mosqueInfo, setMosqueInfo] = useState(info)
     const [currPrayer, setCurrPrayer] = useState ("")
     const [isLoading, setIsLoading] = useState(true);
     const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
@@ -33,9 +34,11 @@ const PrayerTimes = ({navigation, route}) => {
     }, []);
 
     useEffect(() => {
-        console.log(masjidPrayerTimes)
-        //setIsLoading(false); 
-    }, [masjidPrayerTimes])
+        if(mosqueInfo) {
+            setIsLoading(false);
+            setLocText(mosqueInfo.name)
+        }
+    }, [mosqueInfo])
 
     return(
         <View style={styles.page}>
@@ -53,38 +56,31 @@ const PrayerTimes = ({navigation, route}) => {
                 }}
             />
 
-            {(prayerAndTime || currentPrayer) && !isLoading ? (
+            {(info || currentPrayer) && !isLoading ? (
                 <View style={styles.content}>
                     <Text style={styles.mainText }>Mhrm. 1, 1445 AH</Text>
                     <View style={styles.prayerBar}>
-                        <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={masjidPrayerTimes} height={20} currentPrayer={currentPrayer}/>
+                        <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={mosqueInfo.prayer} height={20} currentPrayer={currentPrayer}/>
                     </View>
                     <View style={styles.prayerArea}>
-                        {masjidPrayerTimes && prayersOrder.map((prayer, index) => (
+                        {mosqueInfo.prayer && prayersOrder.map((prayer, index) => (
                             <View key={index} style={styles.prayerAndTime}>
                                 {(prayer == currentPrayer) &&
-                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(masjidPrayerTimes[prayer])} currentPrayer={true}/> )}
+                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(mosqueInfo.prayer[prayer])} currentPrayer={true}/> )}
                                 {(prayer != currentPrayer) &&
-                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(masjidPrayerTimes[prayer])} currentPrayer={false}/> )}
+                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(mosqueInfo.prayer[prayer])} currentPrayer={false}/> )}
                             </View>
                         ))}
-                        {/* {masjidPrayerTimes !== 'LocalTime' && (prayersOrder.map((prayer, index) => (
-                            <View key={index} style={styles.prayerAndTime}>
-                                {(prayer == currentPrayer) &&
-                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(masjidPrayerTimes[prayer])} currentPrayer={true}/> )}
-                                {(prayer != currentPrayer) &&
-                                    (<PrayerToken prayer={prayer} prayerTime={convertMilitaryTime(masjidPrayerTimes[prayer])} currentPrayer={false}/> )}
-                            </View>
-                        )))} */}
                     </View>
                     <View style={styles.location}>
                         <Location 
                             location={'Your Location'} 
                             uid={uid} 
-                            setMasjidPrayerTimes={setMasjidPrayerTimes} 
+                            setMosqueInfo={setMosqueInfo} 
                             favMasjids={favMasjids}
                             setCurrPrayer={setCurrPrayer}
                             setLoading={setIsLoading}
+                            name={name || locationText}
                         />
                     </View>
                     
