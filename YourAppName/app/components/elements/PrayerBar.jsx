@@ -28,7 +28,10 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
             const midnight = 24 * 60;
             const ishaToMidnight = midnight - currPrayerTime;
             const timeBetween = ishaToMidnight + nextPrayerTime;
-            return (currentTimeInMinutes - currPrayerTime) / timeBetween;
+            if(currentTimeInMinutes > 720)
+                return (currentTimeInMinutes - currPrayerTime) / timeBetween;
+            else
+                return (ishaToMidnight + currentTimeInMinutes) / timeBetween;
         }
     };
 

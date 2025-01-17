@@ -5,7 +5,10 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
 
-const Location = ({ setTime, uid, setMosqueInfo, setCurrPrayer, favMasjids, setLoading, name}) => {
+const Location = ({setMosqueInfo, setCurrPrayer, favMasjids, setLoading, name}) => {
+    useEffect(() => {
+        console.log("loading func", setLoading);
+    }, [setLoading])
     if(name == undefined)
         name = 'Your Location'
     const [isOpen, setIsOpen] = useState(false);
@@ -53,7 +56,10 @@ const Location = ({ setTime, uid, setMosqueInfo, setCurrPrayer, favMasjids, setL
             setIsOpen(false);
         } catch (error) {
             console.error("Error fetching prayer times: ", error);
-            setMasjidPrayerTimes([])
+            setMosqueInfo({
+                prayers: {},
+                name: 'Error'
+            })
         }
     };
 
@@ -90,8 +96,12 @@ const Location = ({ setTime, uid, setMosqueInfo, setCurrPrayer, favMasjids, setL
                                         if(text !== 'Your Location') {
                                             setText('Your Location');
                                             setLoading(true);
-                                            if(setMasjidPrayerTimes !== null) {
-                                                setMasjidPrayerTimes((await getLocalPrayerTimes()).data.timings);
+                                            if(setMosqueInfo !== null) {
+                                                const prayers = await getLocalPrayerTimes()
+                                                setMosqueInfo({
+                                                    prayer: prayers.data.timings,
+                                                    name: 'Your Location'
+                                                });
                                                 setLoading(false)
                                             }
                                         }

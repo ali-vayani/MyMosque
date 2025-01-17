@@ -8,29 +8,38 @@ import { BallIndicator } from 'react-native-indicators';
 
 const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
     const [time, setTime] = useState('14 min 20 sec')
-    const [prayerAndTime, setPrayerAndTime] = useState({});
+    const [locationText, setLocText] = useState('Your Location')
     const [currentPrayer, setCurrentPrayer] = useState(null);
     const [isLoading, setIsLoading] = useState(true)
+    const [mosqueInfo, setMosqueInfo] = useState({});
 
     const handleNavigate = useCallback(() => {
-        const mosqueInfo = {
-            prayer: prayerAndTime,
-            name: "Your Location"
-        }
         navigation.navigate('PrayerTimes', {
             info: mosqueInfo, 
             currentPrayer: currentPrayer, 
             uid: uid,
         });
-    }, [prayerAndTime, currentPrayer, uid]);
+    }, [mosqueInfo, currentPrayer, uid]);
+
+    useEffect(() => {
+        if(mosqueInfo) {
+            setIsLoading(false);
+            console.log(mosqueInfo.name);
+            setLocText(mosqueInfo.name)
+        }
+    }, [mosqueInfo])
+
     useEffect(() => {
         const getTime = async () => {
             setIsLoading(true);
             await getLocalPrayerTimes()
                 .then((res) => {
                     const prayer = getCurrentPrayer(res.data.timings);
+                    setMosqueInfo({
+                        prayer: res.data.timings,
+                        name: 'Your Location'
+                    })
                     setCurrentPrayer(prayer); 
-                    setPrayerAndTime(res.data.timings);
                 })
                 .catch((err) => console.error(err));
     
@@ -64,15 +73,13 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
             {!isLoading ? (
                 <View style={styles.content}>
                     <Text style={styles.mainText}> Prayer Times </Text>
-                    <PrayerBar timeTillNext={time} nextPrayer={'Maghrib'} size={28} prayerAndTime={prayerAndTime} currentPrayer={currentPrayer} height={30}/>
+                    <PrayerBar timeTillNext={time} nextPrayer={'Maghrib'} size={28} prayerAndTime={mosqueInfo.prayer} currentPrayer={currentPrayer} height={30}/>
                     <Location 
-                        location={'Your Location'} 
-                        setTime={setTime} 
-                        uid={uid} 
                         favMasjids={favMasjids} 
-                        setMasjidPrayerTimes={setPrayerAndTime}
+                        setMosqueInfo={setMosqueInfo}
                         setCurrPrayer={setCurrentPrayer}
-                        isLoading={setIsLoading}
+                        setLoading={setIsLoading}
+                        name={locationText}
                     />
                 </View>
             ) : 

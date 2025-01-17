@@ -27,7 +27,7 @@ const PrayerTimes = ({navigation, route}) => {
                 setFavoriteMasjids(docSnap.data()["favMasjids"]);
             } catch {
                 setFavoriteMasjids([]);
-            }
+            } 
             setIsLoading(false);
         }
         getMasjidId();
