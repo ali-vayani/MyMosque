@@ -16,7 +16,6 @@ export default function getCurrentPrayer(prayerTimes) {
 
         if (currentTimeInMinutes >= prayerTimeInMinutes) {
             currentPrayer = key;
-            //break;
         }
     }
     return currentPrayer || "Isha";

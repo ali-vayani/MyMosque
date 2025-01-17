@@ -10,7 +10,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { BallIndicator } from 'react-native-indicators';
 
 const PrayerTimes = ({navigation, route}) => {
-    const { info, currentPrayer, uid, name } = route.params;
+    const { info, currentPrayer, uid, name, date } = route.params;
     const [locationText, setLocText] = useState('Your Location')
     const [favMasjids, setFavoriteMasjids] = useState([]);
     const [mosqueInfo, setMosqueInfo] = useState(info)
@@ -58,7 +58,7 @@ const PrayerTimes = ({navigation, route}) => {
 
             {(info || currentPrayer) && !isLoading ? (
                 <View style={styles.content}>
-                    <Text style={styles.mainText }>Mhrm. 1, 1445 AH</Text>
+                    <Text style={styles.mainText }>{date}</Text>
                     <View style={styles.prayerBar}>
                         <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={mosqueInfo.prayer} height={20} currentPrayer={currentPrayer}/>
                     </View>

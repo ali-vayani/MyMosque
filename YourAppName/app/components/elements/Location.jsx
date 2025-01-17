@@ -6,9 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
 
 const Location = ({setMosqueInfo, setCurrPrayer, favMasjids, setLoading, name}) => {
-    useEffect(() => {
-        console.log("loading func", setLoading);
-    }, [setLoading])
     if(name == undefined)
         name = 'Your Location'
     const [isOpen, setIsOpen] = useState(false);

@@ -15,7 +15,6 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
                 const docRef = doc(FIRESTORE_DB, "mosques", id.replace(/\s/g, ''));
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
-                    console.log(`Data for ${id}:`, docSnap.data()["posts"][0]["timeCreated"]);
                     setPosts(docSnap.data()["posts"]);
                 } else {
                     console.log(`No document found for ID: ${id}`);
@@ -27,9 +26,9 @@ const MyMosqueWidget = ({ navigation, masjidId, uid }) => {
     };
     
     useEffect(() => {
-        console.log('mashidId', masjidId);
         getPosts();
     }, [masjidId]);
+
     // for testing
     const images = [
         'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
