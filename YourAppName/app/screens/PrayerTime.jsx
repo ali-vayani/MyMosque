@@ -8,6 +8,8 @@ import convertMilitaryTime from '../functions/convertMilitaryTime';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
 import { BallIndicator } from 'react-native-indicators';
+import { Ionicons } from '@expo/vector-icons';
+import SettingsModal from '../components/elements/SettingsModal';
 
 const PrayerTimes = ({navigation, route}) => {
     const { info, currentPrayer, uid, name, date } = route.params;
@@ -16,6 +18,7 @@ const PrayerTimes = ({navigation, route}) => {
     const [mosqueInfo, setMosqueInfo] = useState(info)
     const [currPrayer, setCurrPrayer] = useState ("")
     const [isLoading, setIsLoading] = useState(true);
+    const [displayModal, setDisplayModal] = useState(false);
     const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
     const docRef = doc(FIRESTORE_DB, "users", uid);
 
@@ -82,8 +85,11 @@ const PrayerTimes = ({navigation, route}) => {
                             setLoading={setIsLoading}
                             name={name || locationText}
                         />
+                        <TouchableOpacity onPress={() => setDisplayModal(true)}>
+                            <Ionicons name="cog-outline" size={25} color={'#F2EFFB'}/>
+                        </TouchableOpacity>
                     </View>
-                    
+                    {displayModal ? <SettingsModal setDisplayModal={setDisplayModal} displayModal={displayModal}/> : <></>}
                 </View>
             ) : <BallIndicator color="#F2EFFB" />}
             
@@ -96,8 +102,12 @@ export default PrayerTimes;
 const styles = StyleSheet.create({
     location: {
         position: 'absolute',
+        width: '85%',
         bottom: 30,
-        left: 21
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
     page: {
         width: '100%',

@@ -4,7 +4,7 @@ export default getLocalPrayerTimes = async (location) => {
     if(!location)
         location = await getUserLocation();
     let today = new Date();
-    const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=2&adjustment=1`
+    const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=2&adjustment=1&school=0`
     return fetch(url)
     .then(response => {
         if (!response.ok) {
