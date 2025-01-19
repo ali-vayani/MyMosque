@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect } from 'react';
 import {
     Modal,
     View,
@@ -6,28 +7,76 @@ import {
     TouchableOpacity,
     StyleSheet,
     Pressable,
+    ScrollView
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const SettingsModal = ({setDisplayModal, displayModal}) => {
-    // Track which dropdown is open
+
+    useEffect(() => {
+        const loadSelection = async () => {
+            try {
+                const savedItem = await AsyncStorage.getItem('prayerTimeSettings');
+                if (savedItem) {
+                    setPrayerTimeSettings(JSON.parse(savedItem));
+                } else {
+
+                }
+            } catch (error) {
+                console.error('Failed to load selection', error);
+            }
+        };
+        loadSelection();
+    }, []);
+
+    useEffect(() => {
+        console.log('settings', prayerTimeSettings);
+    }, [prayerTimeSettings])
+
     const [activeDropdown, setActiveDropdown] = useState(null);
+    const methods = [
+        { name: 'Muslim World Leauge', id: 3 },
+        { name: 'Egyptian General Authority of Survey', id: 5 },
+        { name: 'University of Islamic Sciences, Karachi ', id: 1 },
+        { name: 'Umm Al-Qura University, Makkah', id: 4 },
+        { name: 'Dubai', id: 16 },
+        { name: 'Islamic Society of North America (ISNA)', id: 2 },
+        { name: 'Kuwait', id: 9 },
+        { name: 'Qatar', id: 10 },
+        { name: 'Singapore', id: 12 },
+        { name: 'Tehran', id: 7 },
+        { name: 'Turkey', id: 13 }
+    ]
+
+    const school = [
+        { name: 'Shafi', id: 0 },
+        { name: 'Hanafi', id: 1 },
+    ]
+    const savedSettings = [methods, school];
     
-    const [selected1, setSelected1] = useState('');
-    const [selected2, setSelected2] = useState('');
-    const [selected3, setSelected3] = useState('');
+    const saveSelection = async (item, index) => {
+        try {
+            //await AsyncStorage.setItem(`selectedItem-${index}`, JSON.stringify(item));
+            setPrayerTimeSettings((prevSettings) =>
+                prevSettings.map((setting, i) => (
+                    i === index ? item : setting 
+                ))
+            );
+        } catch (error) {
+            console.error('Failed to save selection', error);
+        }
+    };
+    
 
-    const options1 = ['Option 1A', 'Option 1B', 'Option 1C'];
-    const options2 = ['Option 2A', 'Option 2B', 'Option 2C'];
-    const options3 = ['Option 3A', 'Option 3B', 'Option 3C'];
-
+    const [selected1, setSelected1] = useState("Calculation Method");
+    const [selected2, setSelected2] = useState("Madhad Asr Adjustment");
+    const [prayerTimeSettings, setPrayerTimeSettings] = useState([methods[5], school[0]]);
     const closeAllDropdowns = () => {
         setActiveDropdown(null);
     };
 
     const Dropdown = ({ id, options, selected, setSelected, placeholder }) => {
         const isOpen = activeDropdown === id;
-        
         return (
             <View style={[
                 styles.dropdownContainer,
@@ -44,7 +93,9 @@ const SettingsModal = ({setDisplayModal, displayModal}) => {
                     }}
                 >
                     <Text style={styles.dropdownButtonText}>
-                        {selected || placeholder}
+                        {(selected || placeholder).length > 30 
+                            ? `${(selected || placeholder).substring(0, 30)}...` 
+                            : selected || placeholder}
                     </Text>
                     <Ionicons 
                         name={isOpen ? "chevron-up" : "chevron-down"} 
@@ -55,20 +106,28 @@ const SettingsModal = ({setDisplayModal, displayModal}) => {
                 
                 {isOpen && (
                     <View style={styles.dropdownList}>
-                        {options.map((item, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                style={styles.dropdownItem}
-                                onPress={() => {
-                                    setSelected(item);
-                                    setActiveDropdown(null);
-                                }}
-                            >
-                                <Text style={styles.dropdownItemText}>{item}</Text>
-                            </TouchableOpacity>
-                        ))}
+                        <ScrollView>
+                            {options.map((item, index) => (
+                                <TouchableOpacity
+                                    key={item.id}
+                                    style={styles.dropdownItem}
+                                    onPress={() => {
+                                        saveSelection(item, id)
+                                        setActiveDropdown(null);
+                                    }}
+                                >
+                                    <Text 
+                                        style={styles.dropdownItemText}
+                                        numberOfLines={1} 
+                                        ellipsizeMode="tail">
+                                        {item.name}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
                     </View>
                 )}
+
             </View>
         );
     };
@@ -108,30 +167,18 @@ const SettingsModal = ({setDisplayModal, displayModal}) => {
                     </View>
 
                     <View style={styles.dropdownsContainer}>
-                        <Dropdown 
-                            id={1}
-                            options={options1}
-                            selected={selected1}
-                            setSelected={setSelected1}
-                            placeholder="Select option 1"
-                        />
-                        
-                        <Dropdown 
-                            id={2}
-                            options={options2}
-                            selected={selected2}
-                            setSelected={setSelected2}
-                            placeholder="Select option 2"
-                        />
-                        
-                        <Dropdown 
-                            id={3}
-                            options={options3}
-                            selected={selected3}
-                            setSelected={setSelected3}
-                            placeholder="Select option 3"
-                        />
+                        {prayerTimeSettings.map((settings, index) => {
+                            return <Dropdown
+                                key={index}
+                                id={index}
+                                options={savedSettings[index]}
+                                selected={settings.name}
+                                setSelected={(item, index) => saveSelection(item, index)}
+                                placeholder={"Test"}
+                            />
+                        })}
                     </View>
+
                 </Pressable>
             </Pressable>
         </Modal>
@@ -206,6 +253,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         zIndex: 999,
+        maxHeight: 200,
+        overflow: 'hidden',
     },
     dropdownItem: {
         padding: 12,
