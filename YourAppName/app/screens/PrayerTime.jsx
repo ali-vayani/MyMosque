@@ -19,12 +19,10 @@ const PrayerTimes = ({navigation, route}) => {
     const [currPrayer, setCurrPrayer] = useState ("")
     const [isLoading, setIsLoading] = useState(true);
     const [displayModal, setDisplayModal] = useState(false);
+    const [islamicDate, setIslamicDate] = useState(date);
     const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
     const docRef = doc(FIRESTORE_DB, "users", uid);
 
-    useEffect(() => {
-        console.log(info);
-    }, [])
     useEffect(() => {
         const getMasjidId = async () => {
             setIsLoading(true)
@@ -36,7 +34,35 @@ const PrayerTimes = ({navigation, route}) => {
             } 
             setIsLoading(false);
         }
+
+        const getDate = async () => {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            const formattedDate = `${day}-${month}-${year}`;
+        
+            const url = `https://api.aladhan.com/v1/gToH/${formattedDate}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                const month = data.data.hijri.month.en
+                const day = data.data.hijri.month.days
+                const year = data.data.hijri.year;
+                const date = month + " " + day + ", " + year + " AH";
+                setIslamicDate(date);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return null;
+            }
+        };
+        
         getMasjidId();
+        if(!islamicDate)
+            getDate();
     }, []);
 
     useEffect(() => {
@@ -64,7 +90,7 @@ const PrayerTimes = ({navigation, route}) => {
 
             {(info || currentPrayer) && !isLoading ? (
                 <View style={styles.content}>
-                    <Text style={styles.mainText }>{date}</Text>
+                    <Text style={styles.mainText }>{islamicDate}</Text>
                     <View style={styles.prayerBar}>
                         <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={mosqueInfo.prayer} height={20} currentPrayer={currentPrayer}/>
                     </View>
