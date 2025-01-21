@@ -26,7 +26,7 @@ const updateMaghribTime = async (prayerTimes, address) => {
         throw new Error('Network response was not ok');
     }
     const data = await response.json();
-    const localPrayerTimes = await getLocalPrayerTimes(data[0].address);
+    const localPrayerTimes = await getLocalPrayerTimes(data[0].address, null);
     const maghribTime = localPrayerTimes.data.timings.Maghrib;
 
     let [hour, minute] = maghribTime.split(':').map(Number);

@@ -12,14 +12,17 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
     const [currentPrayer, setCurrentPrayer] = useState(null);
     const [isLoading, setIsLoading] = useState(true)
     const [mosqueInfo, setMosqueInfo] = useState({});
-    const [date, setDate] = useState("")
+    const [date, setDate] = useState("");
+    const [timeSettings, setTimeSettings] = useState([]);
 
     const handleNavigate = useCallback(() => {
         navigation.navigate('PrayerTimes', {
             info: mosqueInfo, 
             currentPrayer: currentPrayer, 
             uid: uid,
-            date: date
+            date: date,
+            setTimeSettings: setTimeSettings,
+            timeSettings: timeSettings
         });
     }, [mosqueInfo, currentPrayer, uid]);
 
@@ -33,7 +36,8 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
     useEffect(() => {
         const getTime = async () => {
             setIsLoading(true);
-            await getLocalPrayerTimes()
+            console.log("uid:", uid)
+            await getLocalPrayerTimes(null, uid)
                 .then((res) => {
                     const month = res.data.date.hijri.month.en;
                     const day = res.data.date.hijri.month.days;
@@ -51,9 +55,9 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
     
             setIsLoading(false);
         };
-    
-        getTime();
-    }, []);
+        if(uid)
+            getTime();
+    }, [uid]);
     
     return (
         <TouchableOpacity 
@@ -81,6 +85,7 @@ const PrayerTimesWidget = ({ navigation, uid, favMasjids }) => {
                         setCurrPrayer={setCurrentPrayer}
                         setLoading={setIsLoading}
                         name={locationText}
+                        uid={uid}
                     />
                 </View>
             ) : 

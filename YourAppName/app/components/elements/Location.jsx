@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
 
-const Location = ({setMosqueInfo, setCurrPrayer, favMasjids, setLoading, name}) => {
+const Location = ({setMosqueInfo, setCurrPrayer, favMasjids, setLoading, name, uid}) => {
     if(name == undefined)
         name = 'Your Location'
     const [isOpen, setIsOpen] = useState(false);
@@ -94,7 +94,7 @@ const Location = ({setMosqueInfo, setCurrPrayer, favMasjids, setLoading, name}) 
                                             setText('Your Location');
                                             setLoading(true);
                                             if(setMosqueInfo !== null) {
-                                                const prayers = await getLocalPrayerTimes()
+                                                const prayers = await getLocalPrayerTimes(null, uid)
                                                 setMosqueInfo({
                                                     prayer: prayers.data.timings,
                                                     name: 'Your Location'

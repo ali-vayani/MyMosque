@@ -1,10 +1,13 @@
 import * as LocationExpo from 'expo-location';
+import { FIRESTORE_DB } from '../../firebaseConfig';
+import { doc, getDoc } from "firebase/firestore";
 
-export default getLocalPrayerTimes = async (location) => {
-    if(!location)
+export default getLocalPrayerTimes = async (location, uid) => {
+    if(!location) 
         location = await getUserLocation();
     let today = new Date();
-    const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=2&adjustment=1&school=0`
+    const settings = await getTimeSettings(uid)
+    const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=${settings[0].id}&adjustment=1&school=${settings[1].id}`
     return fetch(url)
     .then(response => {
         if (!response.ok) {
@@ -41,4 +44,21 @@ const getCityName = async (lat, lng) => {
             console.error('Error:', error);
             return null;
         });
+}
+
+const getTimeSettings = async (uid) => {
+    if(uid) {
+        const docRef = doc(FIRESTORE_DB, "users", uid);
+        try{
+            const docSnap = await getDoc(docRef);
+            if(docSnap.data()["prayerTimeSettings"].length > 0)
+                return docSnap.data()["prayerTimeSettings"]
+            else
+                return [{id: 2, name: 'North America (ISNA)'},{id: 0, name: 'Shafi'}]
+        } catch {
+            return [{id: 2, name: 'North America (ISNA)'},{id: 0, name: 'Shafi'}]
+        }
+    }
+
+    return [{id: 2, name: 'North America (ISNA)'},{id: 0, name: 'Shafi'}]
 }

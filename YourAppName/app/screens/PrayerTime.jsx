@@ -12,16 +12,19 @@ import { Ionicons } from '@expo/vector-icons';
 import SettingsModal from '../components/elements/SettingsModal';
 
 const PrayerTimes = ({navigation, route}) => {
-    const { info, currentPrayer, uid, name, date } = route.params;
+    const { info, currentPrayer, uid, name, date, setTimeSettings, timeSettings} = route.params;
     const [locationText, setLocText] = useState('Your Location')
     const [favMasjids, setFavoriteMasjids] = useState([]);
-    const [mosqueInfo, setMosqueInfo] = useState(info)
+    const [mosqueInfo, setMosqueInfo] = useState(info) // idk why i named it this way, {prayerTimes & name}
     const [currPrayer, setCurrPrayer] = useState ("")
     const [isLoading, setIsLoading] = useState(true);
     const [displayModal, setDisplayModal] = useState(false);
     const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
     const docRef = doc(FIRESTORE_DB, "users", uid);
 
+    useEffect(() => {
+        console.log(info);
+    }, [])
     useEffect(() => {
         const getMasjidId = async () => {
             setIsLoading(true)
@@ -89,7 +92,12 @@ const PrayerTimes = ({navigation, route}) => {
                             <Ionicons name="cog-outline" size={25} color={'#F2EFFB'}/>
                         </TouchableOpacity>
                     </View>
-                    {displayModal ? <SettingsModal setDisplayModal={setDisplayModal} displayModal={displayModal}/> : <></>}
+                    {displayModal ? <SettingsModal 
+                                        setDisplayModal={setDisplayModal} 
+                                        displayModal={displayModal} 
+                                        uid={uid}
+                                        setPrayerInfo={setMosqueInfo}
+                                    /> : <></>}
                 </View>
             ) : <BallIndicator color="#F2EFFB" />}
             

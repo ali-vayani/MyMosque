@@ -10,69 +10,68 @@ import {
     ScrollView
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { FIRESTORE_DB } from '../../../firebaseConfig';
+import { doc, setDoc, getDoc} from "firebase/firestore";
+import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
 
-const SettingsModal = ({setDisplayModal, displayModal}) => {
-
-    useEffect(() => {
-        const loadSelection = async () => {
-            try {
-                const savedItem = await AsyncStorage.getItem('prayerTimeSettings');
-                if (savedItem) {
-                    setPrayerTimeSettings(JSON.parse(savedItem));
-                } else {
-
-                }
-            } catch (error) {
-                console.error('Failed to load selection', error);
-            }
-        };
-        loadSelection();
-    }, []);
-
-    useEffect(() => {
-        console.log('settings', prayerTimeSettings);
-    }, [prayerTimeSettings])
-
+const SettingsModal = ({setDisplayModal, displayModal, uid, setPrayerInfo}) => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const methods = [
         { name: 'Muslim World Leauge', id: 3 },
         { name: 'Egyptian General Authority of Survey', id: 5 },
-        { name: 'University of Islamic Sciences, Karachi ', id: 1 },
-        { name: 'Umm Al-Qura University, Makkah', id: 4 },
+        { name: 'Karachi ', id: 1 },
+        { name: 'Umm Al-Qura', id: 4 },
         { name: 'Dubai', id: 16 },
-        { name: 'Islamic Society of North America (ISNA)', id: 2 },
+        { name: 'North America (ISNA)', id: 2 },
         { name: 'Kuwait', id: 9 },
         { name: 'Qatar', id: 10 },
         { name: 'Singapore', id: 12 },
         { name: 'Tehran', id: 7 },
         { name: 'Turkey', id: 13 }
     ]
-
     const school = [
         { name: 'Shafi', id: 0 },
         { name: 'Hanafi', id: 1 },
     ]
     const savedSettings = [methods, school];
-    
+    const [prayerTimeSettings, setPrayerTimeSettings] = useState([methods[5], school[0]]);
+    useEffect(() => {
+        const loadSelection = async () => {
+            const docRef = doc(FIRESTORE_DB, "users", uid);
+            try{
+                const docSnap = await getDoc(docRef);
+                if(docSnap.data()["prayerTimeSettings"].length > 0)
+                    setPrayerTimeSettings(docSnap.data()["prayerTimeSettings"])
+                else
+                    return;
+            } catch {
+                return;
+            }
+        }
+        loadSelection();
+    }, [])
+    const closeAllDropdowns = () => {
+        setActiveDropdown(null);
+    };
+    const updateTimeSettings = async (prayerTimeSettings) => {
+        const userRef = doc(FIRESTORE_DB, "users", uid);
+        await setDoc(userRef, {prayerTimeSettings}, {merge: true});
+        const localPrayerTimes = await getLocalPrayerTimes(null, uid);
+        setPrayerInfo({prayer: localPrayerTimes.data.timings, name: 'Your Location'})
+    }
+
     const saveSelection = async (item, index) => {
         try {
-            //await AsyncStorage.setItem(`selectedItem-${index}`, JSON.stringify(item));
-            setPrayerTimeSettings((prevSettings) =>
-                prevSettings.map((setting, i) => (
-                    i === index ? item : setting 
-                ))
+            const updatedSettings = prayerTimeSettings.map((setting, i) =>
+                i === index ? item : setting
             );
+    
+            setPrayerTimeSettings(updatedSettings);
+            await updateTimeSettings(updatedSettings);
+
         } catch (error) {
             console.error('Failed to save selection', error);
         }
-    };
-    
-
-    const [selected1, setSelected1] = useState("Calculation Method");
-    const [selected2, setSelected2] = useState("Madhad Asr Adjustment");
-    const [prayerTimeSettings, setPrayerTimeSettings] = useState([methods[5], school[0]]);
-    const closeAllDropdowns = () => {
-        setActiveDropdown(null);
     };
 
     const Dropdown = ({ id, options, selected, setSelected, placeholder }) => {
