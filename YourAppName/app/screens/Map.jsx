@@ -18,7 +18,6 @@ const Map = ({ navigation, route }) => {
     const [expanded, setExpanded] = useState(null);
     const [masjidId, setMasjidID] = useState(null);
 
-    console.log(markers);
 
     useEffect(() => {
         (async () => {
@@ -184,6 +183,8 @@ const Map = ({ navigation, route }) => {
                         marker={marker} 
                         name={index} 
                         onPress={() => onListItemPress(marker.geometry.location.lat, marker.geometry.location.lng)}
+                        navigation={navigation}
+                        uid={uid}
                     />
                 ))}
             </ScrollView>

@@ -67,14 +67,14 @@ const SearchWidget = ({ navigation, inputVersion, onSubmit, setValue, value, uid
                 inputVersion && 
                 <View style={[styles.content]}>
                 <TouchableOpacity onPress={ dismissKeyboard && onSubmit }>
-                    <Ionicons name="search-outline" size={36} color={'#FFF4D2'}/>
+                    <Ionicons name="search-sharp" size={36} color={'#E6E8EC'} />
                 </TouchableOpacity>
                 <TextInput
                     style={styles.textarea}
                     returnKeyType='done'
                     onSubmitEditing={dismissKeyboard && onSubmit}
                     placeholder={'Search for a Mosque'}
-                    placeholderTextColor={"rgba(255, 244, 210, .5)"}
+                    placeholderTextColor={"rgba(230, 232, 236, .5)"}
                     onChangeText={text => setValue(text)}
                     value={value} 
                 />

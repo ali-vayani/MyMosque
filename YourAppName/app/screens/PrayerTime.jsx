@@ -22,7 +22,7 @@ const PrayerTimes = ({navigation, route}) => {
     const [islamicDate, setIslamicDate] = useState(date);
     const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
     const docRef = doc(FIRESTORE_DB, "users", uid);
-
+    console.log(info)
     useEffect(() => {
         const getMasjidId = async () => {
             setIsLoading(true)

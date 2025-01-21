@@ -45,12 +45,12 @@ const MosquePage = ({navigation, route}) => {
     useEffect(() => {
         const fetchPrayerTimes = async () => {
             const info = await getMosquePrayerTimes(prayers, address)
-            console.log("info:", info.currentPrayer)
             setCurrentPrayerTimes(info.mosquePrayerTimes);
             setCurrentPrayer(info.currentPrayer);
         }
         fetchPrayerTimes();
     }, [prayers]);
+
 
     const handleNavigate = useCallback(() => {
         navigation.navigate('PrayerTimes', {

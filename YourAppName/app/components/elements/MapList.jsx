@@ -1,12 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../../firebaseConfig';
 import { View, Text, Linking, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default MapList = ({ pageLink, directions, prayerLink, marker, onPress }) => {
+export default MapList = ({ uid, marker, onPress, navigation}) => {
     const [address, setAddress] = useState(marker.vicinity || marker.formatted_address);
     const [name, setName] = useState(marker.name);
+
+    const handleNavigate = async (navigateTo) => {
+        try {
+            const getMosqueWithAddress = query(collection(FIRESTORE_DB, "mosques"), where("address", "==", address));
+            const querySnapshot = await getDocs(getMosqueWithAddress);
+            if(navigateTo == "MosquePage")
+                navigation.navigate("MosquePage", {masjidId: querySnapshot.docs[0].id, uid: uid})
+            else if(navigateTo == "PrayerTimes") {
+                const prayers = querySnapshot.docs[0].data().prayerTimes;
+                const info = await getMosquePrayerTimes(prayers, address);
+                console.log("info", info);
+                const name = querySnapshot.docs[0].data().name;
+
+                navigation.navigate('PrayerTimes', {
+                    info: {
+                        prayer: info.mosquePrayerTimes,
+                        name: name
+                    },
+                    currentPrayer: info.currentPrayer,
+                    uid: uid,
+                });
+            }
+        } catch (error){
+            console.error("an error occured: ", error)
+        }
+    }
 
     return (
         <TouchableOpacity style={styles.container} onPress={onPress}>
@@ -26,7 +52,9 @@ export default MapList = ({ pageLink, directions, prayerLink, marker, onPress })
                 <Text style={styles.nameText}>{name}</Text>
 
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.viewPageButton}>
+                    <TouchableOpacity style={styles.viewPageButton}
+                        onPress={() => handleNavigate("MosquePage")}
+                    >
                         <Text style={styles.buttonText}>View Page</Text>
                     </TouchableOpacity>
 
@@ -41,7 +69,9 @@ export default MapList = ({ pageLink, directions, prayerLink, marker, onPress })
                         <Text style={styles.buttonText}>Directions</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.prayerTimesButton}>
+                    <TouchableOpacity style={styles.prayerTimesButton}
+                        onPress={() => handleNavigate("PrayerTimes")}
+                    >
                         <Text style={styles.buttonText}>Prayer Times</Text>
                     </TouchableOpacity>
                 </View>
