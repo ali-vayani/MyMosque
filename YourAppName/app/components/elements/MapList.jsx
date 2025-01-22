@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 export default MapList = ({ uid, marker, onPress, navigation}) => {
     const [address, setAddress] = useState(marker.vicinity || marker.formatted_address);
     const [name, setName] = useState(marker.name);
-
+    console.log(address)
     const handleNavigate = async (navigateTo) => {
         try {
             const getMosqueWithAddress = query(collection(FIRESTORE_DB, "mosques"), where("address", "==", address));
@@ -17,7 +17,6 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
             else if(navigateTo == "PrayerTimes") {
                 const prayers = querySnapshot.docs[0].data().prayerTimes;
                 const info = await getMosquePrayerTimes(prayers, address);
-                console.log("info", info);
                 const name = querySnapshot.docs[0].data().name;
 
                 navigation.navigate('PrayerTimes', {

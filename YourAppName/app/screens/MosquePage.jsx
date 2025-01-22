@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {View, Text, Button, StyleSheet, Image, Linking, TouchableOpacity, ScrollView} from 'react-native'
 import Post from '../components/elements/Post';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import convertMilitaryTime from '../functions/convertMilitaryTime';
 import getMosquePrayerTimes from '../functions/getMosquePrayerTimes';
 import { BallIndicator } from 'react-native-indicators';
+import { Ionicons } from '@expo/vector-icons';
 
 const MosquePage = ({navigation, route}) => {
     const {masjidId, uid} = route.params;
@@ -18,7 +19,10 @@ const MosquePage = ({navigation, route}) => {
     const [currentPrayerTimes, setCurrentPrayerTimes] = useState();
     const [currentPrayer, setCurrentPrayer] = useState("")
     const [isLoading, setIsLoading] = useState(true);
+    const [joined, setJoined] = useState(false);
     const docRef = masjidId ? doc(FIRESTORE_DB, "mosques", masjidId.replace(/\s/g, '')) : null;
+    const userRef = doc(FIRESTORE_DB, "users", uid);
+
 
     const nextPrayer = {
         "Fajr": "Dhuhr",
@@ -31,16 +35,22 @@ const MosquePage = ({navigation, route}) => {
     useEffect(() => {
         const getInfo = async () => {
             const docSnap = await getDoc(docRef);
+            const userSnap = await getDoc(userRef)
             setPosts(docSnap.data()["posts"])
             setName(docSnap.data()["name"])
             setBio(docSnap.data()["bio"]);
             setMembers(docSnap.data()["members"])
             setAddress(docSnap.data()["address"])
             setPrayers(docSnap.data()["prayerTimes"])
+            userSnap.data()["favMasjids"].map((mid) => {
+                if(mid == masjidId)
+                    setJoined(true);
+            })
             setIsLoading(false);
         }
         getInfo();
     },[])
+
 
     useEffect(() => {
         const fetchPrayerTimes = async () => {
@@ -51,6 +61,31 @@ const MosquePage = ({navigation, route}) => {
         fetchPrayerTimes();
     }, [prayers]);
 
+    const handleBookmar = async () => {
+        if (joined) {
+            setJoined(false);
+            try {
+                const userSnap = await getDoc(userRef);
+                let favMasjids = userSnap.data()?.favMasjids || [];
+                favMasjids = favMasjids.filter(mid => mid !== masjidId);
+                await updateDoc(userRef, { favMasjids });
+            } catch (error) {
+                console.error("Error updating favorites: ", error);
+            }
+        } else {
+            setJoined(true);
+            try {
+                const userSnap = await getDoc(userRef);
+                let favMasjids = userSnap.data()?.favMasjids || [];
+                if (!favMasjids.includes(masjidId)) {
+                    favMasjids = [...favMasjids, masjidId];
+                }
+                await updateDoc(userRef, { favMasjids });
+            } catch (error) {
+                console.error("Error updating favorites: ", error);
+            }
+        }
+    };
 
     const handleNavigate = useCallback(() => {
         navigation.navigate('PrayerTimes', {
@@ -89,6 +124,19 @@ const MosquePage = ({navigation, route}) => {
             {isLoading ? <BallIndicator color="#F2EFFB" /> : (
             <>
                 <View style={styles.mainInfo}>
+                    <TouchableOpacity
+                        style={{
+                            position: 'absolute',
+                            right: 32,
+                            zIndex: 10
+                        }}
+                        onPress={() => {
+                            handleBookmar();
+                        }}
+                        
+                    >
+                        {joined ? <Ionicons name="bookmark" size={24} /> : <Ionicons name="bookmark-outline" size={24} />}
+                    </TouchableOpacity>
                     <Text style={styles.mainText}>{name}</Text>
                     <View style={styles.info}>
                         <Image
@@ -120,13 +168,14 @@ const MosquePage = ({navigation, route}) => {
                                 
                             </View>
                             <View style={styles.infoSegment}>
-                                <Text style={{fontSize:14, fontWeight: 600}}>5</Text>
+                                <Text style={{fontSize:14}}>5</Text>
                                 <Text style={{fontSize:14}}>Events</Text>
                             </View>
                         </View>
                     </View>
                     <Text 
                         style={{ marginLeft: 25, marginTop: 15, fontSize:11 }}>
+                            
                         {bio}
                     </Text>
                     <View style={styles.buttons}>
@@ -206,6 +255,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         display: 'flex',
         marginTop: 60,
+        pointerEvents: "box-none" 
 
     },
     mainText: {

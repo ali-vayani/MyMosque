@@ -44,7 +44,7 @@ const Map = ({ navigation, route }) => {
     const fetchNearbyMosques = async (lat, lng, nextPageToken = null) => {
         const radius = 24000;
         const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
-        let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&keyword=mosque&key=${apiKey}`;
+        let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=mosque&key=${apiKey}`;
         
         if (nextPageToken) {
             url += `&pagetoken=${nextPageToken}`;
@@ -90,8 +90,8 @@ const Map = ({ navigation, route }) => {
                 {
                     latitude,
                     longitude,
-                    latitudeDelta: 0.075,
-                    longitudeDelta: 0.075,
+                    latitudeDelta: 0.025,
+                    longitudeDelta: 0.025,
                 },
                 500
             );
