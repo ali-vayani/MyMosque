@@ -14,6 +14,8 @@ import Feed from './app/screens/Feed';
 import MosquePage from './app/screens/MosquePage';
 import SetUp from './app/screens/SetUp';
 import CreateAccount from './app/screens/CreateAccount';
+import Calander from './app/screens/Calander';
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -31,6 +33,7 @@ export default function App() {
         <Stack.Screen name='EditMosque' component={EditMosque} options={{headerShown: false}} />
         <Stack.Screen name='Feed' component={Feed} options={{headerShown: false}} />
         <Stack.Screen name='MosquePage' component={MosquePage} options={{headerShown: false}} />
+        <Stack.Screen name="Calander" component={Calander} options={{headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

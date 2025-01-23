@@ -179,7 +179,10 @@ const MosquePage = ({navigation, route}) => {
                         {bio}
                     </Text>
                     <View style={styles.buttons}>
-                        <TouchableOpacity style={styles.viewPageButton}>
+                        <TouchableOpacity 
+                            style={styles.viewPageButton}
+                            onPress={() => navigation.navigate('Calander')}
+                        >
                             <Text style={styles.buttonText}>View Calander</Text>
                         </TouchableOpacity>
 
