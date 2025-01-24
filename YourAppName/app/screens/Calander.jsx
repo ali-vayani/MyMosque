@@ -23,39 +23,13 @@ const Calendar = ({route}) => {
         }
         getInfo()
     }, [])
-    // const events = {
-    //     '2025-01-23': [
-    //     { id: 1, title: 'Event1', time: '7:30pm' },
-    //     { id: 2, title: 'Event2', time: 'After Isha' }
-    //     ],
-    //     '2025-01-24': [
-    //         { id: 1, title: 'Event3', time: '7:30pm' },
-    //         { id: 2, title: 'Event4', time: 'After Isha' }
-    //     ],
-    //     '2025-01-25': [
-    //         { id: 1, title: 'Event5', time: '7:30pm' },
-    //         { id: 2, title: 'Event6', time: 'After Isha' }
-    //     ],
-    //     '2025-01-26': [
-    //         { id: 1, title: 'Event7', time: '7:30pm' },
-    //         { id: 2, title: 'Event8', time: 'After Isha' }
-    //     ],
-    //     '2025-01-27': [
-    //         { id: 1, title: 'Event9', time: '7:30pm' },
-    //         { id: 2, title: 'Event0', time: 'After Isha' }
-    //     ],
-    // };
 
     const formatDate = (date) => {
-        // Create a new date object to avoid modifying the original
         const localDate = new Date(date.getTime());
-        //localDate.setMinutes(localDate.getMinutes() + localDate.getTimezoneOffset());
         return `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`;
     };
 
     const getSectionData = () => {
-        const dateString = selectedDate ? formatDate(selectedDate) : '';
-        console.log(dateString)
         const currentDate = new Date(selectedDate);
         const sections = [];
         

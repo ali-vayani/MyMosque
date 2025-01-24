@@ -20,6 +20,7 @@ const MosquePage = ({navigation, route}) => {
     const [currentPrayer, setCurrentPrayer] = useState("")
     const [isLoading, setIsLoading] = useState(true);
     const [joined, setJoined] = useState(false);
+    const [numEvents, setNumEvents] = useState(0);
     const docRef = masjidId ? doc(FIRESTORE_DB, "mosques", masjidId.replace(/\s/g, '')) : null;
     const userRef = doc(FIRESTORE_DB, "users", uid);
 
@@ -36,6 +37,10 @@ const MosquePage = ({navigation, route}) => {
         const getInfo = async () => {
             const docSnap = await getDoc(docRef);
             const userSnap = await getDoc(userRef)
+            const dateFormatted = formatDate(new Date);
+            const events = docSnap.data()['events']
+            const todaysEvent = events[dateFormatted]
+            setNumEvents(todaysEvent == undefined ? 0 : todaysEvent.length);
             setPosts(docSnap.data()["posts"])
             setName(docSnap.data()["name"])
             setBio(docSnap.data()["bio"]);
@@ -60,6 +65,11 @@ const MosquePage = ({navigation, route}) => {
         }
         fetchPrayerTimes();
     }, [prayers]);
+
+    const formatDate = (date) => {
+        const localDate = new Date(date.getTime());
+        return `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`;
+    };
 
     const handleBookmar = async () => {
         if (joined) {
@@ -168,8 +178,8 @@ const MosquePage = ({navigation, route}) => {
                                 
                             </View>
                             <View style={styles.infoSegment}>
-                                <Text style={{fontSize:14}}>5</Text>
-                                <Text style={{fontSize:14}}>Events</Text>
+                                <Text style={{fontSize:14, fontWeight: 600}}>{numEvents}</Text>
+                                <Text style={{fontSize:14}}>Event(s)</Text>
                             </View>
                         </View>
                     </View>
