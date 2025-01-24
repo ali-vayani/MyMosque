@@ -181,7 +181,7 @@ const MosquePage = ({navigation, route}) => {
                     <View style={styles.buttons}>
                         <TouchableOpacity 
                             style={styles.viewPageButton}
-                            onPress={() => navigation.navigate('Calander')}
+                            onPress={() => navigation.navigate('Calander', {masjidId: masjidId, uid: uid})}
                         >
                             <Text style={styles.buttonText}>View Calander</Text>
                         </TouchableOpacity>

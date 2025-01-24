@@ -1,40 +1,61 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SectionList } from 'react-native';
 import { Calendar as RNCalendar } from 'react-native-calendars';
+import { FIRESTORE_DB } from '../../firebaseConfig';
+import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 
-const Calendar = () => {
+const Calendar = ({route}) => {
+    const {masjidId, uid} = route.params;
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [events, setEvents] = useState({});
+    const docRef = masjidId ? doc(FIRESTORE_DB, "mosques", masjidId.replace(/\s/g, '')) : null;
 
-    const events = {
-        '2025-01-23': [
-        { id: 1, title: 'Event', time: '7:30pm' },
-        { id: 2, title: 'Event', time: 'After Isha' }
-        ],
-        '2025-01-24': [
-            { id: 1, title: 'Event', time: '7:30pm' },
-            { id: 2, title: 'Event', time: 'After Isha' }
-        ],
-        '2025-01-25': [
-            { id: 1, title: 'Event', time: '7:30pm' },
-            { id: 2, title: 'Event', time: 'After Isha' }
-        ],
-        '2025-01-26': [
-            { id: 1, title: 'Event', time: '7:30pm' },
-            { id: 2, title: 'Event', time: 'After Isha' }
-        ],
-        '2025-01-27': [
-            { id: 1, title: 'Event', time: '7:30pm' },
-            { id: 2, title: 'Event', time: 'After Isha' }
-        ],
-    };
+    useEffect(() => {
+        const getInfo = async () => {
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                setEvents(data.events);
+            } else {
+                console.log("No such document!");
+            }
+        }
+        getInfo()
+    }, [])
+    // const events = {
+    //     '2025-01-23': [
+    //     { id: 1, title: 'Event1', time: '7:30pm' },
+    //     { id: 2, title: 'Event2', time: 'After Isha' }
+    //     ],
+    //     '2025-01-24': [
+    //         { id: 1, title: 'Event3', time: '7:30pm' },
+    //         { id: 2, title: 'Event4', time: 'After Isha' }
+    //     ],
+    //     '2025-01-25': [
+    //         { id: 1, title: 'Event5', time: '7:30pm' },
+    //         { id: 2, title: 'Event6', time: 'After Isha' }
+    //     ],
+    //     '2025-01-26': [
+    //         { id: 1, title: 'Event7', time: '7:30pm' },
+    //         { id: 2, title: 'Event8', time: 'After Isha' }
+    //     ],
+    //     '2025-01-27': [
+    //         { id: 1, title: 'Event9', time: '7:30pm' },
+    //         { id: 2, title: 'Event0', time: 'After Isha' }
+    //     ],
+    // };
 
     const formatDate = (date) => {
-        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()+1).padStart(2, '0')}`;
+        // Create a new date object to avoid modifying the original
+        const localDate = new Date(date.getTime());
+        //localDate.setMinutes(localDate.getMinutes() + localDate.getTimezoneOffset());
+        return `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`;
     };
 
     const getSectionData = () => {
         const dateString = selectedDate ? formatDate(selectedDate) : '';
+        console.log(dateString)
         const currentDate = new Date(selectedDate);
         const sections = [];
         
@@ -81,10 +102,10 @@ const Calendar = () => {
                     style={styles.calendar}
                     current={currentMonth.toISOString()}
                     onDayPress={(day) => {
-                            const selectedDate = new Date(day.dateString);
-                            setSelectedDate(selectedDate);
-                        }
-                    }
+                        const selectedDate = new Date(day.dateString);
+                        selectedDate.setDate(selectedDate.getDate() + 1);
+                        setSelectedDate(selectedDate);
+                    }}
                     markedDates={{
                         [formatDate(selectedDate)]: { selected: true, selectedColor: '#67519A', backgroundColor: '#000000'},
                         ...Object.keys(events).reduce((acc, date) => ({
@@ -100,19 +121,15 @@ const Calendar = () => {
                 />
             </View>
             <View style={styles.eventsContainer}>
-                {/* <Text style={styles.eventsHeader}>
-                    {selectedDate ? selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) : 'Today'}
-                </Text> */}
                 <SectionList
-                sections={getSectionData()}
-                keyExtractor={(item, index) => item.id + index}
-                renderItem={renderItem}
-                renderSectionHeader={renderSectionHeader}
-                renderSectionFooter={({ section }) => 
-                    section.data.length === 0 ? renderEmptyComponent() : null
-                }
-                // stickySectionHeadersEnabled={true}
-                style={styles.eventsList}
+                    sections={getSectionData()}
+                    keyExtractor={(item, index) => item.id + index-1}
+                    renderItem={renderItem}
+                    renderSectionHeader={renderSectionHeader}
+                    renderSectionFooter={({ section }) => 
+                        section.data.length === 0 ? renderEmptyComponent() : null
+                    }
+                    style={styles.eventsList}
                 />
             </View>
         </View>
