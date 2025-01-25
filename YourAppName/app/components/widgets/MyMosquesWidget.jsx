@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderBottomWidth: 0,
         borderColor: '#ebfeea80', 
-        gap: '15px',
+        gap: 15,
         position: 'sticky'
     },
     header: {
