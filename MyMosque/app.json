@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "MyMosque",
+    "slug": "MyMosque",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c"
+      },
+      "bundleIdentifier": "com.anonymous.MyMosque"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "config": {
+        "googleMapsApiKey": "AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
