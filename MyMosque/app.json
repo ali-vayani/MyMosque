@@ -25,10 +25,16 @@
       },
       "config": {
         "googleMapsApiKey": "AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c"
-      }
+      },
+      "package": "com.anonymous.MyMosque"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c20241f6-743b-4ebe-ae2f-cadc5057fc38"
+      }
     }
   }
 }
