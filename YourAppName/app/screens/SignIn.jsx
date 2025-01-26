@@ -16,7 +16,8 @@ export default function SignIn ({navigation}) {
             const userCredential = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
             const user = userCredential.user;
             const uid = user.uid;
-            navigation.navigate('Home', {uid: uid});
+            /* UID HARD CODED RN */
+            navigation.navigate('Home', {uid: "6795845fb377d17d6886318d"});
         } catch (error) {
             const errorCode = error.code;
             const errorMessage = error.message;

@@ -6,10 +6,12 @@ import MyMosqueWidget from '../components/widgets/MyMosquesWidget';
 import { useState, useEffect  } from 'react';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
+import axios from 'axios';
 
 const Home = ({navigation, route}) => {
     const { uid } = route.params;
-    const docRef = doc(FIRESTORE_DB, "users", uid);
+    console.log(uid);
+    //const docRef = doc(FIRESTORE_DB, "users", uid);
     const [masjidId, setMasjidId] = useState([])
     const [userInfo, setUserInfo] = useState();
 
@@ -18,23 +20,25 @@ const Home = ({navigation, route}) => {
     }, [])
     
     const getMasjidId = async () => {
-        try{
-            const docSnap = await getDoc(docRef);
-            console.log(docSnap.data()["favMasjids"])
-            if(docSnap.data()["favMasjids"].length > 0)
-                setMasjidId(docSnap.data()["favMasjids"]);
-            else
-                setMasjidId([]);
-        } catch {
-            setMasjidId([]);
-        }
+        const options = {
+            method: 'GET',
+            url: 'http://localhost:3000/user/getUser',
+            params: {userId: uid},
+            headers: {'Content-Type': 'application/json', 'User-Agent': 'insomnia/9.3.2'}
+        };
+        
+        axios.request(options).then(function (response) {
+            console.log(response.data);
+        }).catch(function (error) {
+            console.error(error);
+        });
     }
     
     return(
         <View style={styles.page}>
 
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
-            <View style={styles.content}>
+            {/* <View style={styles.content}>
                 <PrayerTimesWidget navigation={navigation} uid={uid} favMasjids={masjidId}/>
                 <SearchWidget navigation={navigation} uid={uid}/>
                 {masjidId ? (
@@ -42,7 +46,7 @@ const Home = ({navigation, route}) => {
                 ) : (
                     <></>
                 )}
-            </View>
+            </View> */}
         </View>
     )
 }
