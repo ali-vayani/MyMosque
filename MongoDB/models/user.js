@@ -1,27 +1,27 @@
 const mongoose = require('mongoose');
 
+const prayerTimeSettingSchema = new mongoose.Schema({
+    id: {
+        type: Number,
+        required: true,
+    },
+    name: {
+        type: String,
+        required: true,
+    }
+});
 
 const userSchema = new mongoose.Schema({
-    _id: String,
-    username: {
+    _id: {
         type: String,
         required: true,
     },
-    // firebaseID: {
-    //     type: String,
-    //     required: true,
-    //     unique: true
-    // },
-    email: {
-        type: String,
+    prayerTimeSettings: {
+        type: [prayerTimeSettingSchema],
         required: true,
-        unique: true
-    },
-    mosquesFollowed: [{
-        type: String,
-        required: true
-    }, { _id: false }],
-}, { collection: 'Users' });
+    }
+}, {collection: 'Users'});
 
+// const User = mongoose.model('Users', userSchema);
 
 module.exports = mongoose.model('User', userSchema); 

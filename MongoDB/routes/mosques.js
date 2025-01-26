@@ -25,7 +25,7 @@ router.get('/', async(req, res) => {
 router.get('/getMosque', async(req, res) => {
     await dbConnect('MyMosque');
     try {
-        const mosque = await Mosque.findById(req.body.mosqueId)
+        const mosque = await Mosque.findOne({ _id: req.body.mosqueId });
         res.json(mosque)
     } catch (err) {
         res.status(500).json({message: err.message})
@@ -79,53 +79,87 @@ router.post('/post', async (req, res) => {
 })
 
 /*
-* Creates Mosque
-* Inputs: username, address, prayer times
+* Gets Mosque Events
+* Inputs: MosqueId
 */
-router.post('/create', async (req, res) => {
-    await dbConnect('MyMosque')
-
-    const newMosque = new Mosque({
-        mosqueName: req.body.mosqueName,
-        address: req.body.address,
-        prayerTimes: req.body.prayerTimes
-    })
-    
+router.get('/getEvents', async(req, res) => {
+    await dbConnect('MyMosque');
     try {
-        const savedMosque = await newMosque.save();
-        res.status(201).json(savedMosque);
+        const mosque = await Mosque.findById(req.body.mosqueId)
+        res.json(mosque.events)
     } catch {
-        res.status(400).json({message: err.message})
+        res.status(500).json({message: err.message})
     } finally {
         mongoose.disconnect();
     }
 })
 
 /*
-* Updates Mosque Prayer Times
-* Inputs: MosqueID, new prayer times
+* Gets Mosque PrayerTimes
+* Inputs: MosqueId
 */
-router.post('/updatePrayers', async (req, res) => {
+router.get('/getPrayerTimes', async(req, res) => {
     await dbConnect('MyMosque');
     try {
-        const updatedMosque = await Mosque.findByIdAndUpdate(
-            req.body.mosqueId, 
-            { $set: { prayerTimes: req.body.prayerTimes }}, 
-            { new: true }
-        );
-
-        if (!updatedMosque) {
-            return res.status(404).json({ message: "Mosque not found" });
-        }
-
-        console.log("Updated mosque: ", updatedMosque);
-        res.status(201).json(updatedMosque);
-    } catch (err) {
-        console.error("Error updating prayers:", err);
-        res.status(400).json({ message: err.message });
+        const mosque = await Mosque.findById(req.body.mosqueId)
+        res.json(mosque.prayerTimes)
+    } catch {
+        res.status(500).json({message: err.message})
     } finally {
         mongoose.disconnect();
     }
-});
+})
+
+// /*
+// * Creates Mosque
+// * Inputs: username, address, prayer times
+// */
+// router.post('/create', async (req, res) => {
+//     await dbConnect('MyMosque')
+
+//     const newMosque = new Mosque({
+//         mosqueName: req.body.mosqueName,
+//         address: req.body.address,
+//         prayerTimes: req.body.prayerTimes
+//     })
+    
+//     try {
+//         const savedMosque = await newMosque.save();
+//         res.status(201).json(savedMosque);
+//     } catch {
+//         res.status(400).json({message: err.message})
+//     } finally {
+//         mongoose.disconnect();
+//     }
+// })
+
+// /*
+// * Updates Mosque Prayer Times
+// * Inputs: MosqueID, new prayer times
+// */
+// router.post('/updatePrayers', async (req, res) => {
+//     await dbConnect('MyMosque');
+//     try {
+//         const updatedMosque = await Mosque.findByIdAndUpdate(
+//             req.body.mosqueId, 
+//             { $set: { prayerTimes: req.body.prayerTimes }}, 
+//             { new: true }
+//         );
+
+//         if (!updatedMosque) {
+//             return res.status(404).json({ message: "Mosque not found" });
+//         }
+
+//         console.log("Updated mosque: ", updatedMosque);
+//         res.status(201).json(updatedMosque);
+//     } catch (err) {
+//         console.error("Error updating prayers:", err);
+//         res.status(400).json({ message: err.message });
+//     } finally {
+//         mongoose.disconnect();
+//     }
+// });
+
+
 
 module.exports = router;
