@@ -10,7 +10,12 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pastali.MyMosque"
+      "bundleIdentifier": "com.pastali.MyMosque",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "MyMosque needs access to location to find nearby mosques",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "MyMosque needs access to location to find nearby mosques",
+        "UIBackgroundModes": ["location"]
+      }
     },
     "android": {
       "adaptiveIcon": {
