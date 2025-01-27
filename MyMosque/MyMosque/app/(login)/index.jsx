@@ -18,7 +18,7 @@ export default function SignIn() {
             const userCredential = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
             const user = userCredential.user;
             const uid = user.uid;
-            router.replace({ pathname: '/(main)', params: { uid: uid } });
+            router.replace({ pathname: '/(home)', params: { uid: uid } });
         } catch (error) {
             const errorCode = error.code;
             const errorMessage = error.message;

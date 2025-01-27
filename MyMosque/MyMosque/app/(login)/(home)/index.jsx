@@ -1,12 +1,12 @@
 import {View, StyleSheet} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
-import PrayerTimesWidget from '../../components/widgets/PrayerTimesWidget';
-import SearchWidget from '../../components/widgets/SearchWidget';
-import MyMosqueWidget from '../../components/widgets/MyMosquesWidget';
+import PrayerTimesWidget from '../../../components/widgets/PrayerTimesWidget';
+import SearchWidget from '../../../components/widgets/SearchWidget';
+import MyMosqueWidget from '../../../components/widgets/MyMosquesWidget';
 import { useState, useEffect  } from 'react';
 import { doc, getDoc, getFirestore } from "firebase/firestore";
-import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
-import { FIREBASE_APP, FIRESTORE_DB } from '../../firebaseConfig';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { FIREBASE_APP, FIRESTORE_DB } from '../../../firebaseConfig';
 
 
 const Home = () => {
@@ -35,26 +35,19 @@ const Home = () => {
     }
     
     return(
-        <>
-            <Stack.Screen 
-                options={{
-                    headerShown: false,
-                    gestureEnabled: false
-                }}
-            />
-            <View style={styles.page}>
-                <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
-                <View style={styles.content}>
-                    <PrayerTimesWidget uid={uid} favMasjids={masjidId}/>
-                    <SearchWidget uid={uid}/>
-                    {masjidId ? (
-                    <MyMosqueWidget masjidId={masjidId} uid={uid}/>
-                    ) : (
-                        <></>
-                    )}
-                </View>
+        <View style={styles.page}>
+
+            <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
+            <View style={styles.content}>
+                <PrayerTimesWidget uid={uid} favMasjids={masjidId}/>
+                <SearchWidget uid={uid}/>
+                {masjidId ? (
+                <MyMosqueWidget masjidId={masjidId} uid={uid} fullscreen={false}/>
+                ) : (
+                    <></>
+                )}
             </View>
-        </>
+        </View>
     )
 }
 

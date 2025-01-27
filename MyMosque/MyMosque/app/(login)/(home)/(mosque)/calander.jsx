@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SectionList } from 'react-native';
 import { Calendar as RNCalendar } from 'react-native-calendars';
-import { FIRESTORE_DB } from '../../firebaseConfig';
+import { FIRESTORE_DB } from '../../../../firebaseConfig';
 import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 

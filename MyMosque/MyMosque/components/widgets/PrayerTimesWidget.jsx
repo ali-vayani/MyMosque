@@ -18,7 +18,7 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
 
     const handleNavigate = useCallback(() => {
         router.push({
-            pathname: '(prayer)',
+            pathname: '/prayer',
             params: {
                 info: JSON.stringify(mosqueInfo),
                 currentPrayer: currentPrayer,

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {View, Text, ActivityIndicator, StyleSheet, Image, Linking, TouchableOpacity, ScrollView} from 'react-native'
-import Post from '../../components/elements/Post';
+import Post from '../../../../components/elements/Post';
 import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import { FIRESTORE_DB } from '../../firebaseConfig';
-import convertMilitaryTime from '../../functions/convertMilitaryTime';
-import getMosquePrayerTimes from '../../functions/getMosquePrayerTimes';
+import { FIRESTORE_DB } from '../../../../firebaseConfig';
+import convertMilitaryTime from '../../../../functions/convertMilitaryTime';
+import getMosquePrayerTimes from '../../../../functions/getMosquePrayerTimes';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
@@ -41,8 +41,17 @@ const MosquePage = () => {
             const dateFormatted = formatDate(new Date);
             const events = docSnap.data()['events']
             const todaysEvent = events[dateFormatted]
+            const newPosts = [];
+            const posts = docSnap.data()["posts"];
+            posts.forEach(post => {
+                newPosts.push({
+                    ...post,
+                    masjidId: null,
+                    uid: null
+                });
+            });
+            setPosts(newPosts);
             setNumEvents(todaysEvent == undefined ? 0 : todaysEvent.length);
-            setPosts(docSnap.data()["posts"])
             setName(docSnap.data()["name"])
             setBio(docSnap.data()["bio"]);
             setMembers(docSnap.data()["members"])
@@ -126,7 +135,7 @@ const MosquePage = () => {
     return (
         <ScrollView style={styles.page} contentContainerStyle={{ flexGrow: 1 }}>
             <Image 
-                source={require('../../assets/MosquePage.png')} 
+                source={require('../../../../assets/MosquePage.png')} 
                 style={{
                 width: '100%',
                 height: '100%',
@@ -157,7 +166,7 @@ const MosquePage = () => {
                     <Text style={styles.mainText}>{name}</Text>
                     <View style={styles.info}>
                         <Image
-                            source={require('../../assets/icon.png')} 
+                            source={require('../../../../assets/icon.png')} 
                             style={{
                             width: 100,
                             height: 100,
@@ -230,13 +239,13 @@ const MosquePage = () => {
                         {posts && posts.map((post, index) => (
                             <View style={styles.posts} key={index}>
                                 <View style={styles.line}></View>
-                                <Post isText={post["isText"]} time="1 day ago" text={post["text"]} masjidName={post["name"]} color={"#000000"} images={post["images"]}/>
+                                <Post post={post} color={"#000000"}/>
                             </View>
                         ))}
-                    <View style={styles.line}></View>
+                    {/* <View style={styles.line}></View>
                     <Post isText={true} time="1 day ago" text={post2} masjidName={name} color={"#000000"}/>
                     <View style={styles.line}></View>
-                    <Post isText={false} time="1 day ago" text={post2} masjidName={name}  images={images} color={"#000000"}/>
+                    <Post isText={false} time="1 day ago" text={post2} masjidName={name}  images={images} color={"#000000"}/> */}
                 </View>
             </>)}
         </ScrollView>

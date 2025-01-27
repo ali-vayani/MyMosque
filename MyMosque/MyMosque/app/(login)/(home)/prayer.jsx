@@ -1,15 +1,15 @@
 import {View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
-import PrayerToken from '../../components/elements/PrayerToken';
-import convertMilitaryTime from '../../functions/convertMilitaryTime';
-import { FIRESTORE_DB } from '../../firebaseConfig';
+import PrayerToken from '../../../components/elements/PrayerToken';
+import convertMilitaryTime from '../../../functions/convertMilitaryTime';
+import { FIRESTORE_DB } from '../../../firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
 import { BallIndicator } from 'react-native-indicators';
 import { Ionicons } from '@expo/vector-icons';
-import SettingsModal from '../../components/elements/SettingsModal';
-import PrayerBar from '../../components/elements/PrayerBar';
-import Location from '../../components/elements/Location';
+import SettingsModal from '../../../components/elements/SettingsModal';
+import PrayerBar from '../../../components/elements/PrayerBar';
+import Location from '../../../components/elements/Location';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const PrayerTimes = () => {
@@ -78,7 +78,7 @@ const PrayerTimes = () => {
         <View style={styles.page}>
             <LinearGradient colors={['#67519A', '#67519A']} style={styles.background}/>
             <Image 
-                source={require('../../assets/prayerBg.png')} 
+                source={require('../../../assets/prayerBg.png')} 
                 style={{
                 width: '100%',
                 height: '100%',

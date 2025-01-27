@@ -22,7 +22,7 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
                 const name = querySnapshot.docs[0].data().name;
 
                 router.push({
-                    pathname: "(prayer)",
+                    pathname: "/prayer",
                     params: {
                         info: JSON.stringify({
                             prayer: info.mosquePrayerTimes,

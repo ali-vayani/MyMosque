@@ -15,8 +15,7 @@
         "NSLocationWhenInUseUsageDescription": "MyMosque needs access to location to find nearby mosques",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "MyMosque needs access to location to find nearby mosques",
         "UIBackgroundModes": ["location"]
-      },
-      "excludeXcodeResources": ["react-native-maps", "react-native-indicators", "expo-checkbox", "firebase", "geolib"]
+      }
     },
     "android": {
       "adaptiveIcon": {

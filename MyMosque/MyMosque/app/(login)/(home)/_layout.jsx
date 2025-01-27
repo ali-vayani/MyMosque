@@ -7,6 +7,10 @@ export default function HomeLayout() {
                 headerShown: false
         }}>
             <Stack.Screen name="index" />
+            <Stack.Screen name="feed" />
+            <Stack.Screen name="map" />
+            <Stack.Screen name="prayer" />
+            <Stack.Screen name="(mosque)" />
         </Stack>
     );
 }

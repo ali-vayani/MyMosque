@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground, FlatList, Dimensions, Image } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, FlatList, Dimensions, Image, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
-const Post = ({ masjidName, time, text, images, isText, color }) => {
-    images = images || [];
+const Post = ({ post, color }) => {
+    const router = useRouter()
+    const images = [];
     const [currentIndex, setCurrentIndex] = useState(0);
     color = color || '#ebfeea'; 
 
@@ -26,75 +28,86 @@ const Post = ({ masjidName, time, text, images, isText, color }) => {
                 colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
                 style={styles.gradient}
             >
-                <Text style={styles.imageText}>{text}</Text>
+                <Text style={styles.imageText}>{post.text}</Text>
             </LinearGradient>
         </ImageBackground>
     );
-
-    if (isText) {
-        return (
-            <View style={styles.textContainer}>
-                <View style={styles.headerContainer}>
-                    <Image
-                        source={require('../../assets/icon.png')} 
-                        style={{
-                        width: 35,
-                        height: 35,
-                        borderRadius: 10000,
-                        }}
-                    />
-                    <View style={{gap: 15, width: '90%'}}>
-                        <View style={{gap: 2}}>
-                            <Text style={[styles.nameText, { color: color }]}>{masjidName}</Text>
-                            <Text style={[styles.timeText, { color: color }]}>{time}</Text>
+    if(post) {
+        if (post.isText) {
+            return (
+                <View style={styles.textContainer}>
+                    <View style={styles.headerContainer}>
+                        <Image
+                            source={require('../../assets/icon.png')} 
+                            style={{
+                            width: 35,
+                            height: 35,
+                            borderRadius: 10000,
+                            }}
+                        />
+                        <View style={{gap: 15, width: '90%'}}>
+                            <View style={{gap: 2}}>
+                                <TouchableOpacity
+                                    onPress={() => router.push({pathname: "(mosque)", params: { masjidId: post.masjidId, uid: post.uid }})}
+                                >
+                                    <Text style={[styles.nameText, { color: color }]}>{post.name}</Text>
+                                </TouchableOpacity>
+                                <Text style={[styles.timeText, { color: color }]}>{"1 Day Ago" || post.time}</Text>
+                            </View>
+                            <Text style={[styles.postText, { color: color }]}>{post.text}</Text>
                         </View>
-                        <Text style={[styles.postText, { color: color }]}>{text}</Text>
                     </View>
                 </View>
-            </View>
-        );
+            );
+        } else {
+            return (
+                <View style={styles.imageContainer}>
+                    <View style={styles.headerContainer}>
+                        <Image
+                            source={require('../../assets/icon.png')} 
+                            style={{
+                            width: 35,
+                            height: 35,
+                            borderRadius: 10000,
+                            }}
+                        />
+                        <View style={{gap: 2}}>
+                            <TouchableOpacity
+                                onPress={() => router.push({pathname: "(mosque)", params: { masjidId: post.masjidId, uid: post.uid }})}
+                            >
+                                <Text style={[styles.nameText, { color: color }]}>{post.name}</Text>
+                            </TouchableOpacity>
+                            <Text style={[styles.timeText, { color: color }]}>{ "1 Day Ago" || post.time}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.post}>
+                        <FlatList
+                            data={post.images}
+                            renderItem={renderImage}
+                            keyExtractor={(item, index) => `image-${index}-${item.substring(0, 20)}`}
+                            horizontal
+                            pagingEnabled
+                            showsHorizontalScrollIndicator={false}
+                            onScroll={handleScroll}
+                            style={styles.flatList}
+                        />
+                        <View style={styles.pagination}>
+                            {images.map((_, index) => (
+                                <View
+                                    key={index}
+                                    style={[
+                                        styles.dot,
+                                        currentIndex === index ? styles.dotActive : styles.dotInactive,
+                                    ]}
+                                />
+                            ))}
+                        </View>
+                    </View>
+                </View>
+            );
+        }
     } else {
-        return (
-            <View style={styles.imageContainer}>
-                <View style={styles.headerContainer}>
-                    <Image
-                        source={require('../../assets/icon.png')} 
-                        style={{
-                        width: 35,
-                        height: 35,
-                        borderRadius: 10000,
-                        }}
-                    />
-                    <View style={{gap: 2}}>
-                        <Text style={[styles.nameText, { color: color }]}>{masjidName}</Text>
-                        <Text style={[styles.timeText, { color: color }]}>{time}</Text>
-                    </View>
-                </View>
-                <View style={styles.post}>
-                    <FlatList
-                        data={images}
-                        renderItem={renderImage}
-                        keyExtractor={(item, index) => `image-${index}-${item.substring(0, 20)}`}
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        onScroll={handleScroll}
-                        style={styles.flatList}
-                    />
-                    <View style={styles.pagination}>
-                        {images.map((_, index) => (
-                            <View
-                                key={index}
-                                style={[
-                                    styles.dot,
-                                    currentIndex === index ? styles.dotActive : styles.dotInactive,
-                                ]}
-                            />
-                        ))}
-                    </View>
-                </View>
-            </View>
-        );
+        return <></>
     }
 };
 

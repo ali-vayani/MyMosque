@@ -1,26 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { doc, getDoc } from "firebase/firestore";
 import { Ionicons } from '@expo/vector-icons';
-import MosqueInfo from '../elements/MosqueInfo';
 import Post from '../elements/Post';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
-const MyMosqueWidget = ({ masjidId, uid }) => {
+
+const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
+    const screenHeight = Dimensions.get('window').height;
+    const widgetHeight = fullscreen ? screenHeight : screenHeight * 0.56;
     const router = useRouter();
-    const [posts, setPosts] = useState();
+    const [posts, setPosts] = useState([]);
     const getPosts = async () => {
         try {
+            const newPosts = [];
             for (const id of masjidId) {
                 const docRef = doc(FIRESTORE_DB, "mosques", id.replace(/\s/g, ''));
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
-                    setPosts(docSnap.data()["posts"]);
+                    const mosqueData = docSnap.data();
+                    const mosquePosts = mosqueData.posts || [];
+                    mosquePosts.forEach(post => {
+                        newPosts.push({
+                            ...post,
+                            masjidId: id,
+                            uid: uid
+                        });
+                    });
                 } else {
                     console.log(`No document found for ID: ${id}`);
                 }
             }
+            setPosts(newPosts);
         } catch (error) {
             console.error("Error fetching posts:", error);
         }
@@ -30,6 +42,10 @@ const MyMosqueWidget = ({ masjidId, uid }) => {
         getPosts();
     }, [masjidId]);
 
+    // useEffect(() => {
+    //     console.log(posts)
+    // }, [])
+
     // for testing
     const images = [
         'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -37,6 +53,55 @@ const MyMosqueWidget = ({ masjidId, uid }) => {
         'https://images.unsplash.com/photo-1716339140080-be256d3270ce?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     ];
+
+
+const styles = StyleSheet.create({
+        widget: {
+            width: '100%',
+            height: widgetHeight,
+            backgroundColor: '#679159',
+            borderRadius: 41.5,
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: -1,
+        },
+        line: {
+            width: '100%',
+            height: '1px',
+            borderTopWidth: 1,
+            borderBottomWidth: 0,
+            borderColor: '#ebfeea80', 
+            gap: 15,
+            position: 'sticky'
+        },
+        header: {
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+        },
+        scrollContainer: {
+            width: '100%',
+            flex: 1,
+        },
+        mainText: {
+            fontSize: 32,
+            fontWeight: 'bold',
+            color: '#EBFEEA',
+        },
+        content: {
+            paddingTop: '10%',
+            paddingBottom: '5%',
+            width: '90%',
+            height: '100%',
+            gap: 35
+        },
+        mosqueInfoContent: {
+            gap: 15,
+            width: '100%',
+            minHeight: '100%',
+        },
+    });
 
     return (
         <View style={styles.widget}>
@@ -55,17 +120,13 @@ const MyMosqueWidget = ({ masjidId, uid }) => {
         <View style={styles.content}>
             <View style={styles.header}>
                 <Text style={styles.mainText}>Your Feed</Text>
-                {masjidId ? (
+                {masjidId && !fullscreen ? (
                     <TouchableOpacity 
                         onPress={() => {
-                            if (masjidId[0]) {  
-                                router.push({ 
-                                    pathname: '(mosque)',
-                                    params: { masjidId: masjidId[0], uid: uid }
-                                });
-                            } else {
-                                console.error("masjidId[0] is undefined");
-                            }
+                            router.push({ 
+                                pathname: '/feed',
+                                params: { masjidId: JSON.stringify(masjidId), uid: uid, fullscreen: true }
+                            });
                         }}>
                         <Ionicons name="chevron-forward-outline" size={32} color={'#EBFEEA'}/>
                     </TouchableOpacity>
@@ -73,69 +134,22 @@ const MyMosqueWidget = ({ masjidId, uid }) => {
             </View>
             <ScrollView style={styles.scrollContainer}>
                 <View style={styles.mosqueInfoContent}>
-                    {posts && posts.map((post, index) => (
-                        <View key={`post-${index}-${post.name}`}>
+                    {posts.map((post, index) => (
+                        <View key={index}>
                             <View style={styles.line}></View>
-                            <Post isText={post["isText"]} time="1 day ago" text={post["text"]} masjidName={post["name"]}  images={post["images"]}/>
+                            <Post post={post}/>
                         </View>
                     ))}
                     <View style={styles.line}></View>
                     <Post isText={false} time="1 Day Ago" text={"post"} masjidName={"name"}  images={images}/>
-                    <MosqueInfo masjidId={undefined} />
+
                 </View>
             </ScrollView>
         </View>
 
         </View>
     );
+    
 };
 
 export default MyMosqueWidget;
-
-const styles = StyleSheet.create({
-    widget: {
-        width: '100%',
-        height: '56%',
-        backgroundColor: '#679159',
-        borderRadius: 41.5,
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: -1,
-    },
-    line: {
-        width: '100%',
-        height: '1px',
-        borderTopWidth: 1,
-        borderBottomWidth: 0,
-        borderColor: '#ebfeea80', 
-        gap: 15,
-        position: 'sticky'
-    },
-    header: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    },
-    scrollContainer: {
-        width: '100%',
-        flex: 1,
-    },
-    mainText: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: '#EBFEEA',
-    },
-    content: {
-        paddingTop: '10%',
-        paddingBottom: '5%',
-        width: '90%',
-        height: '100%',
-        gap: 35
-    },
-    mosqueInfoContent: {
-        gap: 15,
-        width: '100%',
-        minHeight: '100%',
-    },
-});

@@ -3,11 +3,11 @@ import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity, Image, Lin
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getDistance } from 'geolib';
-import SearchWidget from '../../components/widgets/SearchWidget';
+import SearchWidget from '../../../components/widgets/SearchWidget';
 import { LinearGradient } from 'expo-linear-gradient';
-import { FIRESTORE_DB } from '../../firebaseConfig';
+import { FIRESTORE_DB } from '../../../firebaseConfig';
 import { collection, query, where, getDocs } from "firebase/firestore";
-import MapList from '../../components/elements/MapList';
+import MapList from '../../../components/elements/MapList';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const Map = ({ navigation, route }) => {
@@ -143,7 +143,7 @@ const Map = ({ navigation, route }) => {
         <View style={styles.container}>
             <LinearGradient colors={['#57658E', '#A79A84']} style={styles.background} />
             <Image 
-                source={require('../../assets/Random3.png')} 
+                source={require('../../../assets/searchBg.png')} 
                 style={styles.imageBg} 
             />
             <View style={styles.searchContainer}>
