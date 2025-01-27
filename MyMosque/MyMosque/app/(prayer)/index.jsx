@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native'
+import {View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import PrayerToken from '../../components/elements/PrayerToken';
@@ -127,7 +127,13 @@ const PrayerTimes = () => {
                                         setPrayerInfo={setMosqueInfo}
                                     /> : <></>}
                 </View>
-            ) : <BallIndicator color="#F2EFFB" />}
+            ) : 
+            <View style={styles.loading}>
+                <ActivityIndicator size="large" color="#F2EFFB" />     
+            </View>
+            
+            
+            }
             
         </View>
     )
@@ -189,5 +195,11 @@ const styles = StyleSheet.create({
         gap: 12,
         paddingHorizontal: 30,
         marginTop: '15%'
-    },
+    }, 
+    loading: {
+        display: 'flex',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
 })

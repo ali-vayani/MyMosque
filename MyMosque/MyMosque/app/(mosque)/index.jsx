@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {View, Text, Button, StyleSheet, Image, Linking, TouchableOpacity, ScrollView} from 'react-native'
+import {View, Text, ActivityIndicator, StyleSheet, Image, Linking, TouchableOpacity, ScrollView} from 'react-native'
 import Post from '../../components/elements/Post';
 import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 import convertMilitaryTime from '../../functions/convertMilitaryTime';
 import getMosquePrayerTimes from '../../functions/getMosquePrayerTimes';
-import { BallIndicator } from 'react-native-indicators';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
@@ -136,7 +135,10 @@ const MosquePage = () => {
                 left: 0,
                 }}
             />
-            {isLoading ? <BallIndicator color="#F2EFFB" /> : (
+            {isLoading ? 
+            <View style={styles.loading}>
+                <ActivityIndicator size="large" color="#000000" />     
+            </View> : (
             <>
                 <View style={styles.mainInfo}>
                     <TouchableOpacity
@@ -344,4 +346,10 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         textAlign: 'center',
     },
+    loading: {
+        display: 'flex',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
 })

@@ -1,76 +1,146 @@
-import {View, StyleSheet} from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient';
-import PrayerTimesWidget from '../../components/widgets/PrayerTimesWidget';
-import SearchWidget from '../../components/widgets/SearchWidget';
-import MyMosqueWidget from '../../components/widgets/MyMosquesWidget';
-import { useState, useEffect  } from 'react';
-import { doc, getDoc, getFirestore } from "firebase/firestore";
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { FIREBASE_APP, FIRESTORE_DB } from '../../firebaseConfig';
+import { useState } from "react";
+import { TouchableWithoutFeedback, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard} from 'react-native';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { FIREBASE_AUTH } from '../../firebaseConfig';
+import { useRouter } from 'expo-router';
 
+export default function SignIn() {
+    const router = useRouter();
+    const [email, setEmail] = useState('test2@gmail.com')
+    const [password, setPassword] = useState('123123')
 
-const Home = () => {
-    const { uid } = useLocalSearchParams();
-    const docRef = doc(FIRESTORE_DB, "users", uid);
-    const [masjidId, setMasjidId] = useState([])
-    const [userInfo, setUserInfo] = useState();
+    const dismissKeyboard = () => {
+        Keyboard.dismiss();
+    };
 
-    useEffect(() => {
-        getMasjidId()
-    }, [])
-    
-    const getMasjidId = async () => {
+    const signIn = async () => {
         try {
-            const docSnap = await getDoc(docRef);
-            const data = docSnap.data();
-            if (data && data.favMasjids && data.favMasjids.length > 0) {
-                setMasjidId(data.favMasjids);
-            } else {
-                setMasjidId([]);
-            }
+            const userCredential = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
+            const user = userCredential.user;
+            const uid = user.uid;
+            router.replace({ pathname: '/(main)', params: { uid: uid } });
         } catch (error) {
-            console.error('Error fetching masjid IDs:', error);
-            setMasjidId([]);
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error(`Error [${errorCode}]: ${errorMessage}`);
         }
     }
-    
-    return(
-        <View style={styles.page}>
 
-            <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
-            <View style={styles.content}>
-                <PrayerTimesWidget uid={uid} favMasjids={masjidId}/>
-                <SearchWidget uid={uid}/>
-                {masjidId ? (
-                <MyMosqueWidget masjidId={masjidId} uid={uid}/>
-                ) : (
-                    <></>
-                )}
+    return (
+        <TouchableWithoutFeedback onPress={dismissKeyboard}>
+            <View style={styles.container}>
+                <Image 
+                    source={require('../../assets/MMBackground.png')} 
+                    style={{
+                    width: '100%',
+                    height: '100%',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    opacity: .5
+                    }}
+                />
+                <View style={styles.headerContainer}>
+                <   Text style={styles.headerText}>MyMosque</Text>
+                </View>
+        
+                <View style={styles.formContainer}>
+                    <TextInput 
+                        placeholder="Email or username" 
+                        onChangeText={(text) => setEmail(text)} 
+                        value={email} 
+                        placeholderTextColor={'rgba(6, 3, 31)'} 
+                        style={styles.input}
+                        returnKeyType="done"
+                        onSubmitEditing={dismissKeyboard}
+                    />
+
+                    <TextInput 
+                        placeholder="Password" 
+                        onChangeText={(text) => setPassword(text)} 
+                        value={password} 
+                        placeholderTextColor={'rgba(6, 3, 31)'} 
+                        style={styles.input}
+                        returnKeyType="done"
+                        onSubmitEditing={dismissKeyboard}
+                        secureTextEntry={true}
+                    />
+                    <Text style={[styles.subtext, { color: '#67519A' }]}>Forgot Password</Text>
+                    <TouchableOpacity onPress={() => signIn()} style={styles.button}>
+                        <Text style={styles.buttonText}>Log in</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.signUpRedirect}>
+                    <Text style={styles.subtext}>Don't have an account?</Text>
+                    <TouchableOpacity onPress={() => router.push('/setup')}>
+                        <Text style={[styles.subtext, { color: '#67519A', fontWeight: '600',}]}>Sign up!</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
-    )
-}
-
-export default Home;
+        </TouchableWithoutFeedback>
+        );
+    };
 
 const styles = StyleSheet.create({
-    page: {
-        width: '100%',
-        height: '100%',
-        alignItems: 'center'
-
-    },
-    background:{
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-        zIndex:-2,
-    },
-    content: {
-        width: '100%',
-        height: '100%',
+    container: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
         alignItems: 'center',
-        marginVertical: '2%',
+        justifyContent: 'flex-start',
     },
-    
-})
+    headerContainer: {
+        height: '33%',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingBottom: 16,
+        gap: 3
+    },
+    headerText: {
+        fontSize: 40,
+        fontWeight: '500',
+    },
+    subtext: {
+        fontSize: 14,
+        fontWeight: '400',
+    },
+    formContainer: {
+        height: '33%',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'flex-start'
+    },
+    input: {
+        width: '91.66%',
+        height: 64, 
+        paddingHorizontal: 16,
+        marginVertical: 8, 
+        borderRadius: 8,
+        borderWidth: 2,
+        backgroundColor: 'rgba(0, 0, 0, 0.05)', 
+        borderColor: 'rgba(0, 0, 0, 0.25)' 
+    },
+    button: {
+        width: '91.66%',
+        height: 56, 
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#67519A', 
+        borderRadius: 8, 
+        marginTop: 16
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: '500',
+    }, 
+    signUpRedirect : {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 3,
+        position: 'absolute',
+        bottom: 40,
+    }
+
+});

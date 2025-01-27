@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity  } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator} from 'react-native';
 import { useRouter } from 'expo-router';
 import PrayerBar from '../elements/PrayerBar';
 import Location from '../elements/Location';
 import getCurrentPrayer from '../../functions/getCurrentPrayer';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
-import { BallIndicator } from 'react-native-indicators';
 
 const PrayerTimesWidget = ({ uid, favMasjids }) => {
     const router = useRouter();
@@ -40,7 +39,6 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
     useEffect(() => {
         const getTime = async () => {
             setIsLoading(true);
-            console.log("uid:", uid)
             await getLocalPrayerTimes(null, uid)
                 .then((res) => {
                     const month = res.data.date.hijri.month.en;
@@ -79,8 +77,12 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
                 opacity: .2,
                 }}
             />
-            {!isLoading ? (
-                <View style={styles.content}>
+            {isLoading ? (
+                <View style={styles.loading} key="loading-view">
+                    <ActivityIndicator size="large" color="#F2EFFB" />
+                </View>
+            ) : (
+                <View style={styles.content} key="content-view">
                     <Text style={styles.mainText}> Prayer Times </Text>
                     <PrayerBar timeTillNext={time} nextPrayer={'Maghrib'} size={28} prayerAndTime={mosqueInfo.prayer} currentPrayer={currentPrayer} height={30}/>
                     <Location 
@@ -92,10 +94,7 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
                         uid={uid}
                     />
                 </View>
-            ) : 
-            <View style={styles.loading}>
-                <BallIndicator color="#F2EFFB" />
-            </View>}
+            )}
         
         </TouchableOpacity>
     );

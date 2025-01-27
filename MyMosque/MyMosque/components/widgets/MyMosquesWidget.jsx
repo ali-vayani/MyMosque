@@ -74,21 +74,13 @@ const MyMosqueWidget = ({ masjidId, uid }) => {
             <ScrollView style={styles.scrollContainer}>
                 <View style={styles.mosqueInfoContent}>
                     {posts && posts.map((post, index) => (
-                        <View key={index}>
+                        <View key={`post-${index}-${post.name}`}>
                             <View style={styles.line}></View>
                             <Post isText={post["isText"]} time="1 day ago" text={post["text"]} masjidName={post["name"]}  images={post["images"]}/>
                         </View>
                     ))}
-                    {/* <View style={styles.line}></View>
-                    <Post isText={true} time="1 Day Ago" text={post} masjidName={name}/> */}
                     <View style={styles.line}></View>
                     <Post isText={false} time="1 Day Ago" text={"post"} masjidName={"name"}  images={images}/>
-                    {/* {masjidId && masjidId.map((id, index) => (
-                        <React.Fragment key={index}>
-                            <View style={styles.line}></View>
-                            <MosqueInfo masjidId={id} navigation={navigation} uid={uid}/>
-                        </React.Fragment>
-                    ))} */}
                     <MosqueInfo masjidId={undefined} />
                 </View>
             </ScrollView>

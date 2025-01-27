@@ -29,7 +29,6 @@ export default function CreateAccount() {
     const createAccount = async() => {
         const isValid = checkPasswordValid();
         setPasswordValid(isValid);
-        console.log(password, email)
         if(isValid) {
             try {
                 const auth = getAuth();
@@ -37,7 +36,7 @@ export default function CreateAccount() {
                     .then( async (userCredentials) => {
                         const user = userCredentials.user;
                         await addUserDB(user.uid)
-                        navigation.navigate('Home', {uid: user.uid})
+                        router.replace({ pathname: '/(main)', params: { uid: uid } });
                     })
                     .catch((error) => {
                         console.error("Error creating user:", error);

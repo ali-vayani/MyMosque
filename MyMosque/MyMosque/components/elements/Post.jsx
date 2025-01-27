@@ -74,7 +74,7 @@ const Post = ({ masjidName, time, text, images, isText, color }) => {
                     <FlatList
                         data={images}
                         renderItem={renderImage}
-                        keyExtractor={(item, index) => index.toString()}
+                        keyExtractor={(item, index) => `image-${index}-${item.substring(0, 20)}`}
                         horizontal
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
