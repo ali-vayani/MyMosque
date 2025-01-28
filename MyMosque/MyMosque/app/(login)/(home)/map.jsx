@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { VirtualizedList } from 'react-native';
 import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity, Image, Linking } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -18,39 +20,19 @@ const Map = ({ navigation, route }) => {
     const [value, setValue] = useState();
     const [expanded, setExpanded] = useState(null);
     const [masjidId, setMasjidID] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const cacheKey = 'nearbyMosquesCache';
+    const cacheDuration = 1000 * 60 * 15; // 15 minutes
 
-
-    useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission Denied', 'Permission to access location was denied');
-                return;
-            }
-
-            let currentPosition = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
-            const { latitude, longitude } = currentPosition.coords;
-
-            setLocation({
-                latitude,
-                longitude,
-                latitudeDelta: 0.075,
-                longitudeDelta: 0.075,
-            });
-
-            fetchNearbyMosques(latitude, longitude)
-        })();
-    }, []);
-
-    const fetchNearbyMosques = async (lat, lng, nextPageToken = null) => {
-        const radius = 24000;
+    const fetchQueryMosque = async (query, lat, lng, nextPageToken = null) => {
         const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
-        let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=mosque&key=${apiKey}`;
+        const radius = 24000;
+        let url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&type=mosque&radius=${radius}&key=${apiKey}`;
         
         if (nextPageToken) {
             url += `&pagetoken=${nextPageToken}`;
         }
-
+        
         try {
             const response = await fetch(url);
             const data = await response.json();
@@ -62,14 +44,25 @@ const Map = ({ navigation, route }) => {
                         { latitude: result.geometry.location.lat, longitude: result.geometry.location.lng }
                     ),
                 }));
-
                 resultsWithDistance.sort((a, b) => a.distance - b.distance);
                 setMarkers(resultsWithDistance);
+                if (resultsWithDistance.length > 0) {
+                    const nearestMarker = resultsWithDistance[0];
+                    setLocation({
+                        latitude: nearestMarker.geometry.location.lat,
+                        longitude: nearestMarker.geometry.location.lng,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    });
+                }
             }
         } catch (error) {
-            console.error("Error fetching: ", error);
+            console.error("Error fetching mosques: ", error);
         }
     };
+
+    const getItemCount = (data) => data.length;
+    const getItem = (data, index) => data[index];
 
     const onMarkerPress = (latitude, longitude) => {
         if (mapRef.current) {
@@ -99,15 +92,48 @@ const Map = ({ navigation, route }) => {
         }
     };
 
-    const fetchQueryMosque = async (query, lat, lng, nextPageToken = null) => {
-        const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
+    useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission Denied', 'Permission to access location was denied');
+                return;
+            }
+
+            let currentPosition = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+            const { latitude, longitude } = currentPosition.coords;
+
+            setLocation({
+                latitude,
+                longitude,
+                latitudeDelta: 0.075,
+                longitudeDelta: 0.075,
+            });
+
+            // Try to get cached data first
+            const cachedData = await AsyncStorage.getItem(cacheKey);
+            if (cachedData) {
+                const { data, timestamp } = JSON.parse(cachedData);
+                if (Date.now() - timestamp < cacheDuration) {
+                    setMarkers(data);
+                    return;
+                }
+            }
+
+            fetchNearbyMosques(latitude, longitude);
+        })();
+    }, []);
+
+    const fetchNearbyMosques = async (lat, lng, nextPageToken = null) => {
+        setIsLoading(true);
         const radius = 24000;
-        let url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&type=mosque&radius=${radius}&key=${apiKey}`;
+        const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
+        let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=mosque&key=${apiKey}`;
         
         if (nextPageToken) {
             url += `&pagetoken=${nextPageToken}`;
         }
-    
+
         try {
             const response = await fetch(url);
             const data = await response.json();
@@ -119,32 +145,33 @@ const Map = ({ navigation, route }) => {
                         { latitude: result.geometry.location.lat, longitude: result.geometry.location.lng }
                     ),
                 }));
-    
+
                 resultsWithDistance.sort((a, b) => a.distance - b.distance);
-    
                 setMarkers(resultsWithDistance);
-    
-                if (resultsWithDistance.length > 0) {
-                    const nearestMarker = resultsWithDistance[0];
-                    setLocation({
-                        latitude: nearestMarker.geometry.location.lat,
-                        longitude: nearestMarker.geometry.location.lng,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    });
-                }
+
+                // Cache the results
+                await AsyncStorage.setItem(cacheKey, JSON.stringify({
+                    data: resultsWithDistance,
+                    timestamp: Date.now()
+                }));
             }
         } catch (error) {
-            console.error("Error fetching mosques: ", error);
+            console.error("Error fetching: ", error);
+        } finally {
+            setIsLoading(false);
         }
-    };    
+    };
+
+    // Memoize markers to prevent unnecessary re-renders
+    const memoizedMarkers = useMemo(() => markers, [markers]);
 
     return (
         <View style={styles.container}>
-            <LinearGradient colors={['#57658E', '#A79A84']} style={styles.background} />
+            {/* <LinearGradient colors={['#57658E', '#57658E']} style={styles.background} /> */}
             <Image 
                 source={require('../../../assets/searchBg.png')} 
-                style={styles.imageBg} 
+                style={styles.imageBg}
+                loading="lazy"
             />
             <View style={styles.searchContainer}>
                 <SearchWidget 
@@ -160,7 +187,7 @@ const Map = ({ navigation, route }) => {
                 region={location}
                 ref={mapRef}
             >
-                {markers.map((marker, index) => (
+                {memoizedMarkers.map((marker, index) => (
                     <Marker
                         key={marker.place_id}
                         coordinate={{
@@ -169,16 +196,16 @@ const Map = ({ navigation, route }) => {
                         }}
                         title={marker.name}
                         onPress={() => onMarkerPress(marker.geometry.location.lat, marker.geometry.location.lng)}
+                        tracksViewChanges={false}
                     />
                 ))}
             </MapView>
 
-            <ScrollView 
+            <VirtualizedList
                 style={styles.list}
                 contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
-            >
-                <LinearGradient colors={['#57658E', '#A79A84']} style={styles.background} />
-                {markers.map((marker, index) => (
+                data={memoizedMarkers}
+                renderItem={({ item: marker, index }) => (
                     <MapList 
                         key={marker.place_id} 
                         marker={marker} 
@@ -187,11 +214,21 @@ const Map = ({ navigation, route }) => {
                         navigation={navigation}
                         uid={uid}
                     />
-                ))}
-            </ScrollView>
+                )}
+                keyExtractor={item => item.place_id}
+                getItemCount={getItemCount}
+                getItem={getItem}
+                initialNumToRender={5}
+                maxToRenderPerBatch={5}
+                windowSize={5}
+                removeClippedSubviews={true}
+            />
         </View>
     );
 };
+
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -220,7 +257,7 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         borderRadius: 41.5,
-        opacity: 0.05,
+        opacity: 1,
     },
     nameText: {
         color: '#FFF4D2',
