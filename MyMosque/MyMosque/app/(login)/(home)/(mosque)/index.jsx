@@ -39,10 +39,12 @@ const MosquePage = () => {
             const docSnap = await getDoc(docRef);
             const userSnap = await getDoc(userRef)
             const dateFormatted = formatDate(new Date);
-            const events = docSnap.data()['events']
-            const todaysEvent = events[dateFormatted]
+            const events = docSnap.data()['events'] || {};
+            const todaysEvent = events[dateFormatted];
             const newPosts = [];
-            const posts = docSnap.data()["posts"];
+            const mosqueData = docSnap.data();
+            const posts = mosqueData.posts || [];
+
             posts.forEach(post => {
                 newPosts.push({
                     ...post,
@@ -50,7 +52,29 @@ const MosquePage = () => {
                     uid: null
                 });
             });
-            setPosts(newPosts);
+
+            Object.entries(events).forEach(([date, events]) => {
+                events.forEach(event => {
+                    newPosts.push({
+                        name: mosqueData.name,
+                        title: event.title,
+                        text: `Event: ${event.title}\nTime: ${event.time}\nDate: ${date}`,
+                        isText: false,
+                        time: date,
+                        masjidId: masjidId,
+                        uid: uid,
+                        images: event.images,
+                        timeCreated: event.timeCreated
+                    });
+                });
+            });
+
+            setPosts(newPosts.sort((a, b) => {
+                const timeA = a.timeCreated || 0;
+                const timeB = b.timeCreated || 0;
+                return timeB - timeA;
+            }));
+
             setNumEvents(todaysEvent == undefined ? 0 : todaysEvent.length);
             setName(docSnap.data()["name"])
             setBio(docSnap.data()["bio"]);
@@ -64,7 +88,7 @@ const MosquePage = () => {
             setIsLoading(false);
         }
         getInfo();
-    },[])
+    },[]);
 
 
     useEffect(() => {
@@ -242,10 +266,6 @@ const MosquePage = () => {
                                 <Post post={post} color={"#000000"}/>
                             </View>
                         ))}
-                    {/* <View style={styles.line}></View>
-                    <Post isText={true} time="1 day ago" text={post2} masjidName={name} color={"#000000"}/>
-                    <View style={styles.line}></View>
-                    <Post isText={false} time="1 day ago" text={post2} masjidName={name}  images={images} color={"#000000"}/> */}
                 </View>
             </>)}
         </ScrollView>

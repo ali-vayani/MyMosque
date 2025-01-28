@@ -1,7 +1,6 @@
 import getCurrentPrayer from "./getCurrentPrayer";
 import getLocalPrayerTimes from "./getLocalPrayerTimes";
 
-
 export default getMosquePrayerTimes = async (listOfTimes, address) => {
     let currentPrayer;
     let mosquePrayerTimes;
@@ -27,7 +26,7 @@ const updateMaghribTime = async (prayerTimes, address) => {
     }
     const data = await response.json();
     const localPrayerTimes = await getLocalPrayerTimes(data[0].address, null);
-    const maghribTime = localPrayerTimes.data.timings.Maghrib;
+    const maghribTime = localPrayerTimes.timings.Maghrib;
 
     let [hour, minute] = maghribTime.split(':').map(Number);
     const maghribAddition = parseInt(prayerTimes.Maghrib);

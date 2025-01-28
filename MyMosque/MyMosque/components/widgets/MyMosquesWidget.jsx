@@ -8,8 +8,6 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 
 
 const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
-    const screenHeight = Dimensions.get('window').height;
-    const widgetHeight = fullscreen ? screenHeight : screenHeight * 0.56;
     const router = useRouter();
     const [posts, setPosts] = useState([]);
     const getPosts = async () => {
@@ -28,11 +26,31 @@ const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
                             uid: uid
                         });
                     });
+                    const mosqueEvents = mosqueData.events || {};
+                    Object.entries(mosqueEvents).forEach(([date, events]) => {
+                        events.forEach(event => {
+                            newPosts.push({
+                                name: mosqueData.name,
+                                title: event.title,
+                                text: `Event: ${event.title}\nTime: ${event.time}\nDate: ${date}`,
+                                isText: false,
+                                time: date,
+                                masjidId: id,
+                                uid: uid,
+                                images: event.images,
+                                timeCreated: event.timeCreated
+                            });
+                        });
+                    });
                 } else {
                     console.log(`No document found for ID: ${id}`);
                 }
             }
-            setPosts(newPosts);
+            setPosts(newPosts.sort((a, b) => {
+                const timeA = a.timeCreated || 0;
+                const timeB = b.timeCreated || 0;
+                return timeB - timeA; 
+            }));
         } catch (error) {
             console.error("Error fetching posts:", error);
         }
@@ -42,10 +60,6 @@ const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
         getPosts();
     }, [masjidId]);
 
-    // useEffect(() => {
-    //     console.log(posts)
-    // }, [])
-
     // for testing
     const images = [
         'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -53,55 +67,6 @@ const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
         'https://images.unsplash.com/photo-1716339140080-be256d3270ce?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     ];
-
-
-const styles = StyleSheet.create({
-        widget: {
-            width: '100%',
-            height: widgetHeight,
-            backgroundColor: '#679159',
-            borderRadius: 41.5,
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: -1,
-        },
-        line: {
-            width: '100%',
-            height: '1px',
-            borderTopWidth: 1,
-            borderBottomWidth: 0,
-            borderColor: '#ebfeea80', 
-            gap: 15,
-            position: 'sticky'
-        },
-        header: {
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-        },
-        scrollContainer: {
-            width: '100%',
-            flex: 1,
-        },
-        mainText: {
-            fontSize: 32,
-            fontWeight: 'bold',
-            color: '#EBFEEA',
-        },
-        content: {
-            paddingTop: '10%',
-            paddingBottom: '5%',
-            width: '90%',
-            height: '100%',
-            gap: 35
-        },
-        mosqueInfoContent: {
-            gap: 15,
-            width: '100%',
-            minHeight: '100%',
-        },
-    });
 
     return (
         <View style={styles.widget}>
@@ -153,3 +118,52 @@ const styles = StyleSheet.create({
 };
 
 export default MyMosqueWidget;
+
+
+const styles = StyleSheet.create({
+    widget: {
+        width: '97%',
+        height: '56%',
+        backgroundColor: '#679159',
+        borderRadius: 41.5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: -1,
+    },
+    line: {
+        width: '100%',
+        height: '1px',
+        borderTopWidth: 1,
+        borderBottomWidth: 0,
+        borderColor: '#ebfeea80', 
+        gap: 15,
+        position: 'sticky'
+    },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    scrollContainer: {
+        width: '100%',
+        flex: 1,
+    },
+    mainText: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#EBFEEA',
+    },
+    content: {
+        paddingTop: '10%',
+        paddingBottom: '5%',
+        width: '90%',
+        height: '100%',
+        gap: 35
+    },
+    mosqueInfoContent: {
+        gap: 15,
+        width: '100%',
+        minHeight: '100%',
+    },
+});

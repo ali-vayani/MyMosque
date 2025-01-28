@@ -41,14 +41,14 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
             setIsLoading(true);
             await getLocalPrayerTimes(null, uid)
                 .then((res) => {
-                    const month = res.data.date.hijri.month.en;
-                    const day = res.data.date.hijri.month.days;
-                    const year = res.data.date.hijri.year;
+                    const month = res.date.hijri.month.en;
+                    const day = res.date.hijri.month.days;
+                    const year = res.date.hijri.year;
                     const date = month + " " + day + ", " + year + " AH";
                     setDate(date);
-                    const prayer = getCurrentPrayer(res.data.timings);
+                    const prayer = getCurrentPrayer(res.timings);
                     setMosqueInfo({
-                        prayer: res.data.timings,
+                        prayer: res.timings,
                         name: 'Your Location'
                     })
                     setCurrentPrayer(prayer); 

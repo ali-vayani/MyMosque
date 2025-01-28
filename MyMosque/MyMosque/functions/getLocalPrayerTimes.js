@@ -1,20 +1,54 @@
 import * as LocationExpo from 'expo-location';
 import { doc, getDoc } from "firebase/firestore";
 import { FIRESTORE_DB } from '../firebaseConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default getLocalPrayerTimes = async (location, uid) => {
-    if(!location) 
-        location = await getUserLocation();
-    let today = new Date();
-    const settings = await getTimeSettings(uid)
-    const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=${settings[0].id}&adjustment=1&school=${settings[1].id}`
-    return fetch(url)
-    .then(response => {
+    try {
+        // Check if we have cached data
+        const cachedData = await AsyncStorage.getItem('prayerTimesCache');
+        if (cachedData) {
+            const { data, timestamp, cachedLocation, cachedSettings } = JSON.parse(cachedData);
+            const today = new Date();
+            const cachedDate = new Date(timestamp);
+            const settings = await getTimeSettings(uid);
+            
+            // Check if the data is from today and settings haven't changed
+            if (cachedDate.getDate() === today.getDate() && 
+                cachedDate.getMonth() === today.getMonth() && 
+                cachedDate.getFullYear() === today.getFullYear() &&
+                JSON.stringify(cachedSettings) === JSON.stringify(settings) &&
+                (!location || (cachedLocation.city === location.city && cachedLocation.country === location.country))) {
+                return data.data;
+            }
+        }
+
+        // If no cache or cache is invalid, fetch new data
+        if(!location) 
+            location = await getUserLocation();
+        const today = new Date();
+        const settings = await getTimeSettings(uid);
+        const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=${settings[0].id}&adjustment=1&school=${settings[1].id}`;
+        
+        const response = await fetch(url);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        return response.json();
-    })
+        const data = await response.json();
+        
+        // Cache the new data
+        await AsyncStorage.setItem('prayerTimesCache', JSON.stringify({
+            data,
+            timestamp: new Date().toISOString(),
+            cachedLocation: location,
+            cachedSettings: settings
+        }));
+        
+        return data.data;
+    } catch (error) {
+        console.error('Error in getLocalPrayerTimes:', error);
+        throw error;
+    }
 }
 
 const getUserLocation = async () => {

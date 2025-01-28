@@ -1,13 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TouchableWithoutFeedback, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard} from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../firebaseConfig';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignIn() {
     const router = useRouter();
     const [email, setEmail] = useState('test2@gmail.com')
     const [password, setPassword] = useState('123123')
+
+    useEffect(() => {
+        checkLoginState();
+    }, []);
+
+    const checkLoginState = async () => {
+        try {
+            const uid = await AsyncStorage.getItem('userUID');
+            if (uid) {
+                router.replace({ pathname: '/(home)', params: { uid: uid } });
+            }
+        } catch (error) {
+            console.error('Error checking login state:', error);
+        }
+    };
 
     const dismissKeyboard = () => {
         Keyboard.dismiss();
@@ -18,11 +34,13 @@ export default function SignIn() {
             const userCredential = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
             const user = userCredential.user;
             const uid = user.uid;
+            await AsyncStorage.setItem('userUID', uid);
             router.replace({ pathname: '/(home)', params: { uid: uid } });
         } catch (error) {
             const errorCode = error.code;
             const errorMessage = error.message;
             console.error(`Error [${errorCode}]: ${errorMessage}`);
+            alert('Invalid email or password');
         }
     }
 

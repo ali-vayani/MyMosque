@@ -36,7 +36,7 @@ export default function CreateAccount() {
                     .then( async (userCredentials) => {
                         const user = userCredentials.user;
                         await addUserDB(user.uid)
-                        router.replace({ pathname: '/(main)', params: { uid: uid } });
+                        router.replace({ pathname: '/(home)', params: { uid: uid } });
                     })
                     .catch((error) => {
                         console.error("Error creating user:", error);

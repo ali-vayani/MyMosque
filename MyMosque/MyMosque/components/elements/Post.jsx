@@ -37,22 +37,26 @@ const Post = ({ post, color }) => {
             return (
                 <View style={styles.textContainer}>
                     <View style={styles.headerContainer}>
-                        <Image
-                            source={require('../../assets/icon.png')} 
-                            style={{
-                            width: 35,
-                            height: 35,
-                            borderRadius: 10000,
-                            }}
-                        />
+                        <TouchableOpacity
+                            onPress={() => router.push({pathname: "(mosque)", params: { masjidId: post.masjidId, uid: post.uid }})}
+                        >
+                            <Image
+                                source={require('../../assets/icon.png')} 
+                                style={{
+                                width: 35,
+                                height: 35,
+                                borderRadius: 10000,
+                                }}
+                            />
+                        </TouchableOpacity>
                         <View style={{gap: 15, width: '90%'}}>
                             <View style={{gap: 2}}>
                                 <TouchableOpacity
                                     onPress={() => router.push({pathname: "(mosque)", params: { masjidId: post.masjidId, uid: post.uid }})}
                                 >
                                     <Text style={[styles.nameText, { color: color }]}>{post.name}</Text>
+                                    <Text style={[styles.timeText, { color: color }]}>{post.time || (post.timeCreated ? new Date(post.timeCreated).toLocaleDateString() : "1 Day Ago")}</Text>
                                 </TouchableOpacity>
-                                <Text style={[styles.timeText, { color: color }]}>{"1 Day Ago" || post.time}</Text>
                             </View>
                             <Text style={[styles.postText, { color: color }]}>{post.text}</Text>
                         </View>
@@ -77,7 +81,7 @@ const Post = ({ post, color }) => {
                             >
                                 <Text style={[styles.nameText, { color: color }]}>{post.name}</Text>
                             </TouchableOpacity>
-                            <Text style={[styles.timeText, { color: color }]}>{ "1 Day Ago" || post.time}</Text>
+                            <Text style={[styles.timeText, { color: color }]}>{post.time || (post.timeCreated ? new Date(post.timeCreated).toLocaleDateString() : "1 Day Ago")}</Text>
                         </View>
                     </View>
                     <View style={styles.post}>
