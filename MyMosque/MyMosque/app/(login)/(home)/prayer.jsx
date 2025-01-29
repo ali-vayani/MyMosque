@@ -94,6 +94,7 @@ const PrayerTimes = () => {
                 <View style={styles.content}>
                     <Text style={styles.mainText }>{islamicDate}</Text>
                     <View style={styles.prayerBar}>
+                        <Text>{mosqueInfo.located}</Text>
                         <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={mosqueInfo.prayer} height={20} currentPrayer={currentPrayer}/>
                     </View>
                     <View style={styles.prayerArea}>

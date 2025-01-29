@@ -5,32 +5,37 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default getLocalPrayerTimes = async (location, uid) => {
     try {
-        // Check if we have cached data
+
         const cachedData = await AsyncStorage.getItem('prayerTimesCache');
+
         if (cachedData) {
             const { data, timestamp, cachedLocation, cachedSettings } = JSON.parse(cachedData);
             const today = new Date();
             const cachedDate = new Date(timestamp);
             const settings = await getTimeSettings(uid);
-            
             // Check if the data is from today and settings haven't changed
             if (cachedDate.getDate() === today.getDate() && 
                 cachedDate.getMonth() === today.getMonth() && 
                 cachedDate.getFullYear() === today.getFullYear() &&
-                JSON.stringify(cachedSettings) === JSON.stringify(settings) &&
+                JSON.stringify(settings[0].name) === JSON.stringify(cachedSettings[0].name) &&
+                JSON.stringify(settings[1].name) === JSON.stringify(cachedSettings[1].name) &&
                 (!location || (cachedLocation.city === location.city && cachedLocation.country === location.country))) {
-                return data.data;
+                return {
+                    ...data.data ,
+                    located: 'AsyncStorage'
+                }
             }
         }
 
-        // If no cache or cache is invalid, fetch new data
         if(!location) 
             location = await getUserLocation();
         const today = new Date();
         const settings = await getTimeSettings(uid);
         const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=${settings[0].id}&adjustment=1&school=${settings[1].id}`;
-        
+        const startTime = performance.now();
         const response = await fetch(url);
+        const endTime = performance.now();
+        console.log(`API Response Time: ${endTime - startTime}ms`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -44,7 +49,10 @@ export default getLocalPrayerTimes = async (location, uid) => {
             cachedSettings: settings
         }));
         
-        return data.data;
+        return {
+            ...data.data ,
+            located: endTime - startTime
+        }
     } catch (error) {
         console.error('Error in getLocalPrayerTimes:', error);
         throw error;

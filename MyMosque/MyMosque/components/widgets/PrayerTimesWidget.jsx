@@ -49,12 +49,12 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
                     const prayer = getCurrentPrayer(res.timings);
                     setMosqueInfo({
                         prayer: res.timings,
-                        name: 'Your Location'
+                        name: 'Your Location',
+                        located: res.located
                     })
                     setCurrentPrayer(prayer); 
                 })
                 .catch((err) => console.error(err));
-    
             setIsLoading(false);
         };
         if(uid)
@@ -79,11 +79,12 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
             />
             {isLoading ? (
                 <View style={styles.loading} key="loading-view">
-                    <ActivityIndicator size="large" color="#F2EFFB" />
+                    {/* <ActivityIndicator size="large" color="#F2EFFB" /> */}
                 </View>
             ) : (
                 <View style={styles.content} key="content-view">
                     <Text style={styles.mainText}> Prayer Times </Text>
+                    <Text>{mosqueInfo.located}</Text>
                     <PrayerBar timeTillNext={time} nextPrayer={'Maghrib'} size={28} prayerAndTime={mosqueInfo.prayer} currentPrayer={currentPrayer} height={30}/>
                     <Location 
                         favMasjids={favMasjids} 
