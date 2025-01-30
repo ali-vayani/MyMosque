@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VirtualizedList } from 'react-native';
-import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity, Image, Linking } from 'react-native';
+import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getDistance } from 'geolib';
@@ -202,29 +202,33 @@ const Map = ({ navigation, route }) => {
                     />
                 ))}
             </MapView>
-
-            <VirtualizedList
-                style={styles.list}
-                contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
-                data={memoizedMarkers}
-                renderItem={({ item: marker, index }) => (
-                    <MapList 
-                        key={marker.place_id} 
-                        marker={marker} 
-                        name={index} 
-                        onPress={() => onListItemPress(marker.geometry.location.lat, marker.geometry.location.lng)}
-                        navigation={navigation}
-                        uid={uid}
-                    />
-                )}
-                keyExtractor={item => item.place_id}
-                getItemCount={getItemCount}
-                getItem={getItem}
-                initialNumToRender={5}
-                maxToRenderPerBatch={5}
-                windowSize={5}
-                removeClippedSubviews={true}
-            />
+            {memoizedMarkers.length < 1 ? 
+                <View style={[styles.list, { justifyContent: 'center', alignItems: 'center' }]}>
+                    <ActivityIndicator size="large" color="#F2EFFB" /> 
+                </View>
+                : <VirtualizedList
+                    style={styles.list}
+                    contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                    data={memoizedMarkers}
+                    renderItem={({ item: marker, index }) => (
+                        <MapList 
+                            key={marker.place_id} 
+                            marker={marker} 
+                            name={index} 
+                            onPress={() => onListItemPress(marker.geometry.location.lat, marker.geometry.location.lng)}
+                            navigation={navigation}
+                            uid={uid}
+                        />
+                    )}
+                    keyExtractor={item => item.place_id}
+                    getItemCount={getItemCount}
+                    getItem={getItem}
+                    initialNumToRender={5}
+                    maxToRenderPerBatch={5}
+                    windowSize={5}
+                    removeClippedSubviews={true}
+                />
+            }
         </View>
     );
 };

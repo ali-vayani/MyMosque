@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../firebaseConfig';
-import { View, Text, Linking, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, Linking, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
 export default MapList = ({ uid, marker, onPress, navigation}) => {

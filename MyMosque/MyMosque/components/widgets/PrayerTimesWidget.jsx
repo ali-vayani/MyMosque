@@ -80,7 +80,7 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
             />
             {isLoading ? (
                 <View style={styles.loading} key="loading-view">
-                    {/* <ActivityIndicator size="large" color="#F2EFFB" /> */}
+                    <ActivityIndicator size="large" color="#F2EFFB" />
                 </View>
             ) : (
                 <View style={styles.content} key="content-view">
