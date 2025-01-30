@@ -51,7 +51,7 @@ export default function CreateAccount() {
     const addUserDB = async (uid) => {
         try {
             const userRef = doc(FIRESTORE_DB, "users", uid);
-            await setDoc(userRef, {favMosques: [],});
+            await setDoc(userRef, {favMosques: ["OnfodEG98Qaa3GIYKNxW"],});
             console.log(`User ${uid} added successfully with favMosques initialized as an empty array.`);          
         } catch (error) {
             console.error("Error adding user to Firestore: ", error);

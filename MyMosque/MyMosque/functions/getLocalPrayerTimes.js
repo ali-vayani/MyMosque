@@ -26,7 +26,7 @@ export default getLocalPrayerTimes = async (location, uid) => {
             if (cachedDate.getDate() === today.getDate() && 
                 cachedDate.getMonth() === today.getMonth() && 
                 cachedDate.getFullYear() === today.getFullYear() &&
-                JSON.stringify(settings[0].name) !== JSON.stringify(cachedSettings[0].name) &&
+                JSON.stringify(settings[0].name) === JSON.stringify(cachedSettings[0].name) &&
                 JSON.stringify(settings[1].name) === JSON.stringify(cachedSettings[1].name) &&
                 (!location || (cachedLocation.city === location.city && cachedLocation.country === location.country))) {
                 return {
@@ -50,7 +50,6 @@ export default getLocalPrayerTimes = async (location, uid) => {
         }
         const data = await response.json();
         
-        // Cache the new data
         await AsyncStorage.setItem('prayerTimesCache', JSON.stringify({
             data,
             timestamp: new Date().toISOString(),
