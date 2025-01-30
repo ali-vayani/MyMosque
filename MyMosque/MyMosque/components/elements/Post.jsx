@@ -10,6 +10,8 @@ const Post = ({ post, color }) => {
     const images = [];
     const [currentIndex, setCurrentIndex] = useState(0);
     color = color || '#ebfeea'; 
+    if(post)
+        console.log(new Date(post.timeCreated).toLocaleDateString())
 
     const handleScroll = (event) => {
         const slideSize = event.nativeEvent.layoutMeasurement.width;
@@ -55,7 +57,7 @@ const Post = ({ post, color }) => {
                                     onPress={() => router.push({pathname: "(mosque)", params: { masjidId: post.masjidId, uid: post.uid }})}
                                 >
                                     <Text style={[styles.nameText, { color: color }]}>{post.name}</Text>
-                                    <Text style={[styles.timeText, { color: color }]}>{post.time || (post.timeCreated ? new Date(post.timeCreated).toLocaleDateString() : "1 Day Ago")}</Text>
+                                    <Text style={[styles.timeText, { color: color }]}>{new Date(post.timeCreated).toLocaleDateString()}</Text>
                                 </TouchableOpacity>
                             </View>
                             <Text style={[styles.postText, { color: color }]}>{post.text}</Text>
@@ -81,7 +83,7 @@ const Post = ({ post, color }) => {
                             >
                                 <Text style={[styles.nameText, { color: color }]}>{post.name}</Text>
                             </TouchableOpacity>
-                            <Text style={[styles.timeText, { color: color }]}>{post.time || (post.timeCreated ? new Date(post.timeCreated).toLocaleDateString() : "1 Day Ago")}</Text>
+                            <Text style={[styles.timeText, { color: color }]}>{new Date(post.timeCreated).toLocaleDateString()}</Text>
                         </View>
                     </View>
                     <View style={styles.post}>

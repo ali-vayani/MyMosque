@@ -14,14 +14,17 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "MyMosque needs access to location to find nearby mosques",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "MyMosque needs access to location to find nearby mosques",
-        "UIBackgroundModes": ["location"]
+        "UIBackgroundModes": [
+          "location"
+        ]
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.pastali.MyMosque"
     },
     "web": {
       "bundler": "metro",

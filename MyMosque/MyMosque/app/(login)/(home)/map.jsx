@@ -6,9 +6,6 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getDistance } from 'geolib';
 import SearchWidget from '../../../components/widgets/SearchWidget';
-import { LinearGradient } from 'expo-linear-gradient';
-import { FIRESTORE_DB } from '../../../firebaseConfig';
-import { collection, query, where, getDocs } from "firebase/firestore";
 import MapList from '../../../components/elements/MapList';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
@@ -94,6 +91,7 @@ const Map = ({ navigation, route }) => {
 
     useEffect(() => {
         (async () => {
+            const startTime = performance.now();
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert('Permission Denied', 'Permission to access location was denied');
@@ -112,15 +110,19 @@ const Map = ({ navigation, route }) => {
 
             // Try to get cached data first
             const cachedData = await AsyncStorage.getItem(cacheKey);
+            //console.log(cachedData)
             if (cachedData) {
                 const { data, timestamp } = JSON.parse(cachedData);
                 if (Date.now() - timestamp < cacheDuration) {
                     setMarkers(data);
+                    const endTime = performance.now();
+                    console.log(`API Response Time: ${endTime - startTime}ms`);
                     return;
                 }
             }
 
             fetchNearbyMosques(latitude, longitude);
+            console.log("tetststs")
         })();
     }, []);
 

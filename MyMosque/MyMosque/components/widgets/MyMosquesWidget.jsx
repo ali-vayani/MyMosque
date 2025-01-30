@@ -23,6 +23,7 @@ const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
                         newPosts.push({
                             ...post,
                             masjidId: id,
+                            timeCreated: new Date(post.timeCreated.seconds * 1000),
                             uid: uid
                         });
                     });
@@ -38,7 +39,7 @@ const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
                                 masjidId: id,
                                 uid: uid,
                                 images: event.images,
-                                timeCreated: event.timeCreated
+                                timeCreated: new Date(event.timeCreated.seconds * 1000)
                             });
                         });
                     });

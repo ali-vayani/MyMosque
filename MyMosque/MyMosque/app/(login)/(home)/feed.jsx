@@ -25,6 +25,7 @@ export default function Feed () {
                     mosquePosts.forEach(post => {
                         newPosts.push({
                             ...post,
+                            timeCreated: new Date(post.timeCreated.seconds * 1000),
                             masjidId: id,
                             uid: uid
                         });
@@ -41,7 +42,7 @@ export default function Feed () {
                                 masjidId: id,
                                 uid: uid,
                                 images: event.images,
-                                timeCreated: event.timeCreated
+                                timeCreated: new Date(event.timeCreated.seconds * 1000)
                             });
                         });
                     });
@@ -50,9 +51,11 @@ export default function Feed () {
                 }
             }
             setPosts(newPosts.sort((a, b) => {
+                // console.log(new Date(a.timeCreated.seconds * 1000).toLocaleString());
+                // console.log(b.timeCreated);
                 const timeA = a.timeCreated || 0;
                 const timeB = b.timeCreated || 0;
-                return timeB - timeA; // Sort in descending order (newest first)
+                return timeB - timeA;
             }));
         } catch (error) {
             console.error("Error fetching posts:", error);

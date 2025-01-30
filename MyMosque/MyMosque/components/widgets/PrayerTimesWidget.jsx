@@ -17,16 +17,17 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
     const [timeSettings, setTimeSettings] = useState([]);
 
     const handleNavigate = useCallback(() => {
-        router.push({
-            pathname: '/prayer',
-            params: {
-                info: JSON.stringify(mosqueInfo),
-                currentPrayer: currentPrayer,
-                uid: uid,
-                date: date,
-                timeSettings: JSON.stringify(timeSettings)
-            }
-        });
+        if(!isLoading)
+            router.push({
+                pathname: '/prayer',
+                params: {
+                    info: JSON.stringify(mosqueInfo),
+                    currentPrayer: currentPrayer,
+                    uid: uid,
+                    date: date,
+                    timeSettings: JSON.stringify(timeSettings)
+                }
+            });
     }, [mosqueInfo, currentPrayer, uid, date, timeSettings]);
 
     useEffect(() => {
@@ -83,8 +84,8 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
                 </View>
             ) : (
                 <View style={styles.content} key="content-view">
-                    <Text style={styles.mainText}> Prayer Times. </Text>
-                    <Text>{mosqueInfo.located}</Text>
+                    <Text style={styles.mainText}> Prayer Times</Text>
+                    {/* <Text>{mosqueInfo.located}</Text> */}
                     <PrayerBar timeTillNext={time} nextPrayer={'Maghrib'} size={28} prayerAndTime={mosqueInfo.prayer} currentPrayer={currentPrayer} height={30}/>
                     <Location 
                         favMasjids={favMasjids} 

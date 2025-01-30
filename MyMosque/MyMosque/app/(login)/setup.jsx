@@ -4,8 +4,8 @@ import { useRouter } from 'expo-router';
 
 export default function SetUp({navigation}) {
     const router = useRouter();
-    const [email, setEmail] = useState('test@gmail.com')
-    const [username, setUsername] = useState('ali')
+    const [email, setEmail] = useState()
+    const [username, setUsername] = useState()
 
     const dismissKeyboard = () => {
         Keyboard.dismiss();

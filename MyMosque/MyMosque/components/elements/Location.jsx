@@ -35,15 +35,11 @@ const Location = ({setMosqueInfo, setCurrPrayer, favMasjids, setLoading, name, u
 
     const handlePress = async (item) => {
         try {
-            console.log("test1")
             let docRef = doc(FIRESTORE_DB, "mosques", item.id.replace(/\s/g, ''));
             const docSnap = await getDoc(docRef);
-            console.log("test3")
             const prayers = docSnap.data()["prayerTimes"];
-            console.log("test2")
             const address = docSnap.data()["address"]
             const info = await getMosquePrayerTimes(prayers, address);
-            console.log("test4", info)
             if(setMosqueInfo !== null && info != null) {
                 console.log(info)
                 const mosqueInfo = {

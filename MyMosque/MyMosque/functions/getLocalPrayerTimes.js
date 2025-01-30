@@ -2,6 +2,15 @@ import * as LocationExpo from 'expo-location';
 import { doc, getDoc } from "firebase/firestore";
 import { FIRESTORE_DB } from '../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 export default getLocalPrayerTimes = async (location, uid) => {
     try {
@@ -17,7 +26,7 @@ export default getLocalPrayerTimes = async (location, uid) => {
             if (cachedDate.getDate() === today.getDate() && 
                 cachedDate.getMonth() === today.getMonth() && 
                 cachedDate.getFullYear() === today.getFullYear() &&
-                JSON.stringify(settings[0].name) === JSON.stringify(cachedSettings[0].name) &&
+                JSON.stringify(settings[0].name) !== JSON.stringify(cachedSettings[0].name) &&
                 JSON.stringify(settings[1].name) === JSON.stringify(cachedSettings[1].name) &&
                 (!location || (cachedLocation.city === location.city && cachedLocation.country === location.country))) {
                 return {

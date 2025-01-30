@@ -11,7 +11,7 @@ export default function CreateAccount() {
     const { userEmail, userName } = useLocalSearchParams();
     const [email, setEmail] = useState(userEmail);
     const [username, setUsername]= useState(userName);
-    const [password, setPassword] = useState('123A123!');
+    const [password, setPassword] = useState();
     const [savePassword, setSavePassword] = useState(false);
     const [passwordValid, setPasswordValid] = useState(true);
 

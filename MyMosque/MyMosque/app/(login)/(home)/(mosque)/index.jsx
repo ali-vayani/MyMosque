@@ -48,13 +48,16 @@ const MosquePage = () => {
             posts.forEach(post => {
                 newPosts.push({
                     ...post,
+                    timeCreated: new Date(post.timeCreated.seconds * 1000),
                     masjidId: null,
                     uid: null
                 });
             });
 
             Object.entries(events).forEach(([date, events]) => {
+                //console.log(new Date(event.timeCreated.seconds * 1000))
                 events.forEach(event => {
+                    //console.log(new Date(event.timeCreated.seconds * 1000).toLocaleDateString())
                     newPosts.push({
                         name: mosqueData.name,
                         title: event.title,
@@ -64,7 +67,7 @@ const MosquePage = () => {
                         masjidId: masjidId,
                         uid: uid,
                         images: event.images,
-                        timeCreated: event.timeCreated
+                        timeCreated: new Date(event.timeCreated.seconds * 1000)
                     });
                 });
             });
