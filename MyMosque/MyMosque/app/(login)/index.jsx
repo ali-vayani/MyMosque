@@ -18,7 +18,7 @@ export default function SignIn() {
         try {
             const uid = await AsyncStorage.getItem('userUID');
             if (uid) {
-                router.replace({ pathname: '/(home)', params: { uid: uid } });
+                //router.replace({ pathname: '/(home)', params: { uid: uid } });
             }
         } catch (error) {
             console.error('Error checking login state:', error);

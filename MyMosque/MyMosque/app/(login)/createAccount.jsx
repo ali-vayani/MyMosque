@@ -36,7 +36,7 @@ export default function CreateAccount() {
                     .then( async (userCredentials) => {
                         const user = userCredentials.user;
                         await addUserDB(user.uid)
-                        router.replace({ pathname: '/(home)', params: { uid: uid } });
+                        router.replace({ pathname: '/(home)', params: { uid: user.uid } });
                     })
                     .catch((error) => {
                         console.error("Error creating user:", error);
@@ -51,7 +51,7 @@ export default function CreateAccount() {
     const addUserDB = async (uid) => {
         try {
             const userRef = doc(FIRESTORE_DB, "users", uid);
-            await setDoc(userRef, {favMosques: ["OnfodEG98Qaa3GIYKNxW"],});
+            await setDoc(userRef, {favMasjids: ["OnfodEG98Qaa3GIYKNxW"],});
             console.log(`User ${uid} added successfully with favMosques initialized as an empty array.`);          
         } catch (error) {
             console.error("Error adding user to Firestore: ", error);
