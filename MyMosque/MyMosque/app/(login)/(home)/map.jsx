@@ -8,8 +8,10 @@ import { getDistance } from 'geolib';
 import SearchWidget from '../../../components/widgets/SearchWidget';
 import MapList from '../../../components/elements/MapList';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
-const Map = ({ navigation, route }) => {
+const Map = ({ navigation }) => {
+    const router = new useRouter()
     const { uid } = useLocalSearchParams();
     const mapRef = useRef(null)
     const [location, setLocation] = useState(null);
@@ -110,8 +112,7 @@ const Map = ({ navigation, route }) => {
 
             // Try to get cached data first
             const cachedData = await AsyncStorage.getItem(cacheKey);
-            //console.log(cachedData)
-            if (cachedData) {
+            if (!cachedData) {
                 const { data, timestamp } = JSON.parse(cachedData);
                 if (Date.now() - timestamp < cacheDuration) {
                     setMarkers(data);
@@ -128,7 +129,7 @@ const Map = ({ navigation, route }) => {
 
     const fetchNearbyMosques = async (lat, lng, nextPageToken = null) => {
         setIsLoading(true);
-        const radius = 24000;
+        const radius = 10000;
         const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
         let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=mosque&key=${apiKey}`;
         
@@ -176,12 +177,22 @@ const Map = ({ navigation, route }) => {
                 loading="lazy"
             />
             <View style={styles.searchContainer}>
-                <SearchWidget 
-                    inputVersion={true} 
-                    onSubmit={() => value ? fetchQueryMosque(value, location.latitude, location.longitude) : null} 
-                    setValue={setValue} 
-                    value={value} 
-                />
+                <TouchableOpacity 
+                    style={{height: 35, width: 35, borderRadius: 25, backgroundColor: '#57658E', justifyContent: 'center', alignItems: 'center'}}
+                    onPress={() => {
+                        router.back()
+                    }}
+                >
+                    <Ionicons name="chevron-back-outline" size={22.5} color={'#FFF4D2'}/>
+                </TouchableOpacity>
+                <View style={{display: 'flex', flex: 1}}>
+                    <SearchWidget 
+                        inputVersion={true} 
+                        onSubmit={() => value ? fetchQueryMosque(value, location.latitude, location.longitude) : null} 
+                        setValue={setValue} 
+                        value={value} 
+                    />
+                </View>
             </View>
             
             <MapView
@@ -276,6 +287,10 @@ const styles = StyleSheet.create({
         zIndex: 10, 
         height: 90,
         alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 10,
+        marginInline: 5,
     },
 });
 

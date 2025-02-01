@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SectionList } from 'react-native';
+import { View, Text, StyleSheet, SectionList, TouchableOpacity } from 'react-native';
 import { Calendar as RNCalendar } from 'react-native-calendars';
 import { FIRESTORE_DB } from '../../../../firebaseConfig';
-import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 const Calendar = () => {
+    router = new useRouter()
     const {masjidId, uid} = useLocalSearchParams();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -72,6 +74,14 @@ const Calendar = () => {
 
     return (
         <View style={styles.container}>
+            {/* <TouchableOpacity 
+                        style={{position: 'absolute', left: 10, zIndex: 10}}
+                        onPress={() => {
+                            router.back()
+                        }}
+                    >
+                        <Ionicons name="chevron-back-outline" size={25} color={'#000000'}/>
+                    </TouchableOpacity> */}
             <View style={styles.calendarContainer}>
                 <RNCalendar
                     style={styles.calendar}

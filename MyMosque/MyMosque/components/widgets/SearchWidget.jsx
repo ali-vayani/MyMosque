@@ -24,7 +24,7 @@ const SearchWidget = ({ inputVersion, onSubmit, setValue, value, uid}) => {
             flexDirection: 'row',
             width: '100%',
             height: '100%',
-            paddingHorizontal: '10%',
+            paddingHorizontal: '5%',
             alignItems: 'center'
         },
         textarea: {
@@ -67,18 +67,19 @@ const SearchWidget = ({ inputVersion, onSubmit, setValue, value, uid}) => {
             {
                 inputVersion && 
                 <View style={[styles.content]}>
-                <TouchableOpacity onPress={ dismissKeyboard && onSubmit }>
-                    <Ionicons name="search-sharp" size={36} color={'#E6E8EC'} />
-                </TouchableOpacity>
-                <TextInput
-                    style={styles.textarea}
-                    returnKeyType='done'
-                    onSubmitEditing={dismissKeyboard && onSubmit}
-                    placeholder={'Search for a Mosque'}
-                    placeholderTextColor={"rgba(230, 232, 236, .5)"}
-                    onChangeText={text => setValue(text)}
-                    value={value} 
-                />
+
+                    <TouchableOpacity onPress={ dismissKeyboard && onSubmit }>
+                        <Ionicons name="search-sharp" size={36} color={'#E6E8EC'} />
+                    </TouchableOpacity>
+                    <TextInput
+                        style={styles.textarea}
+                        returnKeyType='done'
+                        onSubmitEditing={dismissKeyboard && onSubmit}
+                        placeholder={'Search for a Mosque'}
+                        placeholderTextColor={"rgba(230, 232, 236, .5)"}
+                        onChangeText={text => setValue(text)}
+                        value={value} 
+                    />
                 </View>
             }
         </View>

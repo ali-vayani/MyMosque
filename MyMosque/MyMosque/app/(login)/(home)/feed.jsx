@@ -1,15 +1,15 @@
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Image, ScrollView, StyleSheet, Text } from "react-native";
+import { View, Image, ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { doc, getDoc } from "firebase/firestore";
 import { FIRESTORE_DB } from '../../../firebaseConfig';
 import Post from "../../../components/elements/Post";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Feed () {
     const router = useRouter();
     const { masjidId, uid } = useLocalSearchParams();
     const parsedMasjidId = JSON.parse(masjidId);
-    console.log(parsedMasjidId)
     const [posts, setPosts] = useState([]);
 
     const getPosts = async () => {
@@ -51,8 +51,7 @@ export default function Feed () {
                 }
             }
             setPosts(newPosts.sort((a, b) => {
-                // console.log(new Date(a.timeCreated.seconds * 1000).toLocaleString());
-                // console.log(b.timeCreated);
+
                 const timeA = a.timeCreated || 0;
                 const timeB = b.timeCreated || 0;
                 return timeB - timeA;
@@ -80,7 +79,16 @@ export default function Feed () {
                 }}
             />
             <View style={styles.content}>
-                <Text style={styles.mainText}>Your Feed</Text>
+                <View style={styles.header}>
+                    <TouchableOpacity 
+                            onPress={() => {
+                                router.back()
+                            }}
+                    >
+                        <Ionicons name="chevron-back-outline" size={25} color={'#EBFEEA'}/>
+                    </TouchableOpacity>
+                    <Text style={styles.mainText}>Your Feed</Text>
+                </View>
                 <View style={styles.posts}>
                         {posts && posts.map((post, index) => (
                             <View style={styles.posts} key={index}>
@@ -134,7 +142,6 @@ const styles = StyleSheet.create({
     mainText: {
         fontSize: 32,
         fontWeight: 'bold',
-        paddingLeft: '5%',
         color: '#EBFEEA'
     },
     background:{
@@ -209,4 +216,11 @@ const styles = StyleSheet.create({
         height: '100%',
         gap: 35
     },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: "center",
+        gap: 10,
+        paddingLeft: '5%'
+    }
 })

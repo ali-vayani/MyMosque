@@ -55,9 +55,7 @@ const MosquePage = () => {
             });
 
             Object.entries(events).forEach(([date, events]) => {
-                //console.log(new Date(event.timeCreated.seconds * 1000))
                 events.forEach(event => {
-                    //console.log(new Date(event.timeCreated.seconds * 1000).toLocaleDateString())
                     newPosts.push({
                         name: mosqueData.name,
                         title: event.title,
@@ -136,7 +134,7 @@ const MosquePage = () => {
 
     const handleNavigate = useCallback(() => {
         router.push({
-            pathname: "(prayer)",
+            pathname: "/(home)/prayer",
             params: {
                 info: JSON.stringify({
                     prayer: currentPrayerTimes,
@@ -147,17 +145,6 @@ const MosquePage = () => {
             }
         });
     }, [currentPrayerTimes, currentPrayer, uid]);
-    
-
-    const images = [
-        'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        'https://images.unsplash.com/photo-1716222350384-763cc1ec344a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8OXx8fGVufDB8fHx8fA%3D%3D',
-        'https://images.unsplash.com/photo-1716339140080-be256d3270ce?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    ];
-    
-    // for testing
-    const [post2, setPost] = useState("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...");
 
     return (
         <ScrollView style={styles.page} contentContainerStyle={{ flexGrow: 1 }}>
@@ -189,6 +176,14 @@ const MosquePage = () => {
                         
                     >
                         {joined ? <Ionicons name="bookmark" size={24} /> : <Ionicons name="bookmark-outline" size={24} />}
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={{position: 'absolute', left: 10, zIndex: 10}}
+                        onPress={() => {
+                            router.back()
+                        }}
+                    >
+                        <Ionicons name="chevron-back-outline" size={25} color={'#000000'}/>
                     </TouchableOpacity>
                     <Text style={styles.mainText}>{name}</Text>
                     <View style={styles.info}>

@@ -14,7 +14,6 @@ const Home = () => {
     const docRef = doc(FIRESTORE_DB, "users", uid);
     const [masjidId, setMasjidId] = useState([])
     const [userInfo, setUserInfo] = useState();
-
     useEffect(() => {
         getMasjidId()
     }, [])

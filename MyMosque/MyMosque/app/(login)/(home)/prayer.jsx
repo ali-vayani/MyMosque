@@ -5,7 +5,6 @@ import PrayerToken from '../../../components/elements/PrayerToken';
 import convertMilitaryTime from '../../../functions/convertMilitaryTime';
 import { FIRESTORE_DB } from '../../../firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
-import { BallIndicator } from 'react-native-indicators';
 import { Ionicons } from '@expo/vector-icons';
 import SettingsModal from '../../../components/elements/SettingsModal';
 import PrayerBar from '../../../components/elements/PrayerBar';
@@ -13,6 +12,7 @@ import Location from '../../../components/elements/Location';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const PrayerTimes = () => {
+    const router = useRouter();
     const { info, currentPrayer, uid, name, date, setTimeSettings, timeSettings} = useLocalSearchParams();
     const [locationText, setLocText] = useState('Your Location')
     const [favMasjids, setFavoriteMasjids] = useState([]);
@@ -24,6 +24,13 @@ const PrayerTimes = () => {
     const prayersOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
     const docRef = doc(FIRESTORE_DB, "users", uid);
 
+    const nextPrayer = {
+        "Fajr": "Dhuhr",
+        "Dhuhr": "Asr",
+        "Asr": "Maghrib",
+        "Maghrib": "Isha",
+        "Isha": "Fajr",
+    };
     
     useEffect(() => {
         const getMasjidId = async () => {
@@ -89,13 +96,20 @@ const PrayerTimes = () => {
                 opacity: .5,
                 }}
             />
-
+            <TouchableOpacity 
+                style={{position: 'absolute', left: 15, top: 60}}
+                onPress={() => {
+                    router.back()
+                }}
+            >
+                <Ionicons name="chevron-back-outline" size={25} color={'#F2EFFB'}/>
+            </TouchableOpacity>
             {(info || currentPrayer) && !isLoading ? (
                 <View style={styles.content}>
                     <Text style={styles.mainText }>{islamicDate}</Text>
                     <View style={styles.prayerBar}>
                         {/* <Text>{mosqueInfo.located}</Text> */}
-                        <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={mosqueInfo.prayer} height={20} currentPrayer={currentPrayer}/>
+                        <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={mosqueInfo.prayer} height={20} currentPrayer={nextPrayer[currentPrayer]}/>
                     </View>
                     <View style={styles.prayerArea}>
                         {mosqueInfo.prayer && prayersOrder.map((prayer, index) => (
