@@ -44,7 +44,6 @@ export default getLocalPrayerTimes = async (location, uid) => {
         const startTime = performance.now();
         const response = await fetch(url);
         const endTime = performance.now();
-        console.log(`API Response Time: ${endTime - startTime}ms`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }

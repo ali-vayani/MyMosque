@@ -25,7 +25,7 @@ const Map = ({ navigation }) => {
 
     const fetchQueryMosque = async (query, lat, lng, nextPageToken = null) => {
         const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
-        const radius = 24000;
+        const radius = 10000;
         let url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&type=mosque&radius=${radius}&key=${apiKey}`;
         
         if (nextPageToken) {
@@ -112,18 +112,17 @@ const Map = ({ navigation }) => {
 
             // Try to get cached data first
             const cachedData = await AsyncStorage.getItem(cacheKey);
-            if (!cachedData) {
+            if (cachedData) {
                 const { data, timestamp } = JSON.parse(cachedData);
                 if (Date.now() - timestamp < cacheDuration) {
                     setMarkers(data);
                     const endTime = performance.now();
-                    console.log(`API Response Time: ${endTime - startTime}ms`);
                     return;
                 }
             }
-
+            const star= performance.now();
             fetchNearbyMosques(latitude, longitude);
-            console.log("tetststs")
+            const endTime = performance.now();
         })();
     }, []);
 

@@ -10,8 +10,6 @@ const Post = ({ post, color }) => {
     const images = [];
     const [currentIndex, setCurrentIndex] = useState(0);
     color = color || '#ebfeea'; 
-    if(post)
-        console.log(new Date(post.timeCreated).toLocaleDateString())
 
     const handleScroll = (event) => {
         const slideSize = event.nativeEvent.layoutMeasurement.width;
