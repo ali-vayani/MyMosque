@@ -1,24 +1,57 @@
 import React, { useEffect, useState } from 'react';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
-import { FIRESTORE_DB } from '../../firebaseConfig';
-import { View, Text, Linking, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { FIREBASE_STORAGE, FIRESTORE_DB } from '../../firebaseConfig';
+import { View, Text, Linking, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { listAll, ref, getDownloadURL } from 'firebase/storage';
 
 export default MapList = ({ uid, marker, onPress, navigation}) => {
     const router = useRouter();
     const [address, setAddress] = useState(marker.vicinity || marker.formatted_address);
     const [name, setName] = useState(marker.name);
-    
+    const [images, setImages] = useState([]);
+    const [masjidInfo, setMasjidInfo] = useState();
+    const [masjidId, setMasjidId] = useState();
+
+    useEffect(() => {
+        const getMasjidInfo = async () => {
+            try {
+                const getMosqueWithAddress = query(collection(FIRESTORE_DB, "mosques"), where("address", "==", address));
+                const querySnapshot = await getDocs(getMosqueWithAddress);
+                if (querySnapshot.docs.length > 0) {
+                    setMasjidInfo(querySnapshot.docs[0]);
+                    const masjidId = querySnapshot.docs[0].id.replace(/\s/g, '');
+                    const storageRef = ref(FIREBASE_STORAGE, `images/mosques/${masjidId}`);
+                    try {
+                        const result = await listAll(storageRef);
+                        const urls = await Promise.all(
+                            result.items.map(async (item) => {
+                                const url = await getDownloadURL(item);
+                                return url;
+                            })
+                        );
+                        setImages(urls);
+                    } catch (error) {
+                        console.error('Error fetching images:', error);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching mosque info:', error);
+            }
+        };
+
+        getMasjidInfo();
+    }, []);
+
     const handleNavigate = async (navigateTo) => {
         try {
-            const getMosqueWithAddress = query(collection(FIRESTORE_DB, "mosques"), where("address", "==", address));
-            const querySnapshot = await getDocs(getMosqueWithAddress);
+
             if(navigateTo == "MosquePage")
-                router.push({pathname: '(mosque)', params: {masjidId: querySnapshot.docs[0].id, uid: uid}})
+                router.push({pathname: '(mosque)', params: {masjidId: masjidInfo.id, uid: uid}})
             else if(navigateTo == "PrayerTimes") {
-                const prayers = querySnapshot.docs[0].data().prayerTimes;
+                const prayers = masjidInfo.data().prayerTimes;
                 const info = await getMosquePrayerTimes(prayers, address);
-                const name = querySnapshot.docs[0].data().name;
+                const name = masjidInfo.data().name;
 
                 router.push({
                     pathname: "/prayer",
@@ -38,19 +71,37 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
     }
 
     return (
-        <TouchableOpacity style={styles.container} onPress={onPress}>
-            <View style={styles.innerContainer}>
-                <ScrollView
+        <View style={styles.container}>
+            <ScrollView
                     horizontal
                     contentContainerStyle={styles.scrollViewContent}
                     showsHorizontalScrollIndicator={false}
                     style={styles.scrollView}
                 >
-                    <View style={styles.imagePlaceholder}></View>
-                    <View style={styles.imagePlaceholder}></View>
-                    <View style={styles.imagePlaceholder}></View>
-                    <View style={styles.imagePlaceholder}></View>
+                    {images.length > 0 ? (
+                        images.map((imageUrl, index) => (
+                            <Image 
+                                key={index}
+                                source={{ uri: imageUrl }}
+                                style={styles.image}
+                                defaultSource={require('../../assets/icon.png')}
+                            />
+                        ))
+                    ) : marker.photoUrl ? (
+                        <Image 
+                            source={{ uri: marker.photoUrl }}
+                            style={styles.image}
+                            defaultSource={require('../../assets/icon.png')}
+                        />
+                    ) : (
+                        <>
+                            <View style={styles.imagePlaceholder}></View>
+                            <View style={styles.imagePlaceholder}></View>
+                            <View style={styles.imagePlaceholder}></View>
+                        </>
+                    )}
                 </ScrollView>
+            <TouchableOpacity style={styles.innerContainer} onPress={onPress}>
 
                 <Text style={styles.nameText}>{name}</Text>
 
@@ -78,8 +129,8 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
                         <Text style={styles.buttonText}>Prayer Times</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
-        </TouchableOpacity>
+            </TouchableOpacity>
+        </View>
     );
 };
 
@@ -89,19 +140,27 @@ const styles = StyleSheet.create({
         marginVertical: 4,
         height: 192,
         backgroundColor: '#364866', // Equivalent to bg-darkBlue
-        borderRadius: 20,
+        borderRadius: 15,
     },
     innerContainer: {
-        height: '100%',
+        // height: '100%',
         marginHorizontal: 8,
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
     },
     scrollView: {
         marginTop: 8,
+        zIndex: 100
     },
     scrollViewContent: {
         flexDirection: 'row',
+    },
+    image: {
+        width: 160,
+        height: 100,
+        margin: 4,
+        borderRadius: 4,
+        backgroundColor: 'rgba(166, 182, 209, 0.5)',
     },
     imagePlaceholder: {
         backgroundColor: 'rgba(166, 182, 209, 0.5)', // Equivalent to bg-lightBlue/50

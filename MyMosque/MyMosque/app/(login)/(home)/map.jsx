@@ -21,7 +21,7 @@ const Map = ({ navigation }) => {
     const [masjidId, setMasjidID] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const cacheKey = 'nearbyMosquesCache';
-    const cacheDuration = 1000 * 60 * 15; // 15 minutes
+    const cacheDuration = 1000 * 60 * 60;
 
     const fetchQueryMosque = async (query, lat, lng, nextPageToken = null) => {
         const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
@@ -93,7 +93,6 @@ const Map = ({ navigation }) => {
 
     useEffect(() => {
         (async () => {
-            const startTime = performance.now();
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 Alert.alert('Permission Denied', 'Permission to access location was denied');
@@ -116,13 +115,10 @@ const Map = ({ navigation }) => {
                 const { data, timestamp } = JSON.parse(cachedData);
                 if (Date.now() - timestamp < cacheDuration) {
                     setMarkers(data);
-                    const endTime = performance.now();
                     return;
                 }
             }
-            const star= performance.now();
             fetchNearbyMosques(latitude, longitude);
-            const endTime = performance.now();
         })();
     }, []);
 
@@ -131,10 +127,6 @@ const Map = ({ navigation }) => {
         const radius = 10000;
         const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
         let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=mosque&key=${apiKey}`;
-        
-        if (nextPageToken) {
-            url += `&pagetoken=${nextPageToken}`;
-        }
 
         try {
             const response = await fetch(url);
@@ -185,12 +177,20 @@ const Map = ({ navigation }) => {
                     <Ionicons name="chevron-back-outline" size={22.5} color={'#FFF4D2'}/>
                 </TouchableOpacity>
                 <View style={{display: 'flex', flex: 1}}>
+                    {memoizedMarkers.length < 1 ? 
+                    <SearchWidget 
+                    inputVersion={true} 
+                    setValue={setValue} 
+                    value={value} 
+                /> : 
+                    
                     <SearchWidget 
                         inputVersion={true} 
                         onSubmit={() => value ? fetchQueryMosque(value, location.latitude, location.longitude) : null} 
                         setValue={setValue} 
                         value={value} 
                     />
+                }
                 </View>
             </View>
             
