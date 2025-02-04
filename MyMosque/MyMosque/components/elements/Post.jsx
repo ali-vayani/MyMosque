@@ -11,6 +11,7 @@ const Post = ({ post, color }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     color = color || '#ebfeea'; 
 
+
     const handleScroll = (event) => {
         const slideSize = event.nativeEvent.layoutMeasurement.width;
         const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -22,7 +23,8 @@ const Post = ({ post, color }) => {
         <ImageBackground
             source={{ uri: item }}
             style={styles.postImage}
-            imageStyle={styles.imageRounded}
+            imageStyle={[styles.imageRounded, { resizeMode: 'cover' }]}
+            resizeMode="cover"
         >
             <LinearGradient
                 colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
@@ -147,10 +149,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     postImage: {
-        width: width - 123, 
+        width: 250, 
         height: 250,
         justifyContent: 'flex-end',
         alignItems: 'center',
+        alignSelf: 'center',
+        overflow: 'hidden',
     },
     imageRounded: {
         borderRadius: 10,
@@ -158,6 +162,7 @@ const styles = StyleSheet.create({
     gradient: {
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'flex-end',
+        borderRadius: 10,
     },
     nameText: {
         fontSize: 15,

@@ -33,7 +33,7 @@ const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
                             newPosts.push({
                                 name: mosqueData.name,
                                 title: event.title,
-                                text: `Event: ${event.title}\nTime: ${event.time}\nDate: ${date}`,
+                                text: `Event: ${event.title}\nTime: ${event.time}\nDate: ${reformatDate(date)}`,
                                 isText: false,
                                 time: date,
                                 masjidId: id,
@@ -61,14 +61,13 @@ const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
         getPosts();
     }, [masjidId]);
 
-    // for testing
-    const images = [
-        'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        'https://images.unsplash.com/photo-1716222350384-763cc1ec344a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8OXx8fGVufDB8fHx8fA%3D%3D',
-        'https://images.unsplash.com/photo-1716339140080-be256d3270ce?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        'https://images.unsplash.com/photo-1716396502668-26f0087e1c7d?q=80&w=3135&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    ];
-
+    const reformatDate = (date) => {
+        const year = date.slice(0, 4);
+        const month = date.slice(5, 7);
+        const day = date.slice(8);
+        return month + "/" + day + "/" + year;
+    }
+    
     return (
         <View style={styles.widget}>
         <Image 
@@ -107,8 +106,6 @@ const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
                         </View>
                     ))}
                     <View style={styles.line}></View>
-                    <Post isText={false} time="1 Day Ago" text={"post"} masjidName={"name"}  images={images}/>
-
                 </View>
             </ScrollView>
         </View>

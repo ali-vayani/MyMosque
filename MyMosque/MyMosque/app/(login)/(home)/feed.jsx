@@ -39,7 +39,7 @@ export default function Feed () {
                             newPosts.push({
                                 name: mosqueData.name,
                                 title: event.title,
-                                text: `Event: ${event.title}\nTime: ${event.time}\nDate: ${date}`,
+                                text: `Event: ${event.title}\nTime: ${event.time}\nDate: ${reformatDate(date)}`,
                                 isText: false,
                                 time: date,
                                 masjidId: id,
@@ -65,6 +65,13 @@ export default function Feed () {
         }
     };
     
+    const reformatDate = (date) => {
+        const year = date.slice(0, 4);
+        const month = date.slice(5, 7);
+        const day = date.slice(8);
+        return month + "/" + day + "/" + year;
+    }
+
     useEffect(() => {
         getPosts();
     }, [masjidId]);
