@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VirtualizedList } from 'react-native';
 import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Callout } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getDistance } from 'geolib';
 import SearchWidget from '../../../components/widgets/SearchWidget';
 import MapList from '../../../components/elements/MapList';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { MarkerClusterer } from '@teovilla/react-native-web-maps';
 
 const Map = ({ navigation }) => {
     const router = new useRouter()
@@ -20,6 +21,7 @@ const Map = ({ navigation }) => {
     const [expanded, setExpanded] = useState(null);
     const [masjidId, setMasjidID] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [clusteringEnabled] = useState(true);
     const cacheKey = 'nearbyMosquesCache';
     const cacheDuration = 1000 * 60 * 60;
 
@@ -131,6 +133,19 @@ const Map = ({ navigation }) => {
         let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=mosque&key=${apiKey}`;
 
         try {
+            // Check cache first with location-based key
+            const cacheKey = `nearbyMosques_${lat.toFixed(3)}_${lng.toFixed(3)}`;
+            const cachedData = await AsyncStorage.getItem(cacheKey);
+            
+            if (cachedData) {
+                const { data, timestamp } = JSON.parse(cachedData);
+                if (Date.now() - timestamp < cacheDuration) {
+                    setMarkers(data);
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
             const response = await fetch(url);
             const data = await response.json();
             if (data.results) {
@@ -143,13 +158,14 @@ const Map = ({ navigation }) => {
                 }));
 
                 resultsWithDistance.sort((a, b) => a.distance - b.distance);
-                setMarkers(resultsWithDistance);
-
-                // Cache the results
+                
+                // Cache the results with location-based key
                 await AsyncStorage.setItem(cacheKey, JSON.stringify({
                     data: resultsWithDistance,
                     timestamp: Date.now()
                 }));
+
+                setMarkers(resultsWithDistance);
             }
         } catch (error) {
             console.error("Error fetching: ", error);
@@ -158,12 +174,10 @@ const Map = ({ navigation }) => {
         }
     };
 
-    // Memoize markers to prevent unnecessary re-renders
     const memoizedMarkers = useMemo(() => markers, [markers]);
 
     return (
         <View style={styles.container}>
-            {/* <LinearGradient colors={['#57658E', '#57658E']} style={styles.background} /> */}
             <Image 
                 source={require('../../../assets/searchBg.png')} 
                 style={styles.imageBg}
@@ -200,6 +214,17 @@ const Map = ({ navigation }) => {
                 style={styles.map}
                 region={location}
                 ref={mapRef}
+                onRegionChangeComplete={(region) => setLocation(region)}
+                clusteringEnabled={clusteringEnabled}
+                clusterColor="#57658E"
+                clusterTextColor="#FFF4D2"
+                clusterBorderColor="#FFF4D2"
+                clusterBorderWidth={4}
+                maxZoom={20}
+                minZoom={1}
+                loadingEnabled={true}
+                loadingIndicatorColor="#57658E"
+                loadingBackgroundColor="#FFF4D2"
             >
                 {memoizedMarkers.map((marker, index) => (
                     <Marker
@@ -211,7 +236,12 @@ const Map = ({ navigation }) => {
                         title={marker.name}
                         onPress={() => onMarkerPress(marker.geometry.location.lat, marker.geometry.location.lng)}
                         tracksViewChanges={false}
-                    />
+                        cluster={true}
+                    >
+                        <Callout>
+                            <Text>{marker.name}</Text>
+                        </Callout>
+                    </Marker>
                 ))}
             </MapView>
             {memoizedMarkers.length < 1 ? 
