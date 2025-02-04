@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { FIREBASE_STORAGE, FIRESTORE_DB } from '../../firebaseConfig';
-import { View, Text, Linking, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { View, Text, Linking, TouchableOpacity, ScrollView, StyleSheet, ImageBackground, Image } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { listAll, ref, getDownloadURL } from 'firebase/storage';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default MapList = ({ uid, marker, onPress, navigation}) => {
     const router = useRouter();
@@ -80,19 +81,32 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
                 >
                     {images.length > 0 ? (
                         images.map((imageUrl, index) => (
-                            <Image 
-                                key={index}
-                                source={{ uri: imageUrl }}
-                                style={styles.image}
-                                defaultSource={require('../../assets/icon.png')}
-                            />
+                            <ImageBackground
+                            source={{ uri: imageUrl }}
+                            style={styles.image}
+                            imageStyle={styles.imageRounded}
+                            key={index}
+                        >
+                            <LinearGradient
+                                colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+                                style={styles.gradient}
+                            >
+                            </LinearGradient>
+                        </ImageBackground>
                         ))
                     ) : marker.photoUrl ? (
-                        <Image 
+                        <ImageBackground
                             source={{ uri: marker.photoUrl }}
                             style={styles.image}
-                            defaultSource={require('../../assets/icon.png')}
-                        />
+                            imageStyle={styles.imageRounded}
+                        >
+                            <LinearGradient
+                                colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+                                style={styles.gradient}
+                            >
+                                <Text style={styles.imageText}>{post.text}</Text>
+                            </LinearGradient>
+                        </ImageBackground>
                     ) : (
                         <>
                             <View style={styles.imagePlaceholder}></View>
@@ -139,7 +153,7 @@ const styles = StyleSheet.create({
         width: '95%',
         marginVertical: 4,
         height: 192,
-        backgroundColor: '#364866', // Equivalent to bg-darkBlue
+        backgroundColor: '#364866',
         borderRadius: 15,
     },
     innerContainer: {
@@ -161,16 +175,17 @@ const styles = StyleSheet.create({
         margin: 4,
         borderRadius: 4,
         backgroundColor: 'rgba(166, 182, 209, 0.5)',
+        marginTop: 5,
     },
     imagePlaceholder: {
-        backgroundColor: 'rgba(166, 182, 209, 0.5)', // Equivalent to bg-lightBlue/50
+        backgroundColor: 'rgba(166, 182, 209, 0.5)', 
         margin: 4,
         borderRadius: 4,
         width: 160,
     },
     nameText: {
         fontSize: 18,
-        color: '#e6e8ec', // Equivalent to text-blueText
+        color: '#e6e8ec',
         fontWeight: 'bold',
         marginVertical: 8,
     },
@@ -209,5 +224,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#e6e8ec', 
         textAlign: 'center',
+    },
+    gradient: {
+        ...StyleSheet.absoluteFillObject,
+        justifyContent: 'flex-end',
+    },
+    imageRounded: {
+        borderRadius: 4,
     },
 });
