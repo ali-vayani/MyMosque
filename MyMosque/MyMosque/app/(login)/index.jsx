@@ -14,6 +14,7 @@ export default function SignIn() {
         checkLoginState();
     }, []);
 
+    // gets the uid from async storage and redirects to home screen if uid exists
     const checkLoginState = async () => {
         try {
             const uid = await AsyncStorage.getItem('userUID');
@@ -29,6 +30,7 @@ export default function SignIn() {
         Keyboard.dismiss();
     };
 
+    // signs user in and navigates them to home with uid
     const signIn = async () => {
         try {
             const userCredential = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);

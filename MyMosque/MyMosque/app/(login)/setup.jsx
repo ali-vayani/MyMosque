@@ -51,7 +51,9 @@ export default function SetUp({navigation}) {
                     onSubmitEditing={dismissKeyboard}
                 />
                 
-                <TouchableOpacity onPress={() => router.push({ pathname: '/createAccount', params: { userEmail: email, userName: username } })} style={styles.button}>
+                <TouchableOpacity 
+                    onPress={() => router.push({ pathname: '/createAccount', params: { userEmail: email, userName: username } })} style={styles.button}
+                >
                     <Text style={styles.buttonText}>Next</Text>
                 </TouchableOpacity>
                 </View>

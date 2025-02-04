@@ -26,9 +26,11 @@ export default function CreateAccount() {
         return password.length >= 7 && specialCharRegex.test(password);
     };
 
+    // creates acc with unique emal and valid pw
     const createAccount = async() => {
         const isValid = checkPasswordValid();
         setPasswordValid(isValid);
+        // creates acc if password is valud & user with that email doesn't already exist
         if(isValid) {
             try {
                 const auth = getAuth();
@@ -39,22 +41,22 @@ export default function CreateAccount() {
                         router.replace({ pathname: '/(home)', params: { uid: user.uid } });
                     })
                     .catch((error) => {
-                        console.error("Error creating user:", error);
                         alert(getErrorMessage(error.code));
                     });
             } catch (error) {
-                console.error("Unexpected error:", error);
+                alert(getErrorMessage(error.code));
             }
         }
     }
 
+    // adds user to the db with collection name being uid
     const addUserDB = async (uid) => {
         try {
             const userRef = doc(FIRESTORE_DB, "users", uid);
-            await setDoc(userRef, {favMasjids: ["OnfodEG98Qaa3GIYKNxW"],});
-            console.log(`User ${uid} added successfully with favMosques initialized as an empty array.`);          
+            await setDoc(userRef, {favMasjids: ["OnfodEG98Qaa3GIYKNxW"],});       
         } catch (error) {
             console.error("Error adding user to Firestore: ", error);
+            alert("There was an error creating your account. Please try again.");
         }
     }
 

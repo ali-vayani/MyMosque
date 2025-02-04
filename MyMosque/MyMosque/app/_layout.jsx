@@ -40,11 +40,6 @@ export default function RootLayout() {
     <>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(login)" options={{ headerShown: false }} />
-        {/* <Stack.Screen name="(home)" options={{ headerShown: false }} />
-        <Stack.Screen name="(prayer)" options={{ headerShown: false }} />
-        <Stack.Screen name="(map)" options={{ headerShown: false }} />
-        <Stack.Screen name="(mosque)" options={{ headerShown: false }} />
-        <Stack.Screen name="(feed)" options={{ headerShown: false }} /> */}
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

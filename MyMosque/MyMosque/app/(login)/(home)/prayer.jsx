@@ -33,6 +33,7 @@ const PrayerTimes = () => {
     };
     
     useEffect(() => {
+         // gets fav masjid ids
         const getMasjidId = async () => {
             setIsLoading(true)
             try{
@@ -44,6 +45,7 @@ const PrayerTimes = () => {
             setIsLoading(false);
         }
 
+        // gets all data nessicary for page
         const getDate = async () => {
             const today = new Date();
             const day = String(today.getDate()).padStart(2, '0');
@@ -108,7 +110,6 @@ const PrayerTimes = () => {
                 <View style={styles.content}>
                     <Text style={styles.mainText }>{islamicDate}</Text>
                     <View style={styles.prayerBar}>
-                        {/* <Text>{mosqueInfo.located}</Text> */}
                         <PrayerBar nextPrayer={"Magrib"} timeTillNext={'14 mins 20 sec'} size={32} prayerAndTime={mosqueInfo.prayer} height={20} currentPrayer={nextPrayer[currentPrayer]}/>
                     </View>
                     <View style={styles.prayerArea}>

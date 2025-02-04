@@ -23,9 +23,11 @@ const Map = ({ navigation }) => {
     const cacheKey = 'nearbyMosquesCache';
     const cacheDuration = 1000 * 60 * 60;
 
+    // fetches mosques based on query
     const fetchQueryMosque = async (query, lat, lng, nextPageToken = null) => {
         const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
         const radius = 10000;
+        // api url
         let url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&type=mosque&radius=${radius}&key=${apiKey}`;
         
         if (nextPageToken) {

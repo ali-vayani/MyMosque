@@ -74,14 +74,6 @@ const Calendar = () => {
 
     return (
         <View style={styles.container}>
-            {/* <TouchableOpacity 
-                        style={{position: 'absolute', left: 10, zIndex: 10}}
-                        onPress={() => {
-                            router.back()
-                        }}
-                    >
-                        <Ionicons name="chevron-back-outline" size={25} color={'#000000'}/>
-                    </TouchableOpacity> */}
             <View style={styles.calendarContainer}>
                 <RNCalendar
                     style={styles.calendar}

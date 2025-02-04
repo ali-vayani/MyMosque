@@ -55,7 +55,6 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
         if (!prayerAndTime || !currentPrayer) return;
         const currPrayerTime = toMin(prayerAndTime[currentPrayer]);
         const nextPrayerTime = toMin(prayerAndTime[prayerKey.get(currentPrayer)]);
-        
         const now = new Date();
         const currentHour = now.getHours();
         const currentMinute = now.getMinutes();
@@ -118,7 +117,7 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
     return (
         <View style={styles.content}>
             <View style={styles.textArea}>
-                <Text style={styles.nextPrayerText}>{currentPrayer}</Text>
+                <Text style={styles.nextPrayerText}>{prayerKey.get(currentPrayer)}</Text>
                 <Text style={styles.timeText}>{timeData.timeTillNext}</Text>
             </View>
             <View style={styles.progressBar}>

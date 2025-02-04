@@ -13,11 +13,11 @@ const Home = () => {
     const { uid } = useLocalSearchParams();
     const docRef = doc(FIRESTORE_DB, "users", uid);
     const [masjidId, setMasjidId] = useState([])
-    const [userInfo, setUserInfo] = useState();
     useEffect(() => {
         getMasjidId()
     }, [])
     
+    // gets user's fav masjids
     const getMasjidId = async () => {
         try {
             const docSnap = await getDoc(docRef);

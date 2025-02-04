@@ -94,7 +94,7 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
                 <View style={styles.content} key="content-view">
                     <Text style={styles.mainText}> Prayer Times</Text>
                     {/* <Text>{mosqueInfo.located}</Text> */}
-                    <PrayerBar timeTillNext={time} nextPrayer={'Maghrib'} size={28} prayerAndTime={mosqueInfo.prayer} currentPrayer={nextPrayer[currentPrayer]} height={30}/>
+                    <PrayerBar timeTillNext={time} nextPrayer={'Maghrib'} size={28} prayerAndTime={mosqueInfo.prayer} currentPrayer={currentPrayer} height={30}/>
                     <Location 
                         favMasjids={favMasjids} 
                         setMosqueInfo={setMosqueInfo}

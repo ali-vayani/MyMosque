@@ -35,6 +35,7 @@ const MosquePage = () => {
     };
 
     useEffect(() => {
+        // gets masjid info
         const getInfo = async () => {
             const docSnap = await getDoc(docRef);
             const userSnap = await getDoc(userRef)
@@ -45,6 +46,7 @@ const MosquePage = () => {
             const mosqueData = docSnap.data();
             const posts = mosqueData.posts || [];
 
+            // deals with posts
             posts.forEach(post => {
                 newPosts.push({
                     ...post,
@@ -70,6 +72,7 @@ const MosquePage = () => {
                 });
             });
 
+            // sets posts by chronological order to state
             setPosts(newPosts.sort((a, b) => {
                 const timeA = a.timeCreated || 0;
                 const timeB = b.timeCreated || 0;
@@ -101,11 +104,13 @@ const MosquePage = () => {
         fetchPrayerTimes();
     }, [prayers]);
 
+    // helper funciton to format date for posts
     const formatDate = (date) => {
         const localDate = new Date(date.getTime());
         return `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`;
     };
 
+    // bookmarking logic
     const handleBookmar = async () => {
         if (joined) {
             setJoined(false);
@@ -132,6 +137,7 @@ const MosquePage = () => {
         }
     };
 
+    // navigating to prayer page
     const handleNavigate = useCallback(() => {
         router.push({
             pathname: "/(home)/prayer",

@@ -12,15 +12,17 @@ export default function Feed () {
     const parsedMasjidId = JSON.parse(masjidId);
     const [posts, setPosts] = useState([]);
 
+    // gets all posts from users saved mosques
     const getPosts = async () => {
         try {
             const newPosts = [];
+            // gets posts for mosque
             for (const id of parsedMasjidId) {
                 const docRef = doc(FIRESTORE_DB, "mosques", id.replace(/\s/g, ''));
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     const mosqueData = docSnap.data();
-                    // Handle posts
+                    // handles individual posts
                     const mosquePosts = mosqueData.posts || [];
                     mosquePosts.forEach(post => {
                         newPosts.push({
@@ -30,6 +32,7 @@ export default function Feed () {
                             uid: uid
                         });
                     });
+                    // handles individual events
                     const mosqueEvents = mosqueData.events || {};
                     Object.entries(mosqueEvents).forEach(([date, events]) => {
                         events.forEach(event => {
@@ -50,14 +53,15 @@ export default function Feed () {
                     console.log(`No document found for ID: ${id}`);
                 }
             }
+            // sets posts state to the events & posts in chronilogical order
             setPosts(newPosts.sort((a, b) => {
-
                 const timeA = a.timeCreated || 0;
                 const timeB = b.timeCreated || 0;
                 return timeB - timeA;
             }));
         } catch (error) {
             console.error("Error fetching posts:", error);
+            alert("Error occured while fetching posts:", error.code)
         }
     };
     
