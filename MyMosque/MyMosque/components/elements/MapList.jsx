@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { FIREBASE_STORAGE, FIRESTORE_DB } from '../../firebaseConfig';
-import { View, Text, Linking, TouchableOpacity, ScrollView, StyleSheet, ImageBackground, Image } from 'react-native';
+import { View, Text, Linking, TouchableOpacity, ScrollView, StyleSheet, ImageBackground, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { listAll, ref, getDownloadURL } from 'firebase/storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -120,27 +120,33 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
                 <Text style={styles.nameText}>{name}</Text>
 
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.viewPageButton}
-                        onPress={() => handleNavigate("MosquePage")}
+                    <TouchableOpacity 
+                        style={[styles.viewPageButton, !masjidInfo && styles.disabledButton]}
+                        onPress={() => masjidInfo && handleNavigate("MosquePage")}
+                        disabled={!masjidInfo}
                     >
-                        <Text style={styles.buttonText}>View Page</Text>
+                        <Text style={[styles.buttonText, !masjidInfo && styles.disabledButtonText]}>View Page</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         style={styles.directionsButton}
                         onPress={() => {
-                            const address = marker.vicinity || marker.formatted_address;
-                            const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
+                            const encodedAddress = encodeURIComponent(address.replace(/\s/g, '+'));
+                            const appleUrl = `maps://maps.apple.com/?address=${encodedAddress}`;
+                            const googleUrl = `https://www.google.com/maps/place/${encodedAddress}`;
+                            const url = Platform.OS === 'ios' ? appleUrl : googleUrl;
                             Linking.openURL(url);
                         }}
                     >
                         <Text style={styles.buttonText}>Directions</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.prayerTimesButton}
-                        onPress={() => handleNavigate("PrayerTimes")}
+                    <TouchableOpacity 
+                        style={[styles.prayerTimesButton, !masjidInfo && styles.disabledButton]}
+                        onPress={() => masjidInfo && handleNavigate("PrayerTimes")}
+                        disabled={!masjidInfo}
                     >
-                        <Text style={styles.buttonText}>Prayer Times</Text>
+                        <Text style={[styles.buttonText, !masjidInfo && styles.disabledButtonText]}>Prayer Times</Text>
                     </TouchableOpacity>
                 </View>
             </TouchableOpacity>
@@ -224,6 +230,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#e6e8ec', 
         textAlign: 'center',
+    },
+    disabledButton: {
+        opacity: 0.5,
+    },
+    disabledButtonText: {
+        opacity: 0.75,
     },
     gradient: {
         ...StyleSheet.absoluteFillObject,

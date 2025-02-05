@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {View, Text, ActivityIndicator, StyleSheet, Image, Linking, TouchableOpacity, ScrollView} from 'react-native'
+import {View, Text, ActivityIndicator, StyleSheet, Image, Linking, TouchableOpacity, ScrollView, Platform} from 'react-native'
 import Post from '../../../../components/elements/Post';
 import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { FIRESTORE_DB } from '../../../../firebaseConfig';
@@ -246,7 +246,10 @@ const MosquePage = () => {
                         <TouchableOpacity
                             style={styles.directionsButton}
                             onPress={() => {
-                                const url = `https://www.google.com/maps/place/${encodeURIComponent(address.replace(/\s/g, '+'))}`;
+                                const encodedAddress = encodeURIComponent(address.replace(/\s/g, '+'));
+                                const appleUrl = `maps://maps.apple.com/?address=${encodedAddress}`;
+                                const googleUrl = `https://www.google.com/maps/place/${encodedAddress}`;
+                                const url = Platform.OS === 'ios' ? appleUrl : googleUrl;
                                 Linking.openURL(url);
                             }}
                         >

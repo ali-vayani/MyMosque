@@ -14,10 +14,6 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "MyMosque needs access to location to find nearby mosques",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "MyMosque needs access to location to find nearby mosques",
-        "UIBackgroundModes": [
-          "location",
-          "location"
-        ],
         "ITSAppUsesNonExemptEncryption": false
       }
     },
