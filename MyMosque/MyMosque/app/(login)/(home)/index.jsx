@@ -7,9 +7,14 @@ import { useState, useEffect  } from 'react';
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { FIREBASE_APP, FIRESTORE_DB } from '../../../firebaseConfig';
+import { usePushNotifications } from '../../../functions/useNotifications';
 
 
 const Home = () => {
+    const {expoPushToken, notification} = usePushNotifications();
+    const data = JSON.stringify(notification, undefined, 2);
+    console.log(expoPushToken?.data);
+    console.log(notification)
     const { uid } = useLocalSearchParams();
     const docRef = doc(FIRESTORE_DB, "users", uid);
     const [masjidId, setMasjidId] = useState([])

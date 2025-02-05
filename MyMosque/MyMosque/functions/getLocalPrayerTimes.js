@@ -69,7 +69,7 @@ export default getLocalPrayerTimes = async (location, uid) => {
 const getUserLocation = async () => {
     let { status } = await LocationExpo.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Permission to access location was denied');
+        alert('Permission Denied', 'Permission to access location was denied');
         return;
     }
     let currentPosition = await LocationExpo.getCurrentPositionAsync({ accuracy: LocationExpo.Accuracy.High });
