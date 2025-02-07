@@ -120,13 +120,18 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
                 <Text style={styles.nameText}>{name}</Text>
 
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity 
-                        style={[styles.viewPageButton, !masjidInfo && styles.disabledButton]}
-                        onPress={() => masjidInfo && handleNavigate("MosquePage")}
-                        disabled={!masjidInfo}
-                    >
-                        <Text style={[styles.buttonText, !masjidInfo && styles.disabledButtonText]}>View Page</Text>
-                    </TouchableOpacity>
+                    {masjidInfo ? (
+                        <TouchableOpacity 
+                            style={styles.viewPageButton}
+                            onPress={() => handleNavigate("MosquePage")}
+                        >
+                            <Text style={styles.buttonText}>View Page</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={[styles.viewPageButton, styles.disabledButton]}>
+                            <Text style={[styles.buttonText, styles.disabledButtonText]}>View Page</Text>
+                        </View>
+                    )}
 
                     <TouchableOpacity
                         style={styles.directionsButton}
@@ -141,13 +146,18 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
                         <Text style={styles.buttonText}>Directions</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
-                        style={[styles.prayerTimesButton, !masjidInfo && styles.disabledButton]}
-                        onPress={() => masjidInfo && handleNavigate("PrayerTimes")}
-                        disabled={!masjidInfo}
-                    >
-                        <Text style={[styles.buttonText, !masjidInfo && styles.disabledButtonText]}>Prayer Times</Text>
-                    </TouchableOpacity>
+                    {masjidInfo ? (
+                        <TouchableOpacity 
+                            style={styles.prayerTimesButton}
+                            onPress={() => handleNavigate("PrayerTimes")}
+                        >
+                            <Text style={styles.buttonText}>Prayer Times</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={[styles.prayerTimesButton, styles.disabledButton]}>
+                            <Text style={[styles.buttonText, styles.disabledButtonText]}>Prayer Times</Text>
+                        </View>
+                    )}
                 </View>
             </TouchableOpacity>
         </View>
