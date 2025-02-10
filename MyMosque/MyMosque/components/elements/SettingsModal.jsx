@@ -6,14 +6,20 @@ import {
     TouchableOpacity,
     StyleSheet,
     Pressable,
-    ScrollView
+    ScrollView,
+    Alert
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { FIRESTORE_DB } from '../../firebaseConfig';
-import { doc, setDoc, getDoc} from "firebase/firestore";
+import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
+import { FIREBASE_AUTH, FIRESTORE_DBRE } from '../../firebaseConfig';
+import { signOut, deleteUser } from 'firebase/auth';
+import { useRouter } from 'expo-router';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SettingsModal = ({setDisplayModal, displayModal, uid, setPrayerInfo}) => {
+    const router = useRouter();
     const [activeDropdown, setActiveDropdown] = useState(null);
     const methods = [
         { name: 'Muslim World Leauge', id: 3 },
@@ -34,6 +40,7 @@ const SettingsModal = ({setDisplayModal, displayModal, uid, setPrayerInfo}) => {
     ]
     const savedSettings = [methods, school];
     const [prayerTimeSettings, setPrayerTimeSettings] = useState([methods[5], school[0]]);
+
     useEffect(() => {
         const loadSelection = async () => {
             const docRef = doc(FIRESTORE_DB, "users", uid);
@@ -49,9 +56,11 @@ const SettingsModal = ({setDisplayModal, displayModal, uid, setPrayerInfo}) => {
         }
         loadSelection();
     }, [])
+
     const closeAllDropdowns = () => {
         setActiveDropdown(null);
     };
+
     const updateTimeSettings = async (prayerTimeSettings) => {
         const userRef = doc(FIRESTORE_DB, "users", uid);
         await setDoc(userRef, {prayerTimeSettings}, {merge: true});
@@ -71,6 +80,52 @@ const SettingsModal = ({setDisplayModal, displayModal, uid, setPrayerInfo}) => {
         } catch (error) {
             console.error('Failed to save selection', error);
         }
+    };
+
+    const handleSignOut = async () => {
+        try {
+            await AsyncStorage.clear();
+            await signOut(FIREBASE_AUTH);
+            router.replace('/');
+        } catch (error) {
+            console.error('Error signing out:', error);
+            Alert.alert('Error', 'Failed to sign out. Please try again.');
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        Alert.alert(
+            'Delete Account',
+            'Are you sure you want to delete your account? This action cannot be undone.',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            const user = FIREBASE_AUTH.currentUser;
+                            if (user) {
+                                // Delete user data from Firestore
+                                const userRef = doc(FIRESTORE_DB, 'users', uid);
+                                await deleteDoc(userRef);
+                                
+                                // Delete user authentication
+                                await deleteUser(user);
+                                await AsyncStorage.clear();
+                                router.replace('/(login)/setup');
+                            }
+                        } catch (error) {
+                            console.error('Error deleting account:', error);
+                            Alert.alert('Error', 'Failed to delete account. Please try again.');
+                        }
+                    }
+                }
+            ]
+        );
     };
 
     const Dropdown = ({ id, options, selected, setSelected, placeholder }) => {
@@ -177,6 +232,22 @@ const SettingsModal = ({setDisplayModal, displayModal, uid, setPrayerInfo}) => {
                         })}
                     </View>
 
+                    {uid == '8T9keaske1VAYEo5iyzsXESMHyO2' ? <></> :  
+                        <View style={styles.dangerZone}>
+                            {/* <TouchableOpacity 
+                                style={styles.dangerButton}
+                                onPress={handleSignOut}
+                            >
+                                <Text style={styles.dangerButtonText}>Sign Out</Text>
+                            </TouchableOpacity> */}
+                            <TouchableOpacity 
+                                style={[styles.dangerButton, styles.deleteButton]}
+                                onPress={handleDeleteAccount}
+                            >
+                                <Text style={styles.dangerButtonText}>Delete Account</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
                 </Pressable>
             </Pressable>
         </Modal>
@@ -263,6 +334,27 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
     },
+    dangerZone: {
+        marginTop: 20,
+        borderTopWidth: 1,
+        borderTopColor: '#dee2e6',
+        paddingTop: 20,
+        gap: 10
+    },
+    dangerButton: {
+        backgroundColor: '#dc3545',
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center'
+    },
+    deleteButton: {
+        backgroundColor: '#dc3545'
+    },
+    dangerButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold'
+    }
 });
 
 export default SettingsModal;

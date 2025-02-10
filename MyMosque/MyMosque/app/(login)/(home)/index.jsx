@@ -11,31 +11,31 @@ import { FIREBASE_APP, FIRESTORE_DB } from '../../../firebaseConfig';
 
 const Home = () => {
     const { uid } = useLocalSearchParams();
-    const docRef = doc(FIRESTORE_DB, "users", uid);
-    const [masjidId, setMasjidId] = useState([])
+    const router = useRouter();
+    const docRef = uid ? doc(FIRESTORE_DB, "users", uid) : null;
+    const [masjidId, setMasjidId] = useState(["OnfodEG98Qaa3GIYKNxW"])
     useEffect(() => {
-        getMasjidId()
+        if(docRef)
+            getMasjidId()
     }, [])
     
     // gets user's fav masjids
     const getMasjidId = async () => {
-        try {
+        if(uid) {
             const docSnap = await getDoc(docRef);
             const data = docSnap.data();
             if (data && data.favMasjids && data.favMasjids.length > 0) {
                 setMasjidId(data.favMasjids);
             } else {
-                setMasjidId([]);
+                setMasjidId(["OnfodEG98Qaa3GIYKNxW"]);
             }
-        } catch (error) {
-            console.error('Error fetching masjid IDs:', error);
-            setMasjidId([]);
+        } else {
+            setMasjidId(["OnfodEG98Qaa3GIYKNxW"]);
         }
     }
     
     return(
         <View style={styles.page}>
-
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
                 <PrayerTimesWidget uid={uid} favMasjids={masjidId}/>

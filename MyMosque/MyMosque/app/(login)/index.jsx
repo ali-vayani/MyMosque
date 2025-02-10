@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { TouchableWithoutFeedback, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Keyboard} from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../firebaseConfig';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignIn() {
@@ -85,9 +85,14 @@ export default function SignIn() {
                         onSubmitEditing={dismissKeyboard}
                         secureTextEntry={true}
                     />
-                    <Text style={[styles.subtext, { color: '#67519A' }]}>Forgot Password</Text>
                     <TouchableOpacity onPress={() => signIn()} style={styles.button}>
                         <Text style={styles.buttonText}>Log in</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={[styles.subtext, { color: '#67519A', marginTop: 15 }]}
+                        onPress={() => router.replace({ pathname: '/(home)', params: { uid: '8T9keaske1VAYEo5iyzsXESMHyO2' } })}
+                    >
+                        <Text style={[styles.subtext, { color: '#67519A', fontWeight: '600',}]}>Continue Without an Account</Text>
                     </TouchableOpacity>
                 </View>
 

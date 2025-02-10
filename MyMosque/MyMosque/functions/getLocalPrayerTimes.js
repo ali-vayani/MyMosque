@@ -39,6 +39,7 @@ export default getLocalPrayerTimes = async (location, uid) => {
         if(!location) 
             location = await getUserLocation();
         const today = new Date();
+        console.log(await getTimeSettings(uid))
         const settings = await getTimeSettings(uid);
         const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=${settings[0].id}&adjustment=1&school=${settings[1].id}`;
         const startTime = performance.now();
