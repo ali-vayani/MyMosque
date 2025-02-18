@@ -1,6 +1,11 @@
+'use client'
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen relative">
       <div className="fixed inset-0 z-0 h-screen w-screen blur-[5px]">
@@ -17,11 +22,14 @@ export default function Home() {
         <h1 className="text-2xl text-text font-medium">MyMosque</h1>
         <div className="flex gap-3">
           <div className="bg-lightGold/50 px-3 py-1 rounded-sm hover:bg-lightGold/70">
-            <a href="https://forms.gle/zeX8wsnF8Yr5W7n58" className="text-text">Waitlist</a>
+            <a href="https://forms.gle/zeX8wsnF8Yr5W7n58" className="text-text">Beta</a>
           </div>
-          <div className="bg-white/20 px-3 py-1 rounded-sm hover:bg-white/40">
-            <a href="#" className="text-text">Log In</a>
-          </div>
+          <button 
+            className="bg-white/20 px-3 py-1 rounded-sm hover:bg-white/40 text-text"
+            onClick={() => router.push("/login")}
+          >
+            Log In
+          </button>
         </div>
       </nav>
       
