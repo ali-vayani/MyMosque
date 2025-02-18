@@ -11,6 +11,8 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        lightGold: '#C8C079',
+        text: '#FFFEF4'
       },
     },
   },
