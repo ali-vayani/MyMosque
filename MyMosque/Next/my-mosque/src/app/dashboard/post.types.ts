@@ -15,14 +15,19 @@ export type Post = {
     images: string[] | null,
 }
 
-export type prayerTimes = {
-    fajr: string,
-    dhuhr: string,
-    asr: string,
-    maghrib: string,
-    isha: string,
-    endDate: Date,
-    startDate: Date
+export type FirestoreTimeStamp = {
+    seconds: number,
+    nanoseconds: number,
+}
+
+export type PrayerTimes = {
+    Fajr: string,
+    Dhuhr: string,
+    Asr: string,
+    Maghrib: string,
+    Isha: string,
+    endDate: FirestoreTimeStamp,
+    startDate: FirestoreTimeStamp
 }
 
 export type MosqueInfo = {
@@ -32,5 +37,6 @@ export type MosqueInfo = {
     members: number,
     name: string,
     posts: Post[],
-    prayerTimes: prayerTimes[],
+    prayerTimes: PrayerTimes[],
 }
+

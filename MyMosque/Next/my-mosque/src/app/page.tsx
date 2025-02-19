@@ -36,7 +36,7 @@ export default function Home() {
       <main className="relative z-10 flex flex-col items-center justify-center px-6 pt-20 pb-32">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-text mb-4">Strengthen your connection to<br />your community</h2>
-          <p className="text-xl text-text mb-8">Mosque locator, prayer times, and community updates.<br />All in one app.</p>
+          <p className="text-xl text-text mb-8">Community updates, share prayer times, and strengthen bonds.<br />All in one app.</p>
           <div className="flex justify-center">
             <button className="bg-lightGold/50 px-8 py-3 rounded-full text-text hover:bg-lightGold/70 transition-colors">
               <a href="https://forms.gle/zeX8wsnF8Yr5W7n58">Join out beta</a>

@@ -1,38 +1,126 @@
 'use client'
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from 'react';
-import { FaHome, FaNewspaper, FaChartBar, FaUser, FaPlusCircle } from 'react-icons/fa';
-import getMosqueInfo from "./hooks/getMosqueInfo";
+import React, { useEffect, useState, useRef } from 'react';
+import { FaRegCalendarAlt, FaChartBar, FaUser, FaPlusCircle, FaPencilAlt } from 'react-icons/fa';
+import { MosqueInfo, PrayerTimes } from "./post.types";
+import { getMosqueInfo, convertTimes } from "./hooks/getMosqueInfo";
 
 export default function Dashboard() {
     const searchParams = useSearchParams();
     const uid = searchParams.get("uid");
+    const [masjidInfo, setMasjidInfo] = useState<MosqueInfo | null>(null);
     const [activeTab, setActiveTab] = useState('Home');
+    const [trailingDots, setTrailingDots] = useState("...");
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const prayerKey: (keyof Omit<PrayerTimes, 'startDate' | 'endDate'>)[] = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"]
 
     useEffect(() => {
         const getInfo = async (uid: string) => {
             const mosqueInfo = await getMosqueInfo(uid);
-            console.log(mosqueInfo);
+            if(mosqueInfo)
+                setMasjidInfo(mosqueInfo);
         }
         if(uid) {
             getInfo(uid)
         }
+
+        intervalRef.current = setInterval(() => {
+            setTrailingDots((prevDots) => {
+                if (prevDots === "...") {
+                    return "";
+                } else {
+                    return prevDots +".";
+                }
+            });
+        }, 500);
+
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        }
     })
 
     const renderContent = () => {
-        switch(activeTab) {
-            case 'Posts':
-                return <div className="p-6"><h2 className="text-2xl font-bold mb-4">Posts</h2><p>Your posts will appear here</p></div>;
-            case 'Create New Post':
-                return <div className="p-6"><h2 className="text-2xl font-bold mb-4">Create New Post</h2><p>Create post form will appear here</p></div>;
-            case 'Analytics':
-                return <div className="p-6"><h2 className="text-2xl font-bold mb-4">Analytics</h2><p>Analytics data will appear here</p></div>;
-            case 'Home':
-                return <div className="p-6"><h2 className="text-2xl font-bold mb-4">Profile</h2><p>Profile information will appear here</p></div>;
-            default:
-                return <div className="p-6"><h2 className="text-2xl font-bold mb-4">Welcome</h2><p>Select an option from the sidebar</p></div>;
-        }
+        return (
+            <div className="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                <div className="bg-white rounded-lg shadow p-4 relative">
+                    <div className="flex justify-between flex-row-reverse items-center">
+                        <button className="text-gray-600 hover:text-gray-800">
+                            <FaPencilAlt className="w-4 h-4" />
+                        </button>
+                        
+                        {masjidInfo && masjidInfo.name ? <h2 className="text-2xl font-bold mb-4">{masjidInfo.name}</h2> : <h2 className="text-2xl font-bold mb-4"></h2>}
+                    </div>
+                    {masjidInfo ? (
+                        <div className="space-y-4">
+                            <div className="bg-lightGold/10 p-4 rounded-lg">
+                                <p className="text-gray-600 text-sm mt-1">
+                                    {masjidInfo.bio.split("<br>").map((line, index) => (
+                                        <React.Fragment key={index}>
+                                            {line}
+                                            <br />
+                                        </React.Fragment>
+                                    ))}
+                                </p>
+                                <p className="text-gray-600 text-sm mt-1">{masjidInfo.address}</p>
+                                <p className="text-gray-600 text-sm mt-1">Members: {masjidInfo.members}</p>
+                            </div>
+                            {masjidInfo.prayerTimes && masjidInfo.prayerTimes[0] && (
+                                <div className="bg-lightGold/10 p-4 rounded-lg">
+                                    <h3 className="font-semibold mb-2">Prayer Times {convertTimes(masjidInfo.prayerTimes[0].startDate, masjidInfo.prayerTimes[0].endDate)}</h3>
+                                    <div className="space-y-2">
+                                        {prayerKey.map((key, index) => (
+                                            <p key={index} className="text-sm">
+                                                {key}: {masjidInfo.prayerTimes[0][key]}
+                                            </p>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <p>Loading mosque information...</p>
+                    )}
+                </div>
+
+                {/* Top Right - Posts and Events */}
+                <div className="bg-white rounded-lg shadow p-4 overflow-auto">
+                    <h2 className="text-2xl font-bold mb-4">Dev Updates</h2>
+                    <div className="space-y-4">
+                        <div className="border-l-4 border-lightGold p-4 bg-lightGold/10">
+                            <h3 className="font-semibold">Community Iftar</h3>
+                            <p className="text-sm text-gray-600">Join us this Saturday for community iftar...</p>
+                        </div>
+                        <div className="border-l-4 border-lightGold p-4 bg-lightGold/10">
+                            <h3 className="font-semibold">Quran Study Circle</h3>
+                            <p className="text-sm text-gray-600">Weekly study circle every Sunday after Maghrib...</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Left - Calendar */}
+                <div className="bg-white rounded-lg shadow p-4 flex items-center justify-center">
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold mb-2">Calendar</h2>
+                        <p className="text-gray-600 text-lg">
+                            in the kitchen{trailingDots}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Bottom Right - Analytics */}
+                <div className="bg-white rounded-lg shadow p-4 flex items-center justify-center">
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold mb-2">Analytics</h2>
+                        <p className="text-gray-600 text-lg">
+                        in the kitchen{trailingDots}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -54,22 +142,22 @@ export default function Dashboard() {
                         className={`flex items-center px-6 py-4 cursor-pointer ${activeTab === 'Posts' ? 'bg-lightGold/20 border-r-4 border-lightGold' : 'hover:bg-gray-50'}`}
                         onClick={() => setActiveTab('Posts')}
                     >
-                        <FaNewspaper className="text-gray-600 mr-3" />
-                        <span className="text-gray-800">Posts</span>
+                        <FaPlusCircle className="text-gray-600 mr-3" />
+                        <span className="text-gray-800">Posts and Events</span>
                     </div>
                     <div
-                        className={`flex items-center px-6 py-4 cursor-pointer ${activeTab === 'Create New Post' ? 'bg-lightGold/20 border-r-4 border-lightGold' : 'hover:bg-gray-50'}`}
+                        className={`flex items-center px-6 py-4 cursor-pointer ${activeTab === 'Calander' ? 'bg-lightGold/20 border-r-4 border-lightGold' : 'hover:cursor-default'}`}
                         onClick={() => setActiveTab('Create New Post')}
                     >
-                        <FaPlusCircle className="text-gray-600 mr-3" />
-                        <span className="text-gray-800">Create New Post</span>
+                        <FaRegCalendarAlt className="text-gray-600/50 mr-3" />
+                        <span className="text-gray-800/50">Calendar</span>
                     </div>
                     <div
-                        className={`flex items-center px-6 py-4 cursor-pointer ${activeTab === 'Analytics' ? 'bg-lightGold/20 border-r-4 border-lightGold' : 'hover:bg-gray-50'}`}
-                        onClick={() => setActiveTab('Analytics')}
+                        className={`flex items-center px-6 py-4 cursor-pointer ${activeTab === 'Analytics' ? 'bg-lightGold/20 border-r-4 border-lightGold' : 'hover:cursor-default'}`}
+                        // onClick={() => setActiveTab('Analytics')}
                     >
-                        <FaChartBar className="text-gray-600 mr-3" />
-                        <span className="text-gray-800">Analytics</span>
+                        <FaChartBar className="text-gray-600/50 mr-3" />
+                        <span className="text-gray-800/50">Analytics</span>
                     </div>
                 </nav>
             </div>
