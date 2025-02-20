@@ -4,7 +4,8 @@ import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useRef } from 'react';
 import { FaRegCalendarAlt, FaChartBar, FaUser, FaPlusCircle, FaPencilAlt } from 'react-icons/fa';
 import { MosqueInfo, PrayerTimes } from "./post.types";
-import { getMosqueInfo, convertTimes } from "./hooks/getMosqueInfo";
+import { getMosqueInfo, convertDates } from "./hooks/getMosqueInfo";
+import Modal from "./Modal";
 
 export default function Dashboard() {
     const searchParams = useSearchParams();
@@ -14,6 +15,7 @@ export default function Dashboard() {
     const [trailingDots, setTrailingDots] = useState("...");
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const prayerKey: (keyof Omit<PrayerTimes, 'startDate' | 'endDate'>)[] = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"]
+    const [hideModal, setHideModal] = useState(true);
 
     useEffect(() => {
         const getInfo = async (uid: string) => {
@@ -40,39 +42,49 @@ export default function Dashboard() {
                 clearInterval(intervalRef.current);
             }
         }
-    })
+    }, [])
 
     const renderContent = () => {
         return (
             <div className="grid grid-cols-2 grid-rows-2 gap-4 h-full">
                 <div className="bg-white rounded-lg shadow p-4 relative">
                     <div className="flex justify-between flex-row-reverse items-center">
-                        <button className="text-gray-600 hover:text-gray-800">
-                            <FaPencilAlt className="w-4 h-4" />
+                        <button 
+                            className="text-gray-600 hover:text-gray-800"
+                            onClick={() => setHideModal(!hideModal)}
+                        >
+                            {masjidInfo && uid && <Modal mosqueInfo={masjidInfo} uid={uid}/>}
                         </button>
-                        
                         {masjidInfo && masjidInfo.name ? <h2 className="text-2xl font-bold mb-4">{masjidInfo.name}</h2> : <h2 className="text-2xl font-bold mb-4"></h2>}
                     </div>
                     {masjidInfo ? (
-                        <div className="space-y-4">
-                            <div className="bg-lightGold/10 p-4 rounded-lg">
-                                <p className="text-gray-600 text-sm mt-1">
-                                    {masjidInfo.bio.split("<br>").map((line, index) => (
-                                        <React.Fragment key={index}>
-                                            {line}
-                                            <br />
-                                        </React.Fragment>
-                                    ))}
-                                </p>
-                                <p className="text-gray-600 text-sm mt-1">{masjidInfo.address}</p>
-                                <p className="text-gray-600 text-sm mt-1">Members: {masjidInfo.members}</p>
+                        <div className="space-x-1 flex flex-row">
+                            <div className="rounded-lg flex flex-col gap-1 justify-start w-2/3">
+                                <div className="bg-lightGold/10 p-2 rounded-lg flex items-center flex-1">
+                                    <p className="text-gray-600 text-sm">
+                                        <span className="text-black font-bold">Bio - </span>
+                                        {masjidInfo.bio.split("<br>").map((line, index) => (
+                                            <React.Fragment key={index}>
+                                                {line}
+                                                <br />
+                                            </React.Fragment>
+                                        ))}
+                                    </p>
+                                </div>
+                                <div className="bg-lightGold/10 p-2 rounded-lg flex items-center flex-1">
+                                    <p className="text-gray-600 text-sm"><span className="text-black font-bold">Address -</span> {masjidInfo.address}</p>
+                                </div>
+                                <div className="bg-lightGold/10 p-2 rounded-lg flex flex-1 items-center">
+                                    <p className="text-gray-600 text-sm"><span className="text-black font-bold">Members -</span> {masjidInfo.members}</p>
+                                </div>
                             </div>
                             {masjidInfo.prayerTimes && masjidInfo.prayerTimes[0] && (
-                                <div className="bg-lightGold/10 p-4 rounded-lg">
-                                    <h3 className="font-semibold mb-2">Prayer Times {convertTimes(masjidInfo.prayerTimes[0].startDate, masjidInfo.prayerTimes[0].endDate)}</h3>
+                                <div className="bg-lightGold/10 p-4 rounded-lg flex-1">
+                                    <h3 className="font-semibold mb-2">Prayer Times</h3>
+                                    {/* <h6 className="text-[10px] mb-2 italic text-gray-600">{convertTimes(masjidInfo.prayerTimes[0].startDate, masjidInfo.prayerTimes[0].endDate)}</h6> */}
                                     <div className="space-y-2">
                                         {prayerKey.map((key, index) => (
-                                            <p key={index} className="text-sm">
+                                            <p key={index} className="text-sm text-gray-600">
                                                 {key}: {masjidInfo.prayerTimes[0][key]}
                                             </p>
                                         ))}
