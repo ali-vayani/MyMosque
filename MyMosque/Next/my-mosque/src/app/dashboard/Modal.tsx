@@ -28,19 +28,113 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
     const [prayerTimes, setPrayerTimes] = useState<PrayerTimes>(mosqueInfo.prayerTimes[0]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [invalidPrayers, setInvalidPrayers] = useState<Set<string>>(new Set());
 
     const prayerKey: (keyof Omit<PrayerTimes, 'startDate' | 'endDate'>)[] = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"]
 
+    const validatePrayerTime = (prayer: string, time: string): boolean => {
+        if (prayer === "Maghrib") {
+            return time.startsWith('+') && !isNaN(parseInt(time.substring(1)));
+        }
+        const timePattern = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        return timePattern.test(time);
+    };
+
     const handlePrayerTimeChange = (key: keyof Omit<PrayerTimes, 'startDate' | 'endDate'>, value: string) => {
-        // Remove any existing am/pm suffix before processing
         const cleanValue = value.replace(/(\s*[ap]m\s*)/i, '').trim();
         setPrayerTimes(prev => ({
             ...prev,
-            [key]: cleanValue
+            [key]: cleanValue as PrayerTimes[typeof key]
         }));
+
+        const isValid = validatePrayerTime(key, cleanValue);
+        setInvalidPrayers(prev => {
+            const newSet = new Set(prev);
+            if (isValid) {
+                newSet.delete(key);
+            } else {
+                newSet.add(key);
+            }
+            return newSet;
+        });
     };
 
+    useEffect(() => {
+        const updatedTimes: Partial<PrayerTimes> = {};
+        let hasUpdates = false;
+
+        for(let prayer in prayerTimes) {
+            if(prayer !== 'endDate' && prayer !== 'startDate') {
+                const time = prayerTimes[prayer as keyof PrayerTimes];
+                if(typeof time === 'string') {
+                    if(prayer === "Maghrib") {
+                        if (!time.startsWith('+')) {
+                            const minutes = parseInt(time);
+                            if (!isNaN(minutes)) {
+                                updatedTimes[prayer as keyof PrayerTimes] = `+${minutes}` as any as PrayerTimes[typeof prayer];
+                                hasUpdates = true;
+                            }
+                        }
+                    } else {
+                        if (!time.includes(':')) {
+                            const timeValue = time.replace(/[^0-9]/g, '');
+                            if (timeValue.length >= 3) {
+                                const hours = timeValue.slice(0, 2);
+                                const minutes = timeValue.slice(2, 4).padEnd(2, '0');
+                                updatedTimes[prayer as keyof PrayerTimes] = `${hours}:${minutes}` as PrayerTimes[typeof prayer];
+                                hasUpdates = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (hasUpdates) {
+            setPrayerTimes(prev => ({
+                ...prev,
+                ...updatedTimes
+            }));
+        }
+    }, [prayerTimes]);
+
     const handleSubmit = async () => {
+        const invalidTimes = new Set<string>();
+        for (const prayer of prayerKey) {
+            if (!validatePrayerTime(prayer, prayerTimes[prayer])) {
+                invalidTimes.add(prayer);
+            }
+        }
+
+        if (invalidTimes.size > 0) {
+            setInvalidPrayers(invalidTimes);
+            setError('Please correct the prayer time format before submitting');
+            return;
+        }
+
+        // Convert prayer times to military time before submission
+        const convertedPrayerTimes = { ...prayerTimes };
+        for (const prayer of prayerKey) {
+            if (prayer !== 'Maghrib') {
+                const time = prayerTimes[prayer];
+                if (time.includes(':')) {
+                    const [hours, minutes] = time.split(':').map(Number);
+                    let militaryHours = hours;
+
+                    // Convert to military time based on prayer name
+                    if (prayer === 'Fajr') {
+                        // Fajr is always AM
+                        if (hours === 12) militaryHours = 0;
+                    } else {
+                        // Other prayers are PM
+                        if (hours !== 12) militaryHours += 12;
+                    }
+
+                    convertedPrayerTimes[prayer] = `${militaryHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                }
+            }
+        }
+
         try {
             setIsSubmitting(true);
             setError(null);
@@ -49,7 +143,7 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
             await updateDoc(mosqueRef, {
                 bio: bio,
                 prayerTimes: [{
-                    ...prayerTimes,
+                    ...convertedPrayerTimes,
                     startDate: mosqueInfo.prayerTimes[0].startDate,
                     endDate: mosqueInfo.prayerTimes[0].endDate
                 }]
@@ -99,7 +193,7 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
                                                 id={key}
                                                 value={prayerTimes[key].replace(/(\s*[ap]m\s*)/i, '').trim()}
                                                 onChange={(e) => handlePrayerTimeChange(key, e.target.value)}
-                                                className="col-span-1" 
+                                                className={`col-span-1 ${invalidPrayers.has(key) ? 'border-red-500 focus:ring-red-500' : ''}`}
                                             />
                                             <p className="text-sm text-gray-600">{key === "Fajr" ? "am" : "pm"}</p>
                                         </div>
