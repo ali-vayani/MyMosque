@@ -32,11 +32,25 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
     const prayerKey: (keyof Omit<PrayerTimes, 'startDate' | 'endDate'>)[] = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"]
 
     const handlePrayerTimeChange = (key: keyof Omit<PrayerTimes, 'startDate' | 'endDate'>, value: string) => {
-        // Remove any existing am/pm suffix before processing
-        const cleanValue = value.replace(/(\s*[ap]m\s*)/i, '').trim();
+        const cleanValue = value.replace(/(s*[ap]ms*)/i, '').trim();
+        
+        // Convert to military time
+        let militaryTime = cleanValue;
+        if (key !== 'Maghrib') {
+            const [hours, minutes] = cleanValue.split(':').map(Number);
+            if (hours && minutes !== undefined) {
+                if (key === 'Fajr') {
+                    militaryTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                } else {
+                    const militaryHours = hours + (hours < 12 ? 12 : 0);
+                    militaryTime = `${militaryHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                }
+            }
+        }
+
         setPrayerTimes(prev => ({
             ...prev,
-            [key]: cleanValue
+            [key]: militaryTime
         }));
     };
 
