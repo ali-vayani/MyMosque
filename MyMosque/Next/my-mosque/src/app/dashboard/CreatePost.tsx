@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { FaLeaf } from 'react-icons/fa';
 
 export default function CreatePost({uid}: {uid: string}) {
     const [isEvent, setIsEvent] = useState(false);
