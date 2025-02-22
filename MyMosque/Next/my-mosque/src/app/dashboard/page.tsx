@@ -141,7 +141,7 @@ function DashboardContent() {
 
     return (
         <div className="flex h-screen bg-gray-100">
-            <div className="w-64 bg-white shadow-lg">
+            <div className="hidden lg:block w-64 bg-white shadow-lg flex-shrink-0">
                 <div className="p-6">
                     <h1 className="text-2xl font-bold text-gray-800">MyMosque</h1>
                 </div>
@@ -176,15 +176,26 @@ function DashboardContent() {
                 </nav>
             </div>
 
-            <div className="flex-1 overflow-y-auto">
-                <header className="bg-white shadow">
-                    <div className="px-6 py-4">
-                        <h2 className="text-xl font-semibold text-gray-800">Dashboard</h2>
-                    </div>
-                </header>
-                <main className="p-6">
-                    {renderContent()}
-                </main>
+            <div className="flex-1 flex flex-col min-h-screen">
+                <div className="lg:hidden flex items-center justify-center h-screen bg-white">
+                    <p className="text-xl text-gray-600 text-center px-4">Please view on larger screen</p>
+                </div>
+                <div className="hidden lg:flex flex-col flex-1">
+                    <header className="bg-white shadow flex-shrink-0">
+                        <div className="px-6 py-4">
+                            <h2 className="text-xl font-semibold text-gray-800">Dashboard</h2>
+                        </div>
+                    </header>
+                    <main className="p-6 flex-grow">
+                        {renderContent()}
+                    </main>
+                    <footer className="bg-white shadow flex-shrink-0">
+                        <div className="px-6 py-4 flex justify-between items-center">
+                            <p className="text-sm text-gray-600">&copy; {new Date().getFullYear()} MyMosque. All rights reserved.</p>
+                            <a href="mailto:contact@mymosque.app" className="text-sm text-gray-600 hover:text-gray-800">contact@mymosque.app</a>
+                        </div>
+                    </footer>
+                </div>
             </div>
         </div>
     );
