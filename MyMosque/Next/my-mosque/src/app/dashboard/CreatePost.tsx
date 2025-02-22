@@ -11,9 +11,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 
-export default function CreatePost({uid}: {uid: string}) {
+interface postProps {
+    uid: string;
+    name: string;
+}
+
+export default function CreatePost({uid, name}: postProps) {
     const [isEvent, setIsEvent] = useState(false);
-    const [formData, setFormData] = useState<Record<string, any>>({});
+    const [formData, setFormData] = useState<Record<string, any>>({name: name});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -96,7 +101,7 @@ export default function CreatePost({uid}: {uid: string}) {
         <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold">
-                    Create {isEvent ? 'Event' : 'Post'}
+                    Create {isEvent ? 'Event' : 'Announcement'}
                 </h2>
                 <div className="flex items-center space-x-2">
                     <Label htmlFor="post-type">Event</Label>
@@ -157,16 +162,6 @@ export default function CreatePost({uid}: {uid: string}) {
                     </>
                 ) : (
                     <>
-                        <div>
-                            <Label htmlFor="name">Name</Label>
-                            <Input
-                                id="name"
-                                name="name"
-                                value={formData.name || ''}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
                         <div>
                             <Label htmlFor="text">Content</Label>
                             <Textarea

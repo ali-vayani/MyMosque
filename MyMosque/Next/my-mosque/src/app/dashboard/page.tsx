@@ -134,7 +134,7 @@ function DashboardContent() {
         else 
             return (
                 <div>
-                    {uid && <CreatePost uid={uid}/>}
+                    {uid && masjidInfo && <CreatePost uid={uid} name={masjidInfo.name}/>}
                 </div>
             )
     };
