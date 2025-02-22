@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useRef, Suspense } from 'react';
 import { FaRegCalendarAlt, FaChartBar, FaUser, FaPlusCircle } from 'react-icons/fa';
 import { MosqueInfo, PrayerTimes } from "./post.types";
-import { getMosqueInfo, convertTimes } from "./hooks/getMosqueInfo";
+import { getMosqueInfo } from "./hooks/getMosqueInfo";
 import Modal from "./Modal";
 import CreatePost from "./CreatePost";
 
@@ -98,6 +98,7 @@ function DashboardContent() {
                                                     let [hours, minutes] = time.split(':').map(Number);
                                                     if (!isNaN(minutes)) {
                                                         const suffix = key === 'Fajr' ? 'AM' : (hours >= 12 ? 'PM' : 'AM');
+                                                        minutes+=0; // TODO: quick fix for eslint
                                                         hours = hours % 12 || 12;
                                                         displayTime = `${hours}:${minutes.toString().padStart(2, '0')} ${suffix}`;
                                                     }
