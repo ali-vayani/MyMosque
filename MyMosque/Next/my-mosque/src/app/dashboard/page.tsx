@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useRef, Suspense } from 'react';
 import { FaRegCalendarAlt, FaChartBar, FaUser, FaPlusCircle } from 'react-icons/fa';
 import { MosqueInfo, PrayerTimes } from "./post.types";
-import { getMosqueInfo } from "./hooks/getMosqueInfo";
+import { getMosqueInfo, convertTimes } from "./hooks/getMosqueInfo";
 import Modal from "./Modal";
 import CreatePost from "./CreatePost";
 
@@ -21,8 +21,13 @@ function DashboardContent() {
     useEffect(() => {
         const getInfo = async (uid: string) => {
             const mosqueInfo = await getMosqueInfo(uid);
-            if(mosqueInfo)
+            if(mosqueInfo) {
+                // if(mosqueInfo.prayerTimes && mosqueInfo.prayerTimes[0]) {
+                //     const convertedTimes = convertTimes(mosqueInfo.prayerTimes);
+                //     mosqueInfo.prayerTimes[0] = convertedTimes;
+                // }
                 setMasjidInfo(mosqueInfo);
+            }
         }
         if(uid && localStorage.getItem("authenticated") == "true") {
             getInfo(uid)
@@ -84,11 +89,25 @@ function DashboardContent() {
                                     <div className="bg-lightGold/10 p-4 rounded-lg flex-1">
                                         <h3 className="font-semibold mb-2">Prayer Times</h3>
                                         <div className="space-y-2">
-                                            {prayerKey.map((key, index) => (
-                                                <p key={index} className="text-sm text-gray-600">
-                                                    {key}: {masjidInfo.prayerTimes[0][key]}
-                                                </p>
-                                            ))}
+                                            {prayerKey.map((key, index) => {
+                                                const time = masjidInfo.prayerTimes[0][key];
+                                                let displayTime = time;
+                                                if (key === 'Maghrib') {
+                                                    displayTime = time; // Keep Maghrib time as is (in +x format)
+                                                } else if (typeof time === 'string') {
+                                                    let [hours, minutes] = time.split(':').map(Number);
+                                                    if (!isNaN(minutes)) {
+                                                        const suffix = key === 'Fajr' ? 'AM' : (hours >= 12 ? 'PM' : 'AM');
+                                                        hours = hours % 12 || 12;
+                                                        displayTime = `${hours}:${minutes.toString().padStart(2, '0')} ${suffix}`;
+                                                    }
+                                                }
+                                                return (
+                                                    <p key={index} className="text-sm text-gray-600">
+                                                        {key}: {displayTime}
+                                                    </p>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )}

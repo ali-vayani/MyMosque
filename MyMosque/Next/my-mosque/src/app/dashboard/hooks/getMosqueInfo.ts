@@ -38,9 +38,7 @@ export function convertTimes(times: Omit<PrayerTimes, 'startDate' | 'endDate'>[]
                 let [hours, minutes] = militaryTime.split(':').map(Number);
                 
                 if (!isNaN(minutes)) {
-                    // am or pm
                     const suffix = hours >= 12 ? 'PM' : 'AM';
-                    // hours to 12 hr format
                     hours = hours % 12 || 12;
                     minutes += 0;
                     if(res[prayer])

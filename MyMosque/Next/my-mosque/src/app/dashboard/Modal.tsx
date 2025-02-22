@@ -24,15 +24,32 @@ interface ModalProps {
 }
 
 export default function Modal({ mosqueInfo, uid }: ModalProps) {
+    const [open, setOpen] = useState(true);
     const [bio, setBio] = useState(mosqueInfo.bio || null);
-    const [prayerTimes, setPrayerTimes] = useState<PrayerTimes>(mosqueInfo.prayerTimes ? mosqueInfo.prayerTimes[0] : {
-        Fajr: '',
-        Dhuhr: '',
-        Asr: '',
-        Maghrib: '',
-        Isha: '',
-        endDate: { seconds: 0, nanoseconds: 0 },
-        startDate: { seconds: 0, nanoseconds: 0 }
+    const [prayerTimes, setPrayerTimes] = useState<PrayerTimes>(() => {
+        if (!mosqueInfo.prayerTimes) return {
+            Fajr: '',
+            Dhuhr: '',
+            Asr: '',
+            Maghrib: '',
+            Isha: '',
+            endDate: { seconds: 0, nanoseconds: 0 },
+            startDate: { seconds: 0, nanoseconds: 0 }
+        };
+
+        const times = { ...mosqueInfo.prayerTimes[0] };
+        for (const prayer of Object.keys(times)) {
+            if (prayer !== 'Maghrib' && prayer !== 'endDate' && prayer !== 'startDate') {
+                const time = times[prayer as keyof PrayerTimes];
+                if (typeof time === 'string' && time.includes(':')) {
+                    const [hours, minutes] = time.split(':').map(Number);
+                    const period = hours >= 12 ? 'PM' : 'AM';
+                    const displayHours = hours % 12 || 12;
+                    times[prayer as keyof PrayerTimes] = `${displayHours}:${minutes.toString().padStart(2, '0')}` as any;
+                }
+            }
+        }
+        return times;
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -156,6 +173,7 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
                     endDate: mosqueInfo.prayerTimes[0].endDate
                 }]
             });
+            setOpen(false); // Close the dialog after successful update
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to update mosque information');
         } finally {
@@ -164,7 +182,7 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
     };
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="ghost" size="icon">  <FaPencilAlt/> </Button>
             </DialogTrigger>
@@ -199,7 +217,7 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
                                             </Label>
                                             <Input 
                                                 id={key}
-                                                value={prayerTimes[key].replace(/(s*[ap]ms*)/i, '').trim()}
+                                                value={prayerTimes[key]}
                                                 onChange={(e) => handlePrayerTimeChange(key, e.target.value)}
                                                 className={`col-span-1 ${invalidPrayers.has(key) ? 'border-red-500 focus:ring-red-500' : ''}`}
                                             />
