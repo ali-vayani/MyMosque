@@ -6,6 +6,8 @@ import { FaRegCalendarAlt, FaChartBar, FaUser, FaPlusCircle, FaPencilAlt } from 
 import { MosqueInfo, PrayerTimes } from "./post.types";
 import { getMosqueInfo, convertDates } from "./hooks/getMosqueInfo";
 import Modal from "./Modal";
+import DisplayFeed from "./DisplayFeed";
+import CreatePost from "./CreatePost";
 
 export default function Dashboard() {
     const searchParams = useSearchParams();
@@ -45,94 +47,105 @@ export default function Dashboard() {
     }, [])
 
     const renderContent = () => {
-        return (
-            <div className="grid grid-cols-2 grid-rows-2 gap-4 h-full">
-                <div className="bg-white rounded-lg shadow p-4 relative">
-                    <div className="flex justify-between flex-row-reverse items-center">
-                        <button 
-                            className="text-gray-600 hover:text-gray-800"
-                            onClick={() => setHideModal(!hideModal)}
-                        >
-                            {masjidInfo && uid && <Modal mosqueInfo={masjidInfo} uid={uid}/>}
-                        </button>
-                        {masjidInfo && masjidInfo.name ? <h2 className="text-2xl font-bold mb-4">{masjidInfo.name}</h2> : <h2 className="text-2xl font-bold mb-4"></h2>}
-                    </div>
-                    {masjidInfo ? (
-                        <div className="space-x-1 flex flex-row">
-                            <div className="rounded-lg flex flex-col gap-1 justify-start w-2/3">
-                                <div className="bg-lightGold/10 p-2 rounded-lg flex items-center flex-1">
-                                    <p className="text-gray-600 text-sm">
-                                        <span className="text-black font-bold">Bio - </span>
-                                        {masjidInfo.bio.split("<br>").map((line, index) => (
-                                            <React.Fragment key={index}>
-                                                {line}
-                                                <br />
-                                            </React.Fragment>
-                                        ))}
-                                    </p>
-                                </div>
-                                <div className="bg-lightGold/10 p-2 rounded-lg flex items-center flex-1">
-                                    <p className="text-gray-600 text-sm"><span className="text-black font-bold">Address -</span> {masjidInfo.address}</p>
-                                </div>
-                                <div className="bg-lightGold/10 p-2 rounded-lg flex flex-1 items-center">
-                                    <p className="text-gray-600 text-sm"><span className="text-black font-bold">Members -</span> {masjidInfo.members}</p>
-                                </div>
-                            </div>
-                            {masjidInfo.prayerTimes && masjidInfo.prayerTimes[0] && (
-                                <div className="bg-lightGold/10 p-4 rounded-lg flex-1">
-                                    <h3 className="font-semibold mb-2">Prayer Times</h3>
-                                    {/* <h6 className="text-[10px] mb-2 italic text-gray-600">{convertTimes(masjidInfo.prayerTimes[0].startDate, masjidInfo.prayerTimes[0].endDate)}</h6> */}
-                                    <div className="space-y-2">
-                                        {prayerKey.map((key, index) => (
-                                            <p key={index} className="text-sm text-gray-600">
-                                                {key}: {masjidInfo.prayerTimes[0][key]}
-                                            </p>
-                                        ))}
+        if(activeTab === "Home")
+            return (
+                <div className="grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                    <div className="bg-white rounded-lg shadow p-4 relative">
+                        <div className="flex justify-between flex-row-reverse items-center">
+                            <button 
+                                className="text-gray-600 hover:text-gray-800"
+                                onClick={() => setHideModal(!hideModal)}
+                            >
+                                {masjidInfo && uid && <Modal mosqueInfo={masjidInfo} uid={uid}/>}
+                            </button>
+                            {masjidInfo && masjidInfo.name ? <h2 className="text-2xl font-bold mb-4">{masjidInfo.name}</h2> : <h2 className="text-2xl font-bold mb-4"></h2>}
+                        </div>
+                        {masjidInfo ? (
+                            <div className="space-x-1 flex flex-row">
+                                <div className="rounded-lg flex flex-col gap-1 justify-start w-2/3">
+                                    <div className="bg-lightGold/10 p-2 rounded-lg flex items-center flex-1">
+                                        <p className="text-gray-600 text-sm">
+                                            <span className="text-black font-bold">Bio - </span>
+                                            {masjidInfo.bio.split("<br>").map((line, index) => (
+                                                <React.Fragment key={index}>
+                                                    {line}
+                                                    <br />
+                                                </React.Fragment>
+                                            ))}
+                                        </p>
+                                    </div>
+                                    <div className="bg-lightGold/10 p-2 rounded-lg flex items-center flex-1">
+                                        <p className="text-gray-600 text-sm"><span className="text-black font-bold">Address -</span> {masjidInfo.address}</p>
+                                    </div>
+                                    <div className="bg-lightGold/10 p-2 rounded-lg flex flex-1 items-center">
+                                        <p className="text-gray-600 text-sm"><span className="text-black font-bold">Members -</span> {masjidInfo.members}</p>
                                     </div>
                                 </div>
-                            )}
-                        </div>
-                    ) : (
-                        <p>Loading mosque information...</p>
-                    )}
-                </div>
+                                {masjidInfo.prayerTimes && masjidInfo.prayerTimes[0] && (
+                                    <div className="bg-lightGold/10 p-4 rounded-lg flex-1">
+                                        <h3 className="font-semibold mb-2">Prayer Times</h3>
+                                        {/* <h6 className="text-[10px] mb-2 italic text-gray-600">{convertTimes(masjidInfo.prayerTimes[0].startDate, masjidInfo.prayerTimes[0].endDate)}</h6> */}
+                                        <div className="space-y-2">
+                                            {prayerKey.map((key, index) => (
+                                                <p key={index} className="text-sm text-gray-600">
+                                                    {key}: {masjidInfo.prayerTimes[0][key]}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <p>Loading mosque information...</p>
+                        )}
+                    </div>
 
-                {/* Top Right - Posts and Events */}
-                <div className="bg-white rounded-lg shadow p-4 overflow-auto">
-                    <h2 className="text-2xl font-bold mb-4">Dev Updates</h2>
-                    <div className="space-y-4">
-                        <div className="border-l-4 border-lightGold p-4 bg-lightGold/10">
-                            <h3 className="font-semibold">Community Iftar</h3>
-                            <p className="text-sm text-gray-600">Join us this Saturday for community iftar...</p>
-                        </div>
-                        <div className="border-l-4 border-lightGold p-4 bg-lightGold/10">
-                            <h3 className="font-semibold">Quran Study Circle</h3>
-                            <p className="text-sm text-gray-600">Weekly study circle every Sunday after Maghrib...</p>
+                    {/* Top Right - Posts and Events */}
+                    <div className="bg-white rounded-lg shadow p-4 overflow-auto">
+                        <h2 className="text-2xl font-bold mb-4">Dev Updates</h2>
+                        <div className="space-y-4">
+                            <div className="border-l-4 border-lightGold p-4 bg-lightGold/10">
+                                <h3 className="font-semibold">1.1 soon</h3>
+                                <p className="text-sm text-gray-600">1.1 Is almost on it's way. It'll contain bug fixes, a new admin portal, and more.</p>
+                            </div>
+                            <div className="border-l-4 border-lightGold p-4 bg-lightGold/10">
+                                <h3 className="font-semibold">1.0 Launch</h3>
+                                <p className="text-sm text-gray-600">We just launched our first version of MyMosque. Stay tuned for more.</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Bottom Left - Calendar */}
-                <div className="bg-white rounded-lg shadow p-4 flex items-center justify-center">
-                    <div className="text-center">
-                        <h2 className="text-2xl font-bold mb-2">Calendar</h2>
-                        <p className="text-gray-600 text-lg">
+                    {/* Bottom Left - Calendar */}
+                    <div className="bg-white rounded-lg shadow p-4 flex items-center justify-center">
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold mb-2">Calendar</h2>
+                            <p className="text-gray-600 text-lg">
+                                in the kitchen{trailingDots}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Bottom Right - Analytics */}
+                    <div className="bg-white rounded-lg shadow p-4 flex items-center justify-center">
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold mb-2">Analytics</h2>
+                            <p className="text-gray-600 text-lg">
                             in the kitchen{trailingDots}
-                        </p>
+                            </p>
+                        </div>
                     </div>
                 </div>
-
-                {/* Bottom Right - Analytics */}
-                <div className="bg-white rounded-lg shadow p-4 flex items-center justify-center">
-                    <div className="text-center">
-                        <h2 className="text-2xl font-bold mb-2">Analytics</h2>
-                        <p className="text-gray-600 text-lg">
-                        in the kitchen{trailingDots}
-                        </p>
-                    </div>
+            );
+        else 
+            return (
+                <div>
+                    {/* { !masjidInfo && uid ? 
+                        <DisplayFeed mosqueInfo={masjidInfo} uid={uid}/> 
+                        : <CreatePost uid={uid}/>
+                    } */}
+                    {uid && <CreatePost uid={uid}/>}
                 </div>
-            </div>
-        );
+            )
     };
 
     return (

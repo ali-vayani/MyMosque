@@ -41,8 +41,8 @@ export function convertTimes(times: Omit<PrayerTimes, 'startDate' | 'endDate'>[]
                 const suffix = hours >= 12 ? 'PM' : 'AM';
                 // hours to 12 hr format
                 hours = hours % 12 || 12;
-                res[prayer] = `${hours}:${minutes.toString().padStart(2, '0')} ${suffix}`;
-                console.log(res);
+                if(res[prayer])
+                    res[prayer] = `${hours}:${minutes.toString().padStart(2, '0')} ${suffix}`;
             } else {
                 res[prayer] = militaryTime;
             }

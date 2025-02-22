@@ -24,8 +24,8 @@ interface ModalProps {
 }
 
 export default function Modal({ mosqueInfo, uid }: ModalProps) {
-    const [bio, setBio] = useState(mosqueInfo.bio);
-    const [prayerTimes, setPrayerTimes] = useState<PrayerTimes>(mosqueInfo.prayerTimes[0]);
+    const [bio, setBio] = useState(mosqueInfo.bio || null);
+    const [prayerTimes, setPrayerTimes] = useState<PrayerTimes>(mosqueInfo.prayerTimes ? mosqueInfo.prayerTimes[0] : []);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [invalidPrayers, setInvalidPrayers] = useState<Set<string>>(new Set());
