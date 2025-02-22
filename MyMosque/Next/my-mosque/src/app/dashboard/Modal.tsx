@@ -25,7 +25,15 @@ interface ModalProps {
 
 export default function Modal({ mosqueInfo, uid }: ModalProps) {
     const [bio, setBio] = useState(mosqueInfo.bio || null);
-    const [prayerTimes, setPrayerTimes] = useState<PrayerTimes>(mosqueInfo.prayerTimes ? mosqueInfo.prayerTimes[0] : null);
+    const [prayerTimes, setPrayerTimes] = useState<PrayerTimes>(mosqueInfo.prayerTimes ? mosqueInfo.prayerTimes[0] : {
+        Fajr: '',
+        Dhuhr: '',
+        Asr: '',
+        Maghrib: '',
+        Isha: '',
+        endDate: { seconds: 0, nanoseconds: 0 },
+        startDate: { seconds: 0, nanoseconds: 0 }
+    });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [invalidPrayers, setInvalidPrayers] = useState<Set<string>>(new Set());
@@ -63,7 +71,7 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
         const updatedTimes: Partial<PrayerTimes> = {};
         let hasUpdates = false;
 
-        for(let prayer in prayerTimes) {
+        for(const prayer in prayerTimes) {
             if(prayer !== 'endDate' && prayer !== 'startDate') {
                 const time = prayerTimes[prayer as keyof PrayerTimes];
                 if(typeof time === 'string') {
@@ -71,7 +79,7 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
                         if (!time.startsWith('+')) {
                             const minutes = parseInt(time);
                             if (!isNaN(minutes)) {
-                                updatedTimes[prayer as keyof PrayerTimes] = `+${minutes}` as any as PrayerTimes[typeof prayer];
+                                updatedTimes[prayer as keyof PrayerTimes] = `+${minutes}` as any;
                                 hasUpdates = true;
                             }
                         }
@@ -81,7 +89,7 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
                             if (timeValue.length >= 3) {
                                 const hours = timeValue.slice(0, 2);
                                 const minutes = timeValue.slice(2, 4).padEnd(2, '0');
-                                updatedTimes[prayer as keyof PrayerTimes] = `${hours}:${minutes}` as PrayerTimes[typeof prayer];
+                                updatedTimes[prayer as keyof PrayerTimes] = `${hours}:${minutes}` as any;
                                 hasUpdates = true;
                             }
                         }
@@ -164,7 +172,7 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
                 <DialogHeader>
                     <DialogTitle>Edit profile</DialogTitle>
                     <DialogDescription>
-                        Make changes to your profile here. Click save when you're done.
+                        Make changes to your profile here. Click save when you&apos;re done.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="gap-2 flex">
@@ -175,7 +183,7 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
                                 Bio
                             </Label>
                             <Textarea 
-                                value={bio}
+                                value={bio ? bio : ""}
                                 onChange={(e) => setBio(e.target.value)}
                                 placeholder="Update your bio!"
                             />
@@ -184,14 +192,14 @@ export default function Modal({ mosqueInfo, uid }: ModalProps) {
                         {mosqueInfo.prayerTimes && mosqueInfo.prayerTimes[0] && (
                             <div className="rounded-lg">
                                 <div className="space-y-2">
-                                    {prayerKey.map((key, index) => (
+                                    {prayerKey.map((key) => (
                                         <div key={key} className="grid grid-cols-4 items-center gap-2">
                                             <Label htmlFor={key} className="text-left">
                                                 {key}
                                             </Label>
                                             <Input 
                                                 id={key}
-                                                value={prayerTimes[key].replace(/(\s*[ap]m\s*)/i, '').trim()}
+                                                value={prayerTimes[key].replace(/(s*[ap]ms*)/i, '').trim()}
                                                 onChange={(e) => handlePrayerTimeChange(key, e.target.value)}
                                                 className={`col-span-1 ${invalidPrayers.has(key) ? 'border-red-500 focus:ring-red-500' : ''}`}
                                             />

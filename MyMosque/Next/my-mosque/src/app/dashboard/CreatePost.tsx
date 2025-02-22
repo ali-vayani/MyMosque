@@ -10,12 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { FaLeaf } from 'react-icons/fa';
 
 export default function CreatePost({uid}: {uid: string}) {
     const [isEvent, setIsEvent] = useState(false);
-    const [formData, setFormData] = useState<Partial<Event | Post>>({
-        images: null
-    });
+    const [formData, setFormData] = useState<Record<string, any>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -42,7 +41,7 @@ export default function CreatePost({uid}: {uid: string}) {
         try {
             const docRef = doc(FIRESTORE_DB, 'mosques', uid);
             const uniqueId = Date.now().toString();
-            let imageUrls: string[] = [];
+            const imageUrls: string[] = [];
 
             if (formData.images) {
                 const files = formData.images as File[];
@@ -74,7 +73,7 @@ export default function CreatePost({uid}: {uid: string}) {
             } else {
                 const postData: Post = {
                     id: uniqueId,
-                    isText: true,
+                    isText: imageUrls.length > 0 ? false : true,
                     name: formData.name as string,
                     text: formData.text as string,
                     timeCreated: new Date(),

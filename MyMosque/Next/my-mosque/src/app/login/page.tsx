@@ -26,8 +26,8 @@ export default function LoginPage() {
             const uid = user.uid  == 'aoma1dzfOsXcAoXKLL9sKJ4JVmz1' ? ' OnfodEG98Qaa3GIYKNxW ' : user.uid;
             localStorage.setItem('authenticated', "true")
             router.push(`/dashboard?uid=${uid.trim()}`);
-        } catch (error: any) {
-            setError(error.message || "Failed to sign in");
+        } catch (error: unknown) {
+            setError(error instanceof Error ? error.message : "Failed to sign in");
             console.error("Login error:", error);
         }
     };

@@ -1,7 +1,6 @@
 import { doc, getDoc } from "firebase/firestore";
-import { Post, FirestoreTimeStamp, MosqueInfo, PrayerTimes} from "../post.types";
+import { FirestoreTimeStamp, MosqueInfo, PrayerTimes} from "../post.types";
 import { FIRESTORE_DB } from "../../../../firebaseConfig";
-import { start } from "repl";
 
 export async function getMosqueInfo(masjidId: string) {
     const docRef = doc(FIRESTORE_DB, "mosques", masjidId);
@@ -32,19 +31,23 @@ export function convertDates(startDate: FirestoreTimeStamp, endDate: FirestoreTi
 }
 
 export function convertTimes(times: Omit<PrayerTimes, 'startDate' | 'endDate'>[]) {
-    let res = {} as Record<string, string>;
+    const res = {} as Record<string, string>;
     for(const time of times) {
         for(const [prayer, militaryTime] of Object.entries(time)) {
             if(typeof militaryTime === 'string' && prayer !== 'Maghrib') {
                 let [hours, minutes] = militaryTime.split(':').map(Number);
-                // am or pm
-                const suffix = hours >= 12 ? 'PM' : 'AM';
-                // hours to 12 hr format
-                hours = hours % 12 || 12;
-                if(res[prayer])
-                    res[prayer] = `${hours}:${minutes.toString().padStart(2, '0')} ${suffix}`;
-            } else {
-                res[prayer] = militaryTime;
+                
+                if (!isNaN(minutes)) {
+                    // am or pm
+                    const suffix = hours >= 12 ? 'PM' : 'AM';
+                    // hours to 12 hr format
+                    hours = hours % 12 || 12;
+                    minutes += 0;
+                    if(res[prayer])
+                        res[prayer] = `${hours}:${minutes.toString().padStart(2, '0')} ${suffix}`;
+                } else {
+                    res[prayer] = militaryTime;
+                }
             }
         }
     }

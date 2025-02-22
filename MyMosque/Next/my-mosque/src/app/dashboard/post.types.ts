@@ -1,5 +1,5 @@
 export type Event = {
-    id: number,
+    id: string,
     time: string,
     timeCreated: Date,
     title: string,
@@ -8,6 +8,7 @@ export type Event = {
 }
 
 export type Post = {
+    id: string,
     isText: boolean,
     name: string,
     text: string,

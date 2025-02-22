@@ -1,14 +1,14 @@
 'use client'
 
 import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
 import { FaRegCalendarAlt, FaChartBar, FaUser, FaPlusCircle } from 'react-icons/fa';
 import { MosqueInfo, PrayerTimes } from "./post.types";
-import { getMosqueInfo, convertDates } from "./hooks/getMosqueInfo";
+import { getMosqueInfo } from "./hooks/getMosqueInfo";
 import Modal from "./Modal";
 import CreatePost from "./CreatePost";
 
-export default function Dashboard() {
+function DashboardContent() {
     const searchParams = useSearchParams();
     const uid = searchParams.get("uid");
     const [masjidInfo, setMasjidInfo] = useState<MosqueInfo | null>(null);
@@ -43,7 +43,7 @@ export default function Dashboard() {
                 clearInterval(intervalRef.current);
             }
         }
-    }, [])
+    }, [uid])
 
     const renderContent = () => {
         if(activeTab === "Home")
@@ -83,7 +83,6 @@ export default function Dashboard() {
                                 {masjidInfo.prayerTimes && masjidInfo.prayerTimes[0] && (
                                     <div className="bg-lightGold/10 p-4 rounded-lg flex-1">
                                         <h3 className="font-semibold mb-2">Prayer Times</h3>
-                                        {/* <h6 className="text-[10px] mb-2 italic text-gray-600">{convertTimes(masjidInfo.prayerTimes[0].startDate, masjidInfo.prayerTimes[0].endDate)}</h6> */}
                                         <div className="space-y-2">
                                             {prayerKey.map((key, index) => (
                                                 <p key={index} className="text-sm text-gray-600">
@@ -99,13 +98,12 @@ export default function Dashboard() {
                         )}
                     </div>
 
-                    {/* Top Right - Posts and Events */}
                     <div className="bg-white rounded-lg shadow p-4 overflow-auto">
                         <h2 className="text-2xl font-bold mb-4">Dev Updates</h2>
                         <div className="space-y-4">
                             <div className="border-l-4 border-lightGold p-4 bg-lightGold/10">
                                 <h3 className="font-semibold">1.1 soon</h3>
-                                <p className="text-sm text-gray-600">1.1 Is almost on it's way. It'll contain bug fixes, a new admin portal, and more.</p>
+                                <p className="text-sm text-gray-600">1.1 Is almost on its way. It&apos;ll contain bug fixes, a new admin portal, and more.</p>
                             </div>
                             <div className="border-l-4 border-lightGold p-4 bg-lightGold/10">
                                 <h3 className="font-semibold">1.0 Launch</h3>
@@ -114,7 +112,6 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Bottom Left - Calendar */}
                     <div className="bg-white rounded-lg shadow p-4 flex items-center justify-center">
                         <div className="text-center">
                             <h2 className="text-2xl font-bold mb-2">Calendar</h2>
@@ -124,7 +121,6 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Bottom Right - Analytics */}
                     <div className="bg-white rounded-lg shadow p-4 flex items-center justify-center">
                         <div className="text-center">
                             <h2 className="text-2xl font-bold mb-2">Analytics</h2>
@@ -138,10 +134,6 @@ export default function Dashboard() {
         else 
             return (
                 <div>
-                    {/* { !masjidInfo && uid ? 
-                        <DisplayFeed mosqueInfo={masjidInfo} uid={uid}/> 
-                        : <CreatePost uid={uid}/>
-                    } */}
                     {uid && <CreatePost uid={uid}/>}
                 </div>
             )
@@ -149,7 +141,6 @@ export default function Dashboard() {
 
     return (
         <div className="flex h-screen bg-gray-100">
-            {/* Sidebar */}
             <div className="w-64 bg-white shadow-lg">
                 <div className="p-6">
                     <h1 className="text-2xl font-bold text-gray-800">MyMosque</h1>
@@ -178,7 +169,6 @@ export default function Dashboard() {
                     </div>
                     <div
                         className={`flex items-center px-6 py-4 cursor-pointer ${activeTab === 'Analytics' ? 'bg-lightGold/20 border-r-4 border-lightGold' : 'hover:cursor-default'}`}
-                        // onClick={() => setActiveTab('Analytics')}
                     >
                         <FaChartBar className="text-gray-600/50 mr-3" />
                         <span className="text-gray-800/50">Analytics</span>
@@ -186,7 +176,6 @@ export default function Dashboard() {
                 </nav>
             </div>
 
-            {/* Main Content */}
             <div className="flex-1 overflow-y-auto">
                 <header className="bg-white shadow">
                     <div className="px-6 py-4">
@@ -198,5 +187,13 @@ export default function Dashboard() {
                 </main>
             </div>
         </div>
+    );
+}
+
+export default function Dashboard() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <DashboardContent />
+        </Suspense>
     );
 }
