@@ -2,11 +2,10 @@
 
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useRef } from 'react';
-import { FaRegCalendarAlt, FaChartBar, FaUser, FaPlusCircle, FaPencilAlt } from 'react-icons/fa';
+import { FaRegCalendarAlt, FaChartBar, FaUser, FaPlusCircle } from 'react-icons/fa';
 import { MosqueInfo, PrayerTimes } from "./post.types";
 import { getMosqueInfo, convertDates } from "./hooks/getMosqueInfo";
 import Modal from "./Modal";
-import DisplayFeed from "./DisplayFeed";
 import CreatePost from "./CreatePost";
 
 export default function Dashboard() {
@@ -25,7 +24,7 @@ export default function Dashboard() {
             if(mosqueInfo)
                 setMasjidInfo(mosqueInfo);
         }
-        if(uid) {
+        if(uid && localStorage.getItem("authenticated") == "true") {
             getInfo(uid)
         }
 

@@ -15,7 +15,6 @@ export default function LoginPage() {
         e.preventDefault();
         setError("");
         
-        // TODO: Implement actual authentication logic
         if (!email || !password) {
             setError("Please fill in all fields");
             return;
@@ -25,7 +24,7 @@ export default function LoginPage() {
             const userCredential = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
             const user = userCredential.user;
             const uid = user.uid  == 'aoma1dzfOsXcAoXKLL9sKJ4JVmz1' ? ' OnfodEG98Qaa3GIYKNxW ' : user.uid;
-            console.log("Logged in user:", uid);
+            localStorage.setItem('authenticated', "true")
             router.push(`/dashboard?uid=${uid.trim()}`);
         } catch (error: any) {
             setError(error.message || "Failed to sign in");
