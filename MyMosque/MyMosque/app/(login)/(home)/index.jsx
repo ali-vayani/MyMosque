@@ -40,8 +40,8 @@ const Home = () => {
     async function registerBackgroundFetchAsync() {
         return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
             minimumInterval: 10,
-            stopOnTerminate: false, // android only,
-            startOnBoot: true, // android only
+            stopOnTerminate: false, 
+            startOnBoot: true, 
         });
     }
 
@@ -89,12 +89,6 @@ const Home = () => {
         <View style={styles.page}>
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
-                <View style={styles.timeContainer}>
-                    <Text style={styles.timeText}>Current Time: {currentTime}</Text>
-                    {lastFetchTime && (
-                        <Text style={styles.fetchText}>Last Background Fetch: {lastFetchTime}</Text>
-                    )}
-                </View>
                 {locationData && <PrayerTimesWidget uid={uid} favMasjids={masjidId} locationData={locationData}/>}
                 {locMosques && <SearchWidget uid={uid} locMosques={locMosques}/>}
                 {masjidId && locationData ? (
