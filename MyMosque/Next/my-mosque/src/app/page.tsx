@@ -39,7 +39,7 @@ export default function Home() {
           <p className="text-xl text-text mb-8">Community updates, share prayer times, and strengthen bonds.<br />All in one app.</p>
           <div className="flex justify-center">
             <button className="bg-lightGold/50 px-8 py-3 rounded-full text-text hover:bg-lightGold/70 transition-colors">
-              <a href="https://forms.gle/zeX8wsnF8Yr5W7n58">Join out beta</a>
+              <a href="https://forms.gle/zeX8wsnF8Yr5W7n58">Join our beta</a>
             </button>
           </div>
         </div>
