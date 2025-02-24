@@ -3,6 +3,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { FIRESTORE_DB } from '../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import getUserLocation from './getUserLocation';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -14,7 +15,6 @@ Notifications.setNotificationHandler({
 
 export default getLocalPrayerTimes = async (location, uid) => {
     try {
-
         const cachedData = await AsyncStorage.getItem('prayerTimesCache');
 
         if (cachedData) {
@@ -36,12 +36,14 @@ export default getLocalPrayerTimes = async (location, uid) => {
             }
         }
 
-        if(!location) 
+        if(!location)  {
             location = await getUserLocation();
+        }
+        console.log("lco", location)
+        const cordinates = await getCityName(location.latitude, location.longitude);
         const today = new Date();
-        console.log(await getTimeSettings(uid))
         const settings = await getTimeSettings(uid);
-        const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${location.city}&country=${location.country}&method=${settings[0].id}&adjustment=1&school=${settings[1].id}`;
+        const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${cordinates.city}&country=${cordinates.country}&method=${settings[0].id}&adjustment=1&school=${settings[1].id}`;
         const startTime = performance.now();
         const response = await fetch(url);
         const endTime = performance.now();
@@ -67,16 +69,16 @@ export default getLocalPrayerTimes = async (location, uid) => {
     }
 }
 
-const getUserLocation = async () => {
-    let { status } = await LocationExpo.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Permission to access location was denied');
-        return;
-    }
-    let currentPosition = await LocationExpo.getCurrentPositionAsync({ accuracy: LocationExpo.Accuracy.High });
-    const { latitude, longitude } = currentPosition.coords;
-    return await getCityName(latitude, longitude)
-}
+// const getUserLocation = async () => {
+//     let { status } = await LocationExpo.requestForegroundPermissionsAsync();
+//     if (status !== 'granted') {
+//         Alert.alert('Permission Denied', 'Permission to access location was denied');
+//         return;
+//     }
+//     let currentPosition = await LocationExpo.getCurrentPositionAsync({ accuracy: LocationExpo.Accuracy.High });
+//     const { latitude, longitude } = currentPosition.coords;
+//     return await getCityName(latitude, longitude)
+// }
 
 const getCityName = async (lat, lng) => {
     const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;

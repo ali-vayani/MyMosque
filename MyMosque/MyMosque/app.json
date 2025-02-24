@@ -44,6 +44,23 @@
     "experiments": {
       "typedRoutes": true
     },
+    "plugins": [
+      "expo-router",
+      ["expo-background-fetch", {
+        "ios": {
+          "minimumInterval": 900
+        },
+        "android": {
+          "minimumInterval": 900
+        }
+      }],
+      ["expo-splash-screen", {
+        "image": "./assets/images/splash-icon.png",
+        "imageWidth": 200,
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      }]
+    ],
     "extra": {
       "router": {
         "origin": false

@@ -7,7 +7,7 @@ import { FIRESTORE_DB } from '../../firebaseConfig';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
 
-const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
+const MyMosqueWidget = ({ masjidId, uid, fullscreen, locData }) => {
     const router = useRouter();
     const [posts, setPosts] = useState([]);
     const getPosts = async () => {
@@ -90,7 +90,7 @@ const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
                         onPress={() => {
                             router.push({ 
                                 pathname: '/feed',
-                                params: { masjidId: JSON.stringify(masjidId), uid: uid, fullscreen: true }
+                                params: { masjidId: JSON.stringify(masjidId), uid: uid, fullscreen: true}
                             });
                         }}>
                         <Ionicons name="chevron-forward-outline" size={32} color={'#EBFEEA'}/>

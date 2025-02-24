@@ -10,13 +10,15 @@ import MapList from '../../../components/elements/MapList';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { MarkerClusterer } from '@teovilla/react-native-web-maps';
+import getUserLocation from '../../../functions/getUserLocation';
+import getLocalMosques from '../../../functions/getLocalMosques';
 
 const Map = ({ navigation }) => {
     const router = new useRouter()
-    const { uid } = useLocalSearchParams();
+    const { uid, locMosques } = useLocalSearchParams();
     const mapRef = useRef(null)
     const [location, setLocation] = useState(null);
-    const [markers, setMarkers] = useState([]);
+    const [markers, setMarkers] = useState(JSON.parse(locMosques) || []);
     const [value, setValue] = useState();
     const [expanded, setExpanded] = useState(null);
     const [masjidId, setMasjidID] = useState(null);
@@ -29,7 +31,6 @@ const Map = ({ navigation }) => {
     const fetchQueryMosque = async (query, lat, lng, nextPageToken = null) => {
         const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
         const radius = 10000;
-        // api url
         let url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&type=mosque&radius=${radius}&key=${apiKey}`;
         
         if (nextPageToken) {
@@ -97,14 +98,7 @@ const Map = ({ navigation }) => {
 
     useEffect(() => {
         (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission Denied', 'Permission to access location was denied');
-                return;
-            }
-
-            let currentPosition = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
-            const { latitude, longitude } = currentPosition.coords;
+            const { latitude, longitude } = await getUserLocation();
 
             setLocation({
                 latitude,
@@ -122,57 +116,14 @@ const Map = ({ navigation }) => {
                     return;
                 }
             }
-            fetchNearbyMosques(latitude, longitude);
+            setIsLoading(true);
+            await getLocalMosques(latitude, longitude)
+                .then((res) => {
+                    setMarkers(res);
+                    setIsLoading(false);
+                });
         })();
     }, []);
-
-    const fetchNearbyMosques = async (lat, lng, nextPageToken = null) => {
-        setIsLoading(true);
-        const radius = 10000;
-        const apiKey = 'AIzaSyD8TOCKBJE00BR8yHhQC4PhN7Vu7AdM68c';
-        let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=mosque&key=${apiKey}`;
-
-        try {
-            // Check cache first with location-based key
-            const cacheKey = `nearbyMosques_${lat.toFixed(3)}_${lng.toFixed(3)}`;
-            const cachedData = await AsyncStorage.getItem(cacheKey);
-            
-            if (cachedData) {
-                const { data, timestamp } = JSON.parse(cachedData);
-                if (Date.now() - timestamp < cacheDuration) {
-                    setMarkers(data);
-                    setIsLoading(false);
-                    return;
-                }
-            }
-
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data.results) {
-                const resultsWithDistance = data.results.map(result => ({
-                    ...result,
-                    distance: getDistance(
-                        { latitude: lat, longitude: lng },
-                        { latitude: result.geometry.location.lat, longitude: result.geometry.location.lng }
-                    ),
-                }));
-
-                resultsWithDistance.sort((a, b) => a.distance - b.distance);
-                
-                // Cache the results with location-based key
-                await AsyncStorage.setItem(cacheKey, JSON.stringify({
-                    data: resultsWithDistance,
-                    timestamp: Date.now()
-                }));
-
-                setMarkers(resultsWithDistance);
-            }
-        } catch (error) {
-            console.error("Error fetching: ", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const memoizedMarkers = useMemo(() => markers, [markers]);
 

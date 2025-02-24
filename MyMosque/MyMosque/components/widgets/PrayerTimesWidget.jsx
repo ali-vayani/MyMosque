@@ -6,7 +6,7 @@ import Location from '../elements/Location';
 import getCurrentPrayer from '../../functions/getCurrentPrayer';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
 
-const PrayerTimesWidget = ({ uid, favMasjids }) => {
+const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
     const router = useRouter();
     const [time, setTime] = useState('14 min 20 sec')
     const [locationText, setLocText] = useState('Your Location')
@@ -48,27 +48,28 @@ const PrayerTimesWidget = ({ uid, favMasjids }) => {
     useEffect(() => {
         const getTime = async () => {
             setIsLoading(true);
-            await getLocalPrayerTimes(null, uid)
-                .then((res) => {
-                    const month = res.date.hijri.month.en;
-                    const day = res.date.hijri.month.days;
-                    const year = res.date.hijri.year;
-                    const date = month + " " + day + ", " + year + " AH";
-                    setDate(date);
-                    const prayer = getCurrentPrayer(res.timings);
-                    setMosqueInfo({
-                        prayer: res.timings,
-                        name: 'Your Location',
-                        located: res.located
-                    })
-                    setCurrentPrayer(prayer); 
-                })
-                .catch((err) => console.error(err));
+            const res = locationData != null ? locationData : await getLocalPrayerTimes(null, uid);
+            parseLocaitonData(res);
             setIsLoading(false);
         };
         if(uid)
             getTime();
     }, [uid]);
+
+    const parseLocaitonData = async (res) => {
+        const month = res.date.hijri.month.en;
+        const day = res.date.hijri.month.days;
+        const year = res.date.hijri.year;
+        const date = month + " " + day + ", " + year + " AH";
+        setDate(date);
+        const prayer = getCurrentPrayer(res.timings);
+        setMosqueInfo({
+            prayer: res.timings,
+            name: 'Your Location',
+            located: res.located
+        })
+        setCurrentPrayer(prayer);
+    };
     
     return (
         <TouchableOpacity 
