@@ -10,6 +10,7 @@ export default function HomeLayout() {
             <Stack.Screen name="feed" />
             <Stack.Screen name="map" />
             <Stack.Screen name="prayer" />
+            <Stack.Screen name="app" />
             <Stack.Screen name="(mosque)" />
         </Stack>
     );
