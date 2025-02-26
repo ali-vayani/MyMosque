@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground, FlatList, Dimensions, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, FlatList, Dimensions, Image, TouchableOpacity, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,11 +11,12 @@ const Post = ({ post, color }) => {
     const [localMosqueTimes, setLocalMosqueTimes] = useState();
     const images = [];
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
     color = color || '#ebfeea'; 
 
     useEffect(() => {
         AsyncStorage.getItem('prayerTimesCache').then((value) => {
-            // console.log(value)
             if (value !== null) {
                 setLocalMosqueTimes(JSON.parse(value));
             }
@@ -30,104 +31,140 @@ const Post = ({ post, color }) => {
     };
 
     const renderImage = ({ item }) => (
-        <ImageBackground
-            source={{ uri: item }}
-            style={styles.postImage}
-            imageStyle={[styles.imageRounded, { resizeMode: 'cover' }]}
-            resizeMode="cover"
+        <TouchableOpacity
+            onPress={() => {
+                setSelectedImage(item);
+                setModalVisible(true);
+            }}
         >
-            <LinearGradient
-                colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
-                style={styles.gradient}
+            <ImageBackground
+                source={{ uri: item }}
+                style={styles.postImage}
+                imageStyle={[styles.imageRounded, { resizeMode: 'cover' }]}
+                resizeMode="cover"
             >
-                <Text style={styles.imageText}>{post.text}</Text>
-            </LinearGradient>
-        </ImageBackground>
+                <LinearGradient
+                    colors={['transparent', 'rgba(0, 0, 0, 0.5)']}
+                    style={styles.gradient}
+                >
+                    <Text style={styles.imageText}>{post.text}</Text>
+                </LinearGradient>
+            </ImageBackground>
+        </TouchableOpacity>
     );
-    if(post) {
-        if (post.isText) {
-            return (
-                <View style={styles.textContainer}>
-                    <View style={styles.headerContainer}>
+    return (
+        <>
+            {post ? (
+                <>
+                    <Modal
+                        animationType="fade"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => setModalVisible(false)}
+                    >
                         <TouchableOpacity
-                            onPress={() => router.push({pathname: "(mosque)", params: { masjidId: post.masjidId, uid: post.uid }})}
+                            style={styles.modalOverlay}
+                            activeOpacity={1}
+                            onPress={() => setModalVisible(false)}
                         >
                             <Image
-                                source={require('../../assets/icon.png')} 
-                                style={{
-                                width: 35,
-                                height: 35,
-                                borderRadius: 10000,
-                                }}
+                                source={{ uri: selectedImage }}
+                                style={styles.modalImage}
+                                resizeMode="contain"
                             />
                         </TouchableOpacity>
-                        <View style={{gap: 15, width: '90%'}}>
-                            <View style={{gap: 2}}>
+                    </Modal>
+
+                    {post.isText ? (
+                        <View style={styles.textContainer}>
+                            <View style={styles.headerContainer}>
                                 <TouchableOpacity
                                     onPress={() => router.push({pathname: "(mosque)", params: { masjidId: post.masjidId, uid: post.uid }})}
                                 >
-                                    <Text style={[styles.nameText, { color: color }]}>{post.name}</Text>
-                                    <Text style={[styles.timeText, { color: color }]}>{new Date(post.timeCreated).toLocaleDateString()}</Text>
+                                    <Image
+                                        source={require('../../assets/logo.png')} 
+                                        style={{
+                                            width: 35,
+                                            height: 35,
+                                            borderRadius: 10000,
+                                        }}
+                                    />
                                 </TouchableOpacity>
+                                <View style={{gap: 15, width: '90%'}}>
+                                    <View style={{gap: 2}}>
+                                        <TouchableOpacity
+                                            onPress={() => router.push({pathname: "(mosque)", params: { masjidId: post.masjidId, uid: post.uid }})}
+                                        >
+                                            <Text style={[styles.nameText, { color: color }]}>{post.name}</Text>
+                                            <Text style={[styles.timeText, { color: color }]}>{new Date(post.timeCreated).toLocaleDateString()}</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <Text style={[styles.postText, { color: color }]}>{post.text}</Text>
+                                </View>
                             </View>
-                            <Text style={[styles.postText, { color: color }]}>{post.text}</Text>
                         </View>
-                    </View>
-                </View>
-            );
-        } else {
-            return (
-                <View style={styles.imageContainer}>
-                    <View style={styles.headerContainer}>
-                        <Image
-                            source={require('../../assets/icon.png')} 
-                            style={{
-                            width: 35,
-                            height: 35,
-                            borderRadius: 10000,
-                            }}
-                        />
-                        <View style={{gap: 2}}>
-                            <TouchableOpacity
-                                onPress={() => router.push({pathname: "(mosque)", params: { masjidId: post.masjidId, uid: post.uid }})}
-                            >
-                                <Text style={[styles.nameText, { color: color }]}>{post.name}</Text>
-                            </TouchableOpacity>
-                            <Text style={[styles.timeText, { color: color }]}>{new Date(post.timeCreated).toLocaleDateString()}</Text>
-                        </View>
-                    </View>
-                    <View style={styles.post}>
-                        <FlatList
-                            data={post.images}
-                            renderItem={renderImage}
-                            keyExtractor={(item, index) => `image-${index}-${item.substring(0, 20)}`}
-                            horizontal
-                            pagingEnabled
-                            showsHorizontalScrollIndicator={false}
-                            onScroll={handleScroll}
-                            style={styles.flatList}
-                        />
-                        <View style={styles.pagination}>
-                            {images.map((_, index) => (
-                                <View
-                                    key={index}
-                                    style={[
-                                        styles.dot,
-                                        currentIndex === index ? styles.dotActive : styles.dotInactive,
-                                    ]}
+                    ) : (
+                        <View style={styles.imageContainer}>
+                            <View style={styles.headerContainer}>
+                                <Image
+                                    source={require('../../assets/logo.png')} 
+                                    style={{
+                                        width: 35,
+                                        height: 35,
+                                        borderRadius: 10000,
+                                    }}
                                 />
-                            ))}
+                                <View style={{gap: 2}}>
+                                    <TouchableOpacity
+                                        onPress={() => router.push({pathname: "(mosque)", params: { masjidId: post.masjidId, uid: post.uid }})}
+                                    >
+                                        <Text style={[styles.nameText, { color: color }]}>{post.name}</Text>
+                                    </TouchableOpacity>
+                                    <Text style={[styles.timeText, { color: color }]}>{new Date(post.timeCreated).toLocaleDateString()}</Text>
+                                </View>
+                            </View>
+                            <View style={styles.post}>
+                                <FlatList
+                                    data={post.images}
+                                    renderItem={renderImage}
+                                    keyExtractor={(item, index) => `image-${index}-${item.substring(0, 20)}`}
+                                    horizontal
+                                    pagingEnabled
+                                    showsHorizontalScrollIndicator={false}
+                                    onScroll={handleScroll}
+                                    style={styles.flatList}
+                                />
+                                <View style={styles.pagination}>
+                                    {images.map((_, index) => (
+                                        <View
+                                            key={index}
+                                            style={[
+                                                styles.dot,
+                                                currentIndex === index ? styles.dotActive : styles.dotInactive,
+                                            ]}
+                                        />
+                                    ))}
+                                </View>
+                            </View>
                         </View>
-                    </View>
-                </View>
-            );
-        }
-    } else {
-        return <></>
-    }
+                    )}
+                </>
+            ) : <></>}
+        </>
+    );
 };
 
 const styles = StyleSheet.create({
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    modalImage: {
+        width: '100%',
+        height: '80%',
+    },
     imageContainer: {
         width: '90%',
         display: 'flex',

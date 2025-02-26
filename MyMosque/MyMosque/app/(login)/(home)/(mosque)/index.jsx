@@ -61,7 +61,7 @@ const MosquePage = () => {
                     newPosts.push({
                         name: mosqueData.name,
                         title: event.title,
-                        text: `Event: ${event.title}\nTime: ${event.time}\nDate: ${date}`,
+                        text: event.description,
                         isText: false,
                         time: date,
                         masjidId: masjidId,
@@ -194,7 +194,7 @@ const MosquePage = () => {
                     <Text style={styles.mainText}>{name}</Text>
                     <View style={styles.info}>
                         <Image
-                            source={require('../../../../assets/icon.png')} 
+                            source={require('../../../../assets/logo.png')} 
                             style={{
                             width: 100,
                             height: 100,

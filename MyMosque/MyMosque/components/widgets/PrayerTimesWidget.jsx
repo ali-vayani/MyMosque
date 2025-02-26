@@ -5,6 +5,7 @@ import PrayerBar from '../elements/PrayerBar';
 import Location from '../elements/Location';
 import getCurrentPrayer from '../../functions/getCurrentPrayer';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
+import { Ionicons } from '@expo/vector-icons';
 
 const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
     const router = useRouter();
@@ -93,8 +94,10 @@ const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
                 </View>
             ) : (
                 <View style={styles.content} key="content-view">
-                    <Text style={styles.mainText}> Prayer Times</Text>
-                    {/* <Text>{mosqueInfo.located}</Text> */}
+                    <View style={styles.header}>
+                        <Text style={styles.mainText}> Prayer Times</Text>
+                        <Ionicons name="chevron-forward-outline" size={32} color={'#EBFEEA'}/>
+                    </View>
                     <PrayerBar timeTillNext={time} nextPrayer={'Maghrib'} size={28} prayerAndTime={mosqueInfo.prayer} currentPrayer={currentPrayer} height={30}/>
                     <Location 
                         favMasjids={favMasjids} 
@@ -142,5 +145,12 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent:'center',
         alignItems: 'center'
+    },
+    header: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: "space-between",
+        alignItems: 'center',
+        flexDirection: 'row'
     }
 });

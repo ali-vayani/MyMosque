@@ -39,7 +39,7 @@ export default function Feed () {
                             newPosts.push({
                                 name: mosqueData.name,
                                 title: event.title,
-                                text: `Event: ${event.title}\nTime: ${event.time}\nDate: ${reformatDate(date)}`,
+                                text: event.description,
                                 isText: false,
                                 time: date,
                                 masjidId: id,
