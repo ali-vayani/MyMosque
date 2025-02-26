@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
+    const [intervalId, setIntervalId] = useState(null);
     const [timeData, setTimeData] = useState({
         timeBetween: 0,
         timeTillNext: '',
@@ -53,27 +54,52 @@ const PrayerBar = ({ prayerAndTime, size, currentPrayer, height }) => {
 
     useEffect(() => {
         if (!prayerAndTime || !currentPrayer) return;
-        const currPrayerTime = toMin(prayerAndTime[currentPrayer]);
-        const nextPrayerTime = toMin(prayerAndTime[prayerKey.get(currentPrayer)]);
+
+        const updateTimeData = () => {
+            const currPrayerTime = toMin(prayerAndTime[currentPrayer]);
+            const nextPrayerTime = toMin(prayerAndTime[prayerKey.get(currentPrayer)]);
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const currentTimeInMinutes = currentHour * 60 + currentMinute;
+
+            const timeBetween = currentPrayer !== 'Isha'
+                ? nextPrayerTime - currPrayerTime
+                : (24 * 60 - currPrayerTime) + nextPrayerTime;
+
+            let percentage = getPercentage(currPrayerTime, nextPrayerTime, currentTimeInMinutes);
+            const timeTillNext = calculateRemaining(percentage, timeBetween);
+
+            if(percentage < .1)
+                percentage = .1;
+            setTimeData({
+                timeBetween,
+                timeTillNext,
+                percentage,
+            });
+        };
+
+        // Initial update
+        updateTimeData();
+
+        // Calculate time until next minute
         const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const currentTimeInMinutes = currentHour * 60 + currentMinute;
+        const msUntilNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
 
-        const timeBetween = currentPrayer !== 'Isha'
-            ? nextPrayerTime - currPrayerTime
-            : (24 * 60 - currPrayerTime) + nextPrayerTime;
+        // Set up initial timeout to sync with minute boundary
+        const initialTimeout = setTimeout(() => {
+            updateTimeData();
+            // Then set up interval to update every minute
+            const intervalId = setInterval(updateTimeData, 60000);
+            // Store interval ID for cleanup
+            setIntervalId(intervalId);
+        }, msUntilNextMinute);
 
-        let percentage = getPercentage(currPrayerTime, nextPrayerTime, currentTimeInMinutes);
-        const timeTillNext = calculateRemaining(percentage, timeBetween);
-
-        if(percentage < .1)
-            percentage = .1;
-        setTimeData({
-            timeBetween,
-            timeTillNext,
-            percentage,
-        });
+        // Cleanup function
+        return () => {
+            clearTimeout(initialTimeout);
+            if (intervalId) clearInterval(intervalId);
+        };
     }, [prayerAndTime, currentPrayer]);
 
     const styles = StyleSheet.create({

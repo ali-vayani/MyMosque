@@ -1,22 +1,31 @@
-import {View, StyleSheet} from 'react-native'
+import {View, StyleSheet, Text, Animated, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import PrayerTimesWidget from '../../../components/widgets/PrayerTimesWidget';
 import SearchWidget from '../../../components/widgets/SearchWidget';
 import MyMosqueWidget from '../../../components/widgets/MyMosquesWidget';
-import { useState, useEffect  } from 'react';
-import { doc, getDoc, getFirestore } from "firebase/firestore";
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { FIREBASE_APP, FIRESTORE_DB } from '../../../firebaseConfig';
+import { useState, useEffect, useRef } from 'react';
+import { doc, getDoc } from "firebase/firestore";
+import { useLocalSearchParams } from 'expo-router';
+import { FIRESTORE_DB } from '../../../firebaseConfig';
 import getLocalPrayerTimes from '../../../functions/getLocalPrayerTimes';
 import getUserLocation from '../../../functions/getUserLocation';
 import getLocalMosques from '../../../functions/getLocalMosques';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Home = () => {
+    const getAsyncData = async () => {
+        const cachedPrayer = await AsyncStorage.getItem('prayerTimesCache');
+        const cachedLoc = await AsyncStorage.getItem('nearbyMosques');
+        return {prayer: cachedPrayer, loc: cachedLoc};
+    }
+
     const { uid } = useLocalSearchParams();
-    const [locationData, setLocationDate] = useState();
-    const [locMosques, setLocMosques] = useState();
+    const [locationData, setLocationDate] = useState(getAsyncData().prayer);
+    const [locMosques, setLocMosques] = useState(getAsyncData().loc);
     const docRef = uid ? doc(FIRESTORE_DB, "users", uid) : null;
     const [masjidId, setMasjidId] = useState(["OnfodEG98Qaa3GIYKNxW"])
+
 
     useEffect(() => {
         const initializeApp = async () => {
@@ -24,12 +33,13 @@ const Home = () => {
         };
         initializeApp();
     }, []);
-    
+
     // gets info for app to run
     const getAppData = async () => {
         const userLoc = await getUserLocation();
         const locData = await getLocalPrayerTimes(userLoc, uid);
-        setLocMosques(await getLocalMosques(userLoc.latitude, userLoc.longitude));
+        const mosques = await getLocalMosques(userLoc.latitude, userLoc.longitude);
+        setLocMosques(mosques);
         setLocationDate(locData);
         if(docRef && uid) {
             const docSnap = await getDoc(docRef);
@@ -80,4 +90,32 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: '2%',
     },
+    timeContainer: {
+        position: 'absolute',
+        top: '10%',
+        left: 0,
+        backgroundColor: 'rgba(103, 81, 154, 0.9)',
+        padding: 15,
+        borderTopRightRadius: 15,
+        borderBottomRightRadius: 15,
+        zIndex: 100,
+    },
+    metricsToggle: {
+        position: 'absolute',
+        top: '5%',
+        left: '5%',
+        zIndex: 101,
+        padding: 10,
+        backgroundColor: '#FFFFFF',
+    },
+    timeText: {
+        color: '#F2EFFB',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    fetchText: {
+        color: '#F2EFFB',
+        fontSize: 14,
+        marginTop: 4,
+    }
 })
