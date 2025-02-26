@@ -6,7 +6,7 @@ const getUserLocation = async () => {
         Alert.alert('Permission Denied', 'Permission to access location was denied');
         return;
     }
-    let currentPosition = await LocationExpo.getCurrentPositionAsync({ accuracy: LocationExpo.Accuracy.High });
+    let currentPosition = await LocationExpo.getCurrentPositionAsync({ accuracy: LocationExpo.Accuracy.Lowest });
     const { latitude, longitude } = currentPosition.coords;
     return { latitude, longitude };
 }
