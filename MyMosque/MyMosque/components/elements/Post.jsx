@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ImageBackground, FlatList, Dimensions, Image, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
 const Post = ({ post, color }) => {
     const router = useRouter()
+    const [localMosqueTimes, setLocalMosqueTimes] = useState();
     const images = [];
     const [currentIndex, setCurrentIndex] = useState(0);
     color = color || '#ebfeea'; 
 
+    useEffect(() => {
+        AsyncStorage.getItem('prayerTimesCache').then((value) => {
+            // console.log(value)
+            if (value !== null) {
+                setLocalMosqueTimes(JSON.parse(value));
+            }
+        });
+    }, [])
 
     const handleScroll = (event) => {
         const slideSize = event.nativeEvent.layoutMeasurement.width;

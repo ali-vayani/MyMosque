@@ -19,13 +19,17 @@ export default getMosquePrayerTimes = async (listOfTimes, address) => {
 }
 
 const updateMaghribTime = async (prayerTimes, address) => {
-    const url = `https://nominatim.openstreetmap.org/search?q=${address}&format=json&addressdetails=1`;
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
     const response = await fetch(url);
     if (!response.ok) {
         throw new Error('Network response was not ok');
     }
     const data = await response.json();
-    const localPrayerTimes = await getLocalPrayerTimes(data[0].address, null);
+    const loc = {
+        latitude: data[0].lat,
+        longitude: data[0].lon,
+    };
+    const localPrayerTimes = await getLocalPrayerTimes(loc, null);
     const maghribTime = localPrayerTimes.timings.Maghrib;
 
     let [hour, minute] = maghribTime.split(':').map(Number);

@@ -121,6 +121,7 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
                 <Text style={styles.nameText}>{name}</Text>
 
                 <View style={styles.buttonContainer}>
+<<<<<<< HEAD
                     <TouchableOpacity 
                         style={[styles.viewPageButton, !masjidInfo && styles.disabledButton]}
                         onPress={() => handleNavigate("MosquePage")}
@@ -128,11 +129,28 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
                     >
                         <Text style={styles.buttonText}>View Page</Text>
                     </TouchableOpacity>
+=======
+                    {masjidInfo ? (
+                        <TouchableOpacity 
+                            style={styles.viewPageButton}
+                            onPress={() => handleNavigate("MosquePage")}
+                        >
+                            <Text style={styles.buttonText}>View Page</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={[styles.viewPageButton, styles.disabledButton]}>
+                            <Text style={[styles.buttonText, styles.disabledButtonText]}>View Page</Text>
+                        </View>
+                    )}
+>>>>>>> main
 
                     <TouchableOpacity
                         style={styles.directionsButton}
                         onPress={() => {
+<<<<<<< HEAD
                             const address = marker.vicinity || marker.formatted_address;
+=======
+>>>>>>> main
                             const encodedAddress = encodeURIComponent(address.replace(/\s/g, '+'));
                             const appleUrl = `maps://maps.apple.com/?address=${encodedAddress}`;
                             const googleUrl = `https://www.google.com/maps/place/${encodedAddress}`;
@@ -143,6 +161,7 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
                         <Text style={styles.buttonText}>Directions</Text>
                     </TouchableOpacity>
 
+<<<<<<< HEAD
                     <TouchableOpacity 
                         style={[styles.prayerTimesButton, !masjidInfo && styles.disabledButton]}
                         onPress={() => handleNavigate("PrayerTimes")}
@@ -150,6 +169,20 @@ export default MapList = ({ uid, marker, onPress, navigation}) => {
                     >
                         <Text style={styles.buttonText}>Prayer Times</Text>
                     </TouchableOpacity>
+=======
+                    {masjidInfo ? (
+                        <TouchableOpacity 
+                            style={styles.prayerTimesButton}
+                            onPress={() => handleNavigate("PrayerTimes")}
+                        >
+                            <Text style={styles.buttonText}>Prayer Times</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={[styles.prayerTimesButton, styles.disabledButton]}>
+                            <Text style={[styles.buttonText, styles.disabledButtonText]}>Prayer Times</Text>
+                        </View>
+                    )}
+>>>>>>> main
                 </View>
             </TouchableOpacity>
         </View>
@@ -232,6 +265,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#e6e8ec', 
         textAlign: 'center',
+    },
+    disabledButton: {
+        opacity: 0.5,
+    },
+    disabledButtonText: {
+        opacity: 0.75,
     },
     gradient: {
         ...StyleSheet.absoluteFillObject,

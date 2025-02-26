@@ -7,8 +7,14 @@ import { useState, useEffect  } from 'react';
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { FIREBASE_APP, FIRESTORE_DB } from '../../../firebaseConfig';
+<<<<<<< HEAD
 import { usePushNotifications } from '../../../functions/useNotifications';
 
+=======
+import getLocalPrayerTimes from '../../../functions/getLocalPrayerTimes';
+import getUserLocation from '../../../functions/getUserLocation';
+import getLocalMosques from '../../../functions/getLocalMosques';
+>>>>>>> main
 
 const Home = () => {
     const {expoPushToken, notification} = usePushNotifications();
@@ -16,39 +22,47 @@ const Home = () => {
     console.log(expoPushToken?.data);
     console.log(notification)
     const { uid } = useLocalSearchParams();
-    const docRef = doc(FIRESTORE_DB, "users", uid);
-    const [masjidId, setMasjidId] = useState([])
+    const [locationData, setLocationDate] = useState();
+    const [locMosques, setLocMosques] = useState();
+    const docRef = uid ? doc(FIRESTORE_DB, "users", uid) : null;
+    const [masjidId, setMasjidId] = useState(["OnfodEG98Qaa3GIYKNxW"])
+
     useEffect(() => {
-        getMasjidId()
-    }, [])
+        const initializeApp = async () => {
+            await getAppData();
+        };
+        initializeApp();
+    }, []);
     
-    // gets user's fav masjids
-    const getMasjidId = async () => {
-        try {
+    // gets info for app to run
+    const getAppData = async () => {
+        const userLoc = await getUserLocation();
+        const locData = await getLocalPrayerTimes(userLoc, uid);
+        setLocMosques(await getLocalMosques(userLoc.latitude, userLoc.longitude));
+        setLocationDate(locData);
+        if(docRef && uid) {
             const docSnap = await getDoc(docRef);
             const data = docSnap.data();
             if (data && data.favMasjids && data.favMasjids.length > 0) {
                 setMasjidId(data.favMasjids);
             } else {
-                setMasjidId([]);
+                setMasjidId(["OnfodEG98Qaa3GIYKNxW"]);
             }
-        } catch (error) {
-            console.error('Error fetching masjid IDs:', error);
-            setMasjidId([]);
+        } else {
+            setMasjidId(["OnfodEG98Qaa3GIYKNxW"]);
         }
     }
     
     return(
         <View style={styles.page}>
-
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
-                <PrayerTimesWidget uid={uid} favMasjids={masjidId}/>
-                <SearchWidget uid={uid}/>
-                {masjidId ? (
-                <MyMosqueWidget masjidId={masjidId} uid={uid} fullscreen={false}/>
+                {locationData && <PrayerTimesWidget uid={uid} favMasjids={masjidId} locationData={locationData}/>}
+                {locMosques && <SearchWidget uid={uid} locMosques={locMosques}/>}
+                {masjidId && locationData ? (
+                <MyMosqueWidget masjidId={masjidId} uid={uid} fullscreen={false} locData={locationData}/>
                 ) : (
-                    <></>
+                    <></>                
                 )}
             </View>
         </View>
@@ -62,7 +76,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         alignItems: 'center'
-
     },
     background:{
         width: '100%',
@@ -76,5 +89,4 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginVertical: '2%',
     },
-    
 })

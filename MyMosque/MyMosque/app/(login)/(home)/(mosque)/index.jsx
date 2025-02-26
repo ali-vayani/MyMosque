@@ -23,7 +23,7 @@ const MosquePage = () => {
     const [joined, setJoined] = useState(false);
     const [numEvents, setNumEvents] = useState(0);
     const docRef = masjidId ? doc(FIRESTORE_DB, "mosques", masjidId.replace(/\s/g, '')) : null;
-    const userRef = doc(FIRESTORE_DB, "users", uid);
+    const userRef = uid ? doc(FIRESTORE_DB, "users", uid) : null;
 
 
     const nextPrayer = {
