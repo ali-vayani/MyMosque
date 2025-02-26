@@ -9,7 +9,7 @@ const getLocalMosques = async (lat, lng, nextPageToken = null) => {
 
     try {
         // Check cache first with location-based key
-        const cacheKey = `nearbyMosques_${lat.toFixed(3)}_${lng.toFixed(3)}`;
+        const cacheKey = "nearbyMosques";
         const cachedData = await AsyncStorage.getItem(cacheKey);
         
         if (cachedData) {

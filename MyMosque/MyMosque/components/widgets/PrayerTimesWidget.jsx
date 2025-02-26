@@ -5,6 +5,7 @@ import PrayerBar from '../elements/PrayerBar';
 import Location from '../elements/Location';
 import getCurrentPrayer from '../../functions/getCurrentPrayer';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
+import { AppState } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
@@ -47,6 +48,18 @@ const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
     }, [mosqueInfo])
 
     useEffect(() => {
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (nextAppState === 'active') {
+                const refreshData = async () => {
+                    setIsLoading(true);
+                    const res = await getLocalPrayerTimes(null, uid);
+                    parseLocaitonData(res);
+                    setIsLoading(false);
+                };
+                refreshData();
+            }
+        });
+
         const getTime = async () => {
             setIsLoading(true);
             const res = locationData != null ? locationData : await getLocalPrayerTimes(null, uid);
@@ -55,6 +68,10 @@ const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
         };
         if(uid)
             getTime();
+
+        return () => {
+            subscription.remove();
+        };
     }, [uid]);
 
     const parseLocaitonData = async (res) => {
