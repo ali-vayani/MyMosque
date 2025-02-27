@@ -196,12 +196,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     postImage: {
-        width: 250, 
+        width: 250,
         height: 250,
         justifyContent: 'flex-end',
         alignItems: 'center',
         alignSelf: 'center',
         overflow: 'hidden',
+        marginHorizontal: 10,
+    },
+    flatList: {
+        borderRadius: 10,
+        width: 270,
     },
     imageRounded: {
         borderRadius: 10,
@@ -233,10 +238,6 @@ const styles = StyleSheet.create({
         width: '87%',
         marginLeft: 10,
         marginBottom: 10
-    },
-    flatList: {
-        borderRadius: 10,
-        width: 270,
     },
     pagination: {
         flexDirection: 'row',
