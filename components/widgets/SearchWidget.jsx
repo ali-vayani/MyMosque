@@ -3,7 +3,7 @@ import { View, StyleSheet, Image, TextInput, Keyboard, Text, TouchableOpacity } 
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
-const SearchWidget = ({ inputVersion, onSubmit, setValue, value, uid, locMosques}) => {
+const SearchWidget = ({ inputVersion, onSubmit, setValue, value, uid, locMosques, disabled = false}) => {
     const router = useRouter();
     let height;
     if(!inputVersion)
@@ -56,7 +56,7 @@ const SearchWidget = ({ inputVersion, onSubmit, setValue, value, uid, locMosques
                 />
             {
             !inputVersion && 
-                <TouchableOpacity style={{width:'100%', height:'100%', margin: 0}} onPress={() => router.push({ pathname: '/map', params: { uid: uid, locMosques: JSON.stringify(locMosques) }})}>
+                <TouchableOpacity disabled={disabled} style={{width:'100%', height:'100%', margin: 0}} onPress={() => router.push({ pathname: '/map', params: { uid: uid, locMosques: JSON.stringify(locMosques) }})}>
 
                 <View style={[styles.content]}>
                     <Ionicons name="search-sharp" size={36} color={'#E6E8EC'} />

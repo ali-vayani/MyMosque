@@ -7,7 +7,7 @@ import { FIRESTORE_DB } from '../../firebaseConfig';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
 
-const MyMosqueWidget = ({ masjidId, uid, fullscreen, locData }) => {
+const MyMosqueWidget = ({ masjidId, uid, fullscreen }) => {
     const router = useRouter();
     const [posts, setPosts] = useState([]);
     const getPosts = async () => {

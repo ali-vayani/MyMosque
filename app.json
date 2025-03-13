@@ -12,6 +12,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.vayania.mymosque",
       "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "MyMosque needs access to location to find nearby mosques",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "MyMosque needs access to location to find nearby mosques",
         "ITSAppUsesNonExemptEncryption": false
       }
     },

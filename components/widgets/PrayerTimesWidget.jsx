@@ -22,7 +22,7 @@ const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
     const handleNavigate = useCallback(() => {
         if(!isLoading)
             router.push({
-                pathname: '/app',
+                pathname: '/prayer',
                 params: {
                     info: JSON.stringify(mosqueInfo),
                     currentPrayer: currentPrayer,
@@ -34,7 +34,7 @@ const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
     }, [mosqueInfo, currentPrayer, uid, date, timeSettings]);
 
     useEffect(() => {
-        if(mosqueInfo) {
+        if(mosqueInfo && locationData) {
             setIsLoading(false);
             setLocText(mosqueInfo.name)
         }

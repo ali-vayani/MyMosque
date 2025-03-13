@@ -11,7 +11,8 @@ import getLocalPrayerTimes from '../../../functions/getLocalPrayerTimes';
 import getUserLocation from '../../../functions/getUserLocation';
 import getLocalMosques from '../../../functions/getLocalMosques';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import * as LocationExpo from 'expo-location';
+import LocationServicesWidget from '../../../components/widgets/LocationServicesWidget';
 
 const Home = () => {
     const getAsyncData = async () => {
@@ -25,6 +26,7 @@ const Home = () => {
     const [locMosques, setLocMosques] = useState(getAsyncData().loc);
     const docRef = uid ? doc(FIRESTORE_DB, "users", uid) : null;
     const [masjidId, setMasjidId] = useState(["OnfodEG98Qaa3GIYKNxW"])
+    const [locAvalible, setLocAvalible] = useState(false);
 
 
     useEffect(() => {
@@ -41,6 +43,8 @@ const Home = () => {
         const mosques = await getLocalMosques(userLoc.latitude, userLoc.longitude);
         setLocMosques(mosques);
         setLocationDate(locData);
+        let { status } = await LocationExpo.requestForegroundPermissionsAsync();
+        status !== 'granted' ? setLocAvalible(false) : setLocAvalible(true);
         if(docRef && uid) {
             const docSnap = await getDoc(docRef);
             const data = docSnap.data();
@@ -58,10 +62,19 @@ const Home = () => {
         <View style={styles.page}>
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
-                {locationData && <PrayerTimesWidget uid={uid} favMasjids={masjidId} locationData={locationData}/>}
-                {locMosques && <SearchWidget uid={uid} locMosques={locMosques}/>}
-                {masjidId && locationData ? (
-                <MyMosqueWidget masjidId={masjidId} uid={uid} fullscreen={false} locData={locationData}/>
+                {locAvalible  ? <>
+                    <PrayerTimesWidget uid={uid} favMasjids={masjidId} locationData={locationData}/>
+                    <SearchWidget uid={uid} locMosques={locMosques}/>
+                </> :
+                <>
+                    <LocationServicesWidget onLocationEnabled={getUserLocation()}/>
+                    <SearchWidget uid={uid} locMosques={locMosques} disabled={true}/>
+                </>
+                    
+                    
+                }
+                {masjidId ? (
+                <MyMosqueWidget masjidId={masjidId} uid={uid} fullscreen={false}/>
                 ) : (
                     <></>                
                 )}
