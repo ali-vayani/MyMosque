@@ -3,23 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 
-const LocationServicesWidget = ({ onLocationEnabled }) => {
-    const handleEnableLocation = async () => {
-        try {
-            let { status } = await Location.getForegroundPermissionsAsync();
-            
-            if (status !== 'granted') {
-                status = (await Location.requestForegroundPermissionsAsync()).status;
-            }
-
-            if (status === 'granted') {
-                onLocationEnabled && onLocationEnabled();
-            }
-        } catch (error) {
-            console.error('Error requesting location permission:', error);
-        }
-    };
-
+const LocationServicesWidget = () => {
     return (
         <View style={styles.widget}>
             <Image 
@@ -42,12 +26,11 @@ const LocationServicesWidget = ({ onLocationEnabled }) => {
                 <Text style={styles.descriptionText}>
                     To show you accurate prayer times and nearby mosques, we need access to your location.
                 </Text>
-                <TouchableOpacity 
+                <View 
                     style={styles.enableButton}
-                    onPress={handleEnableLocation}
                 >
                     <Text style={styles.buttonText}>Enable Location Services</Text>
-                </TouchableOpacity>
+                </View>
             </View>
         </View>
     );

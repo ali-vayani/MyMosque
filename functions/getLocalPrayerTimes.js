@@ -39,7 +39,6 @@ export default getLocalPrayerTimes = async (location, uid) => {
         if(!location)  {
             location = await getUserLocation();
         }
-        console.log("lco", location)
         const cordinates = await getCityName(location.latitude, location.longitude);
         const today = new Date();
         const settings = await getTimeSettings(uid);

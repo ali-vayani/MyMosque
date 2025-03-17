@@ -62,12 +62,12 @@ const Home = () => {
         <View style={styles.page}>
             <LinearGradient colors={['#67519A', '#57658E', '#679159']} style={styles.background}/>
             <View style={styles.content}>
-                {locAvalible  ? <>
+                {locAvalible ? <>
                     <PrayerTimesWidget uid={uid} favMasjids={masjidId} locationData={locationData}/>
                     <SearchWidget uid={uid} locMosques={locMosques}/>
                 </> :
                 <>
-                    <LocationServicesWidget onLocationEnabled={getUserLocation()}/>
+                    <LocationServicesWidget/>
                     <SearchWidget uid={uid} locMosques={locMosques} disabled={true}/>
                 </>
                     

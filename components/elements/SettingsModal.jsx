@@ -65,7 +65,7 @@ const SettingsModal = ({setDisplayModal, displayModal, uid, setPrayerInfo}) => {
         const userRef = doc(FIRESTORE_DB, "users", uid);
         await setDoc(userRef, {prayerTimeSettings}, {merge: true});
         const localPrayerTimes = await getLocalPrayerTimes(null, uid);
-        setPrayerInfo({prayer: localPrayerTimes.data.timings, name: 'Your Location'})
+        setPrayerInfo({prayer: localPrayerTimes.timings, name: 'Your Location'})
     }
 
     const saveSelection = async (item, index) => {
