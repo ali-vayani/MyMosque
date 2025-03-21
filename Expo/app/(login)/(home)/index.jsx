@@ -22,7 +22,7 @@ const Home = () => {
     }
 
     const { uid } = useLocalSearchParams();
-    const [locationData, setLocationDate] = useState(getAsyncData().prayer);
+    const [locationData, setLocationDate] = useState(getAsyncData());
     const [locMosques, setLocMosques] = useState(getAsyncData().loc);
     const docRef = uid ? doc(FIRESTORE_DB, "users", uid) : null;
     const [masjidId, setMasjidId] = useState(["OnfodEG98Qaa3GIYKNxW"])

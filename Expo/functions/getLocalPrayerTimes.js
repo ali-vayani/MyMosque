@@ -17,7 +17,7 @@ export default getLocalPrayerTimes = async (location, uid) => {
     try {
         const cachedData = await AsyncStorage.getItem('prayerTimesCache');
 
-        if (cachedData) {
+        if (!cachedData) {
             const { data, timestamp, cachedLocation, cachedSettings } = JSON.parse(cachedData);
             const today = new Date();
             const cachedDate = new Date(timestamp);
@@ -39,8 +39,8 @@ export default getLocalPrayerTimes = async (location, uid) => {
         if(!location)  {
             location = await getUserLocation();
         }
-        console.log(location)
         const cordinates = await getCityName(location.latitude, location.longitude);
+        console.log(cordinates)
         const today = new Date();
         const settings = await getTimeSettings(uid);
         const url = `https://api.aladhan.com/v1/timingsByCity/${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}?city=${cordinates.city}&country=${cordinates.country}&method=${settings[0].id}&adjustment=1&school=${settings[1].id}`;
@@ -51,17 +51,18 @@ export default getLocalPrayerTimes = async (location, uid) => {
             throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        
+        const userLoc = cordinates.city || cordinates.town + ", " + cordinates.state;
         await AsyncStorage.setItem('prayerTimesCache', JSON.stringify({
             data,
             timestamp: new Date().toISOString(),
             cachedLocation: location,
-            cachedSettings: settings
+            cachedSettings: settings,
+            location: userLoc
         }));
         
         return {
-            ...data.data ,
-            located: endTime - startTime
+            ...data.data,
+            location: userLoc
         }
     } catch (error) {
         console.error('Error in getLocalPrayerTimes:', error);

@@ -3,11 +3,11 @@ import { doc, getDoc } from 'firebase/firestore';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import getLocalPrayerTimes from '../../functions/getLocalPrayerTimes';
-import getCurrentPrayer from '../../functions/getCurrentPrayer';
 import getMosquePrayerTimes from '../../functions/getMosquePrayerTimes';
 import { FIRESTORE_DB } from '../../firebaseConfig';
 
 const Location = ({setMosqueInfo, setCurrPrayer, favMasjids, setLoading, name, uid}) => {
+    console.log(name)
     if(name == undefined)
         name = 'Your Location'
     const [isOpen, setIsOpen] = useState(false);
@@ -97,13 +97,11 @@ const Location = ({setMosqueInfo, setCurrPrayer, favMasjids, setLoading, name, u
                                             setLoading(true);
                                             if(setMosqueInfo !== null) {
                                                 const prayers = await getLocalPrayerTimes(null, uid);
-                                                // TODO: get current prayer working
-                                                // const currPrayer = getCurrentPrayer(prayers);
-                                                // setCurrPrayer(currPrayer);
+                                                console.log(prayers.location)
                                                 setMosqueInfo({
                                                     prayer: prayers.timings,
-                                                    name: 'Your Location'
                                                 });
+                                                setText(prayers.location)
                                                 setLoading(false)
                                             }
                                         }

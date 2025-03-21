@@ -13,8 +13,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const PrayerTimes = () => {
     const router = useRouter();
-    const { info, currentPrayer, uid, name, date, setTimeSettings, timeSettings} = useLocalSearchParams();
-    const [locationText, setLocText] = useState('Your Location')
+    const { info, currentPrayer, uid, name, date, currLocText} = useLocalSearchParams();
+    const [locationText, setLocText] = useState(currLocText)
     const [favMasjids, setFavoriteMasjids] = useState([]);
     const [mosqueInfo, setMosqueInfo] = useState(JSON.parse(info));
     const [currPrayer, setCurrPrayer] = useState ("")

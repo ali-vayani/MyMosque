@@ -10,14 +10,14 @@ import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 
 const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
+    // console.log(locationData)
     const router = useRouter();
     const [time, setTime] = useState('14 min 20 sec')
-    const [locationText, setLocText] = useState('Your Location')
+    const [locationText, setLocText] = useState(locationData.location)
     const [currentPrayer, setCurrentPrayer] = useState(null);
     const [isLoading, setIsLoading] = useState(true)
     const [mosqueInfo, setMosqueInfo] = useState({});
     const [date, setDate] = useState("");
-    const [timeSettings, setTimeSettings] = useState([]);
 
     const handleNavigate = useCallback(() => {
         if(!isLoading)
@@ -28,15 +28,15 @@ const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
                     currentPrayer: currentPrayer,
                     uid: uid,
                     date: date,
-                    timeSettings: JSON.stringify(timeSettings)
+                    currLocText: locationText
                 }
             });
-    }, [mosqueInfo, currentPrayer, uid, date, timeSettings]);
+    }, [mosqueInfo, currentPrayer, uid, date]);
 
     useEffect(() => {
-        if(mosqueInfo && locationData) {
+        if(mosqueInfo && locationData.prayer) {
             setIsLoading(false);
-            setLocText(mosqueInfo.name)
+            setLocText(mosqueInfo.name || locationData.location)
         }
     }, [mosqueInfo])
 
@@ -55,7 +55,7 @@ const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
 
         const getTime = async () => {
             setIsLoading(true);
-            const res = locationData != null ? locationData : await getLocalPrayerTimes(null, uid);
+            const res = locationData.prayer != null ? locationData.prayer : await getLocalPrayerTimes(null, uid);
             parseLocaitonData(res);
             setIsLoading(false);
         };
@@ -76,7 +76,7 @@ const PrayerTimesWidget = ({ uid, favMasjids, locationData }) => {
         const prayer = getCurrentPrayer(res.timings);
         setMosqueInfo({
             prayer: res.timings,
-            name: 'Your Location',
+            name: res.location,
             located: res.located
         })
         setCurrentPrayer(prayer);
