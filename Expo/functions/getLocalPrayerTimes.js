@@ -39,6 +39,7 @@ export default getLocalPrayerTimes = async (location, uid) => {
         if(!location)  {
             location = await getUserLocation();
         }
+        console.log(location)
         const cordinates = await getCityName(location.latitude, location.longitude);
         const today = new Date();
         const settings = await getTimeSettings(uid);
@@ -70,10 +71,11 @@ export default getLocalPrayerTimes = async (location, uid) => {
 
 const getCityName = async (lat, lng) => {
     const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+    console.log(url)
     return fetch(url)
         .then(response => response.json())
         .then(data => {
-            if (data.address && data.address.city) {
+            if (data.address && (data.address.city || data.address.town)) {
                 return data.address;
             } else {
                 console.log("City not found.");

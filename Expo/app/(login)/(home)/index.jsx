@@ -38,23 +38,33 @@ const Home = () => {
 
     // gets info for app to run
     const getAppData = async () => {
-        const userLoc = await getUserLocation();
-        const locData = await getLocalPrayerTimes(userLoc, uid);
-        const mosques = await getLocalMosques(userLoc.latitude, userLoc.longitude);
-        setLocMosques(mosques);
-        setLocationDate(locData);
-        let { status } = await LocationExpo.requestForegroundPermissionsAsync();
-        status !== 'granted' ? setLocAvalible(false) : setLocAvalible(true);
-        if(docRef && uid) {
-            const docSnap = await getDoc(docRef);
-            const data = docSnap.data();
-            if (data && data.favMasjids && data.favMasjids.length > 0) {
-                setMasjidId(data.favMasjids);
-            } else {
-                setMasjidId(["OnfodEG98Qaa3GIYKNxW"]);
+        try {
+            let { status } = await LocationExpo.requestForegroundPermissionsAsync();
+            console.log(status)
+            setLocAvalible(status === 'granted');
+            
+            if (status === 'granted') {
+                const userLoc = await getUserLocation();
+                const locData = await getLocalPrayerTimes(userLoc, uid);
+                const mosques = await getLocalMosques(userLoc.latitude, userLoc.longitude);
+                setLocMosques(mosques);
+                setLocationDate(locData);
+                
+                if(docRef && uid) {
+                    const docSnap = await getDoc(docRef);
+                    const data = docSnap.data();
+                    if (data && data.favMasjids && data.favMasjids.length > 0) {
+                        setMasjidId(data.favMasjids);
+                    } else {
+                        setMasjidId(["OnfodEG98Qaa3GIYKNxW"]);
+                    }
+                } else {
+                    setMasjidId(["OnfodEG98Qaa3GIYKNxW"]);
+                }
             }
-        } else {
-            setMasjidId(["OnfodEG98Qaa3GIYKNxW"]);
+        } catch (error) {
+            console.error('Error in getAppData:', error);
+            setLocAvalible(false);
         }
     }
     
